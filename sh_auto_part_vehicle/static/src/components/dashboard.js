@@ -185,6 +185,7 @@ export class VehicleDashboard extends Component {
             this.state.totalSales = totalSales;
             this.state.totalInvoices = totalInvoices;
             this.state.overdue = overdue;
+            this.state.domain = domain;
     
         } catch (error) {
             console.error("Error fetching motorcycle data:", error);

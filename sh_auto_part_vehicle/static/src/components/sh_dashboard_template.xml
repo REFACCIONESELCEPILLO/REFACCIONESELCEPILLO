@@ -111,16 +111,16 @@
                             <span class="text-white"/>
                         </div>
                         <div t-if="state.chartType === 'bar'" class="chart-container">
-                            <VehicleChartRendorBar chartType="state.chartType"/>
+                            <VehicleChartRendorBar chartType="state.chartType" domain="state.domain"/>
                         </div>
                         <div t-if="state.chartType === 'line'" class="chart-container">
-                            <VehicleChartRendorline chartType="state.chartType"/>
+                            <VehicleChartRendorline chartType="state.chartType" domain="state.domain"/>
                         </div>
                         <div t-if="state.chartType === 'pie'" class="chart-container">
-                            <VehicleChartRendorpie chartType="state.chartType"/>
+                            <VehicleChartRendorpie chartType="state.chartType" domain="state.domain"/>
                         </div>
                         <div t-if="state.chartType === 'doughnut'" class="chart-container">
-                            <VehicleChartRendordoughnut chartType="state.chartType"/>
+                            <VehicleChartRendordoughnut chartType="state.chartType" domain="state.domain"/>
                         </div>
                     </div>
                 </div>
@@ -145,16 +145,16 @@
                             <span class="text-white"/>
                         </div>
                         <div t-if="state.productcharttype === 'line'" class="chart-container">
-                            <ProductLine timeFilter="state.timeFilter" chartType="state.productcharttype"/>
+                            <ProductLine timeFilter="state.timeFilter" chartType="state.productcharttype" domain="state.domain"/>
                         </div>
                         <div t-if="state.productcharttype === 'bar'" class="chart-container">
-                            <ProductBar timeFilter="state.timeFilter" chartType="state.productcharttype"/>
+                            <ProductBar timeFilter="state.timeFilter" chartType="state.productcharttype" domain="state.domain"/>
                         </div>
                         <div t-if="state.productcharttype === 'pie'" class="chart-container">
-                            <Productpie timeFilter="state.timeFilter" chartType="state.productcharttype"/>
+                            <Productpie timeFilter="state.timeFilter" chartType="state.productcharttype" domain="state.domain"/>
                         </div>
                         <div t-if="state.productcharttype === 'doughnut'" class="chart-container">
-                            <Productdoughnut timeFilter="state.timeFilter" chartType="state.productcharttype"/>
+                            <Productdoughnut timeFilter="state.timeFilter" chartType="state.productcharttype" domain="state.domain"/>
                         </div>
                     </div>
                 </div>
