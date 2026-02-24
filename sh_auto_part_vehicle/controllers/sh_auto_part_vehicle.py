@@ -26,7 +26,9 @@ class MotorCycleWebsiteSale(WebsiteSale):
             sh_is_common_product = product.product_variant_id.sh_is_common_product
 
         if product and product.product_variant_ids:
-            vehicles_ids = product.product_variant_ids.mapped('motorcycle_ids').ids
+            for product_variant in product.product_variant_ids:
+                if product_variant.motorcycle_ids:
+                    vehicles_ids += product_variant.motorcycle_ids.ids
             if vehicles_ids:
                 # To Make List Unique
                 # insert the list to the set
@@ -492,12 +494,16 @@ class sh_motorcycle(http.Controller):
             year_set = set()
             for vehicle in vehicles:
                 if vehicle.year_id and vehicle.end_year_id:
-                    year_set.update(range(vehicle.year_id.name, vehicle.end_year_id.name + 1))
+                    # Get years in range that exist in available_years
+                    min_year = vehicle.year_id.name
+                    max_year = vehicle.end_year_id.name
+                    for y in range(min_year, max_year + 1):
+                        if y in available_years:
+                            year_set.add(y)
                 elif vehicle.year_id:
-                    year_set.add(vehicle.year_id.name)
+                    if vehicle.year_id.name in available_years:
+                        year_set.add(vehicle.year_id.name)
             
-            # Intersection with available years from website filter
-            year_set.intersection_update(available_years)
             year_list = sorted(list(year_set))
         
         return year_list or []
@@ -663,13 +669,20 @@ class sh_motorcycle(http.Controller):
                 '|', ('website_id', '=', False), ('website_id', '=', request.website.id)
             ])
             if search_motorcycles:
-                for motorcycle in search_motorcycles.sorted(key=lambda r: r.name):
+                saved_bike_dic = {}
+                for motorcycle in search_motorcycles:
                     moto_url = ('/shop?type=' + str(motorcycle.type_id.id if motorcycle.type_id else '') + '&make=' + str(motorcycle.make_id.id if motorcycle.make_id else '') + '&model=' + str(motorcycle.mmodel_id.id if motorcycle.mmodel_id else '') + '&year=' + str(motorcycle.year_id if motorcycle.year_id else ''))
-                    saved_bike_list.append({
-                        'id': motorcycle.id,
-                        'name': motorcycle.name,
-                        'moto_url': moto_url
+                    saved_bike_dic.update({
+                        motorcycle.id:
+                            {
+                                'id': motorcycle.id,
+                                'name': motorcycle.name,
+                                'moto_url': moto_url
+                            }
                     })
+                if saved_bike_dic:
+                    for key, value in sorted(saved_bike_dic.items(), key=lambda kv: kv[1]['name']):
+                        saved_bike_list.append(value)
         return saved_bike_list or []
 
     @http.route(['/sh_motorcycle/is_user_logined_in'], type='json', auth='public', website=True)

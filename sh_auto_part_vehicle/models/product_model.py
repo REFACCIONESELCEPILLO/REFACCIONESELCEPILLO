@@ -275,7 +275,12 @@ class ProductTemplate(models.Model):
                     motorcycle_heading = ' '.join(vehicle_name_parts) if vehicle_name_parts else False
                     is_compute_vehicle_name = False
 
-                product_tmpl_id_list = search_motorcycles.mapped('product_ids.product_tmpl_id').ids
+                for motorcycle in search_motorcycles:
+                    if motorcycle.product_ids:
+                        for product in motorcycle.product_ids:
+                            if product.product_tmpl_id:
+                                product_tmpl_id_list.append(
+                                    product.product_tmpl_id.id)
 
                 # ------------------
                 # Universal Products
