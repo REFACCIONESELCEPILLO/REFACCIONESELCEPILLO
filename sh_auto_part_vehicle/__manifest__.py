@@ -7,7 +7,7 @@
     "category": "Industries",
     "summary": "Auto Parts Vehicle Management Auto Parts Attributes OEM Original Equipment Manufacture Fleet Repair Vehicle Repair Maintenance Fleet Service Repair Automotive Make Model Year Type Grade Engine Transmission Brand Equipment Maintenance Repair Operation Assets Maintenance Equipment Repair Maintenance Request Auto Parts Repair Auto Parts Maintenance Machine Maintenance Machine Repair Product Repair Assets Repair Car Repair Maintenance Product Maintenance Odoo",
     "description": """In automobile shops have numerous auto parts there is no count for parts and it's variants that's the way it is quite difficult to manage into the shop. So that's why we created a model that will help you to manage it. This module will help to manage an auto part by make, model, year, type, grade, engine, transmission, brand, product type & countries. You can also assign vehicles in auto parts product variants so it will become very easy to find the product using vehicle details. In this module provide two groups for user and manager so you can easily apply access rights for user and manager.""",
-    "version": "0.0.8",
+    "version": "18.0.0.0.8",
     "depends": [
         "website_sale",
         "website_sale_wishlist",
