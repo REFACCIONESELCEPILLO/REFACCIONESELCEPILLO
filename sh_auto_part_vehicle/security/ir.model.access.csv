@@ -19,30 +19,37 @@ sh_motorcycle_motorcycle_public,sh_motorcycle_motorcycle_public,model_motorcycle
 sh_motorcycle_garde_user,sh.motorcycle.garde.user,model_motorcycle_garde,group_sh_motorcycle_user,1,0,0,0
 sh_motorcycle_garde_manager,sh.motorcycle.garde.user,model_motorcycle_garde,group_sh_motorcycle_manager,1,1,1,1
 sh_motorcycle_garde_public,sh.motorcycle.garde.public,model_motorcycle_garde,base.group_public,1,0,0,0
+sh_motorcycle_garde,sh.motorcycle.garde,model_motorcycle_garde,,1,0,0,0
 
 sh_motorcycle_brand_user,sh.motorcycle.brand.user,model_motorcycle_brand,group_sh_motorcycle_user,1,0,0,0
 sh_motorcycle_brand_manager,sh.motorcycle.brand.user,model_motorcycle_brand,group_sh_motorcycle_manager,1,1,1,1
 sh_motorcycle_brand_public,sh.motorcycle.brand.public,model_motorcycle_brand,base.group_public,1,0,0,0
+sh_motorcycle_brand,sh.motorcycle.brand,model_motorcycle_brand,,1,0,0,0
 
 sh_motorcycle_product_type_user,sh.motorcycle.product.type.user,model_motorcycle_product_type,group_sh_motorcycle_user,1,0,0,0
 sh_motorcycle_product_type_public,sh.motorcycle.product.type.public,model_motorcycle_product_type,base.group_public,1,0,0,0
 sh_motorcycle_product_type_manager,sh.motorcycle.product.type.user,model_motorcycle_product_type,group_sh_motorcycle_manager,1,1,1,1
+sh_motorcycle_product_type,sh.motorcycle.product.type,model_motorcycle_product_type,,1,0,0,0
 
 sh_motorcycle_engine_user,sh.motorcycle.engine.user,model_motorcycle_engine,group_sh_motorcycle_user,1,0,0,0
 sh_motorcycle_engine_manager,sh.motorcycle.engine.user,model_motorcycle_engine,group_sh_motorcycle_manager,1,1,1,1
 sh_motorcycle_engine_public,sh.motorcycle.engine.public,model_motorcycle_engine,base.group_public,1,0,0,0
+sh_motorcycle_engine,sh.motorcycle.engine,model_motorcycle_engine,,1,0,0,0
 
 sh_motorcycle_transmission_user,sh.motorcycle.transmission.user,model_motorcycle_transmission,group_sh_motorcycle_user,1,0,0,0
 sh_motorcycle_transmission_manager,sh.motorcycle.transmission.manager,model_motorcycle_transmission,group_sh_motorcycle_manager,1,1,1,1
 sh_motorcycle_transmission_public,sh.motorcycle.transmission.public,model_motorcycle_transmission,base.group_public,1,0,0,0
+sh_motorcycle_transmission,sh.motorcycle.transmission,model_motorcycle_transmission,,1,0,0,0
 
 sh_vehicle_oem_user,sh.vehicle.oem.user,model_sh_vehicle_oem,group_sh_motorcycle_user,1,1,1,1
 sh_vehicle_oem_manager,sh.vehicle.oem.manager,model_sh_vehicle_oem,group_sh_motorcycle_manager,1,1,1,1
 sh_vehicle_oem_public,sh.vehicle.oem.public,model_sh_vehicle_oem,base.group_public,1,1,1,1
+sh_vehicle_oem,sh.vehicle.oem,model_sh_vehicle_oem,,1,0,0,0
 
 sh_product_specification_user,sh.product.specification.user,model_sh_product_specification,group_sh_motorcycle_user,1,1,1,1
 sh_product_specification_manager,sh.product.specification.manager,model_sh_product_specification,group_sh_motorcycle_manager,1,1,1,1
 sh_product_specification_public,sh.product.specification.public,model_sh_product_specification,base.group_public,1,1,1,1
+sh_product_specification,sh.product.specification,model_sh_product_specification,,1,0,0,0
 
 
 

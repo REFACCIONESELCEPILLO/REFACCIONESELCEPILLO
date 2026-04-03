@@ -42,9 +42,9 @@ export class VehicleDashboard extends Component {
         });
     }
 
-     
-   
-    
+
+
+
 
 
 
@@ -87,12 +87,12 @@ export class VehicleDashboard extends Component {
 
     getCurrentDomain() {
         let domain = [];
-    
+
         // If custom is 'none', skip all filters
         if (this.state.custom === "none") {
             return domain;
         }
-    
+
         // Apply date range filter
         if (this.state.startDate && this.state.endDate) {
             domain.push(["create_date", ">=", this.state.startDate]);
@@ -102,7 +102,7 @@ export class VehicleDashboard extends Component {
         else if (this.state.custom) {
             const today = new Date();
             let startDate, endDate;
-    
+
             if (this.state.custom === "daily") {
                 startDate = today.toISOString().split("T")[0];
                 endDate = today.toISOString().split("T")[0];
@@ -118,19 +118,19 @@ export class VehicleDashboard extends Component {
                 startDate = firstDayOfMonth.toISOString().split("T")[0];
                 endDate = today.toISOString().split("T")[0];
             }
-    
+
             domain.push(["create_date", ">=", startDate]);
             domain.push(["create_date", "<=", endDate]);
         }
-    
+
         return domain;
     }
-    
+
 
     async getVehicleCounts() {
         try {
             let domain = [];
-    
+
             // If filter is not "none", apply filters
             if (this.state.custom !== "none") {
                 // Priority: Date Range Filter
@@ -142,7 +142,7 @@ export class VehicleDashboard extends Component {
                 else if (this.state.custom) {
                     const today = new Date();
                     let startDate, endDate;
-    
+
                     if (this.state.custom === "daily") {
                         startDate = endDate = today.toISOString().split("T")[0];
                     } else if (this.state.custom === "weekly") {
@@ -155,14 +155,14 @@ export class VehicleDashboard extends Component {
                         startDate = firstDay.toISOString().split("T")[0];
                         endDate = today.toISOString().split("T")[0];
                     }
-    
+
                     domain.push(["create_date", ">=", startDate]);
                     domain.push(["create_date", "<=", endDate]);
                 }
             }
-    
+
             const today = new Date().toISOString().split("T")[0];
-    
+
             const [
                 totalBrands, totalMakes, totalModels, totalMotorcycles,
                 totalQuotations, totalSales, totalInvoices, overdue
@@ -176,7 +176,7 @@ export class VehicleDashboard extends Component {
                 this.orm.searchCount("account.move", [...domain, ["move_type", "=", "out_invoice"]]),
                 this.orm.searchCount("account.move", [...domain, ["move_type", "=", "out_invoice"], ["payment_state", "=", "not_paid"], ["invoice_date_due", "<", today]])
             ]);
-    
+
             this.state.totalBrands = totalBrands;
             this.state.totalMakes = totalMakes;
             this.state.totalModels = totalModels;
@@ -186,12 +186,12 @@ export class VehicleDashboard extends Component {
             this.state.totalInvoices = totalInvoices;
             this.state.overdue = overdue;
             this.state.domain = domain;
-    
+
         } catch (error) {
             console.error("Error fetching motorcycle data:", error);
         }
     }
-    
+
 
     // async getVehicleCounts() {
     //     try {
@@ -284,19 +284,19 @@ export class VehicleDashboard extends Component {
         // Fetch data for saved/default filter
         this.getVehicleCounts();
     }
-    
+
 
 
     onDateFilterChange(event) {
         this.state.custom = event.target.value;
         localStorage.setItem('salesFilter', this.state.custom);
-    
+
         this.state.startDate = null;
         this.state.endDate = null;
-    
+
         this.getVehicleCounts();
     }
-    
+
 
 
     // onDateChange(ev) {
@@ -311,10 +311,10 @@ export class VehicleDashboard extends Component {
     //     this.getVehicleCounts();
     // }
 
-   
+
     onDateChange(ev) {
         const { id, value } = ev.target;
-    
+
         if (id === "start-date") {
             this.state.startDate = value;
             localStorage.setItem("salesStartDate", value);
@@ -322,12 +322,12 @@ export class VehicleDashboard extends Component {
             this.state.endDate = value;
             localStorage.setItem("salesEndDate", value);
         }
-    
+
         localStorage.setItem("salesFilter", "custom");
         this.state.custom = "";
         this.getVehicleCounts();
     }
-    
+
 
 
     onChartTypeChange(event) {

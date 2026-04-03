@@ -76,23 +76,23 @@ class ProductTemplate(models.Model):
             to get product model list
         """
         model_list = []
-        if (
-            type_id not in ('', "", None, False) and
-            make_id not in ('', "", None, False)
-        ):
-            if type_id != int:
+        if type_id not in ('', "", None, False):
+            if type(type_id) != int:
                 type_id = int(type_id)
-            if make_id != int:
-                make_id = int(make_id)
             # Domain: Show records that match current website OR have no website set
+            domain = [
+                ('type_id', '=', type_id),
+                '|',
+                ('website_id', '=', False),
+                ('website_id', '=', self.env['website'].get_current_website().id)
+            ]
+            # make_id is optional — filter by it only if provided
+            if make_id not in ('', "", None, False):
+                if type(make_id) != int:
+                    make_id = int(make_id)
+                domain.insert(0, ('make_id', '=', make_id))
             model_list = self.env['motorcycle.mmodel'].sudo().search_read(
-                domain=[
-                    ('make_id', '=', make_id),
-                    ('type_id', '=', type_id),
-                    '|',
-                    ('website_id', '=', False),
-                    ('website_id', '=', self.env['website'].get_current_website().id)
-                ],
+                domain=domain,
                 fields=['id', 'name'],
                 order="name asc",
             )
@@ -218,28 +218,36 @@ class ProductTemplate(models.Model):
                 if year_id and type(year_id) != int:
                     year_id = int(year_id)
 
+                # Build domain conditionally — only add filters for fields that have values.
+                # This allows partial searches (e.g. Type + Model without Make/Year).
                 vehicle_domain = [
-                    ('type_id', '=', type_id),
-                    ('make_id', '=', make_id),
-                    ('mmodel_id', '=', mmodel_id),
-                    ('year_id.name', '<=', year_id),
-                    ('end_year_id.name', '>=', year_id),
                     '|',
                     ('website_id', '=', False),
                     ('website_id', '=', self.env['website'].get_current_website().id)
                 ]
+                if type_id:
+                    vehicle_domain.append(('type_id', '=', type_id))
+                if make_id:
+                    vehicle_domain.append(('make_id', '=', make_id))
+                if mmodel_id:
+                    vehicle_domain.append(('mmodel_id', '=', mmodel_id))
+                if year_id:
+                    vehicle_domain.append(('year_id.name', '<=', year_id))
+                    vehicle_domain.append(('end_year_id.name', '>=', year_id))
+
                 search_motorcycles = self.env[
                     'motorcycle.motorcycle'
                 ].sudo().search(vehicle_domain)
 
                 # =========================================================
-                # Type, Make, Model, Year selected when page refresh.
-                # Generate lists based on what's selected for cascading dropdowns
-                
+                # Generate cascade dropdown lists based on what's already selected
+
                 type_list = self._get_type_list()
                 make_list = self._get_make_list(type_id) if type_id else []
-                model_list = self._get_model_list(type_id, make_id) if type_id and make_id else []
-                year_list = self._get_year_list(type_id, make_id, mmodel_id) if type_id and make_id and mmodel_id else []
+                # model_list: needs type; make is optional for partial search
+                model_list = self._get_model_list(type_id, make_id) if type_id else []
+                # year_list: needs at least model to be meaningful
+                year_list = self._get_year_list(type_id, make_id, mmodel_id) if mmodel_id else []
 
                 # =========================================================
 

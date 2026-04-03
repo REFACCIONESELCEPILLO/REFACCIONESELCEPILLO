@@ -49,3 +49,22 @@ Version 18.0.1 (Date : 12 September 2024)
  (Date: 12th Jan 2026)
 =============================
 [UPDATE] Update Motorcycle Mmodel 
+
+
+ 18.0.9(Date: 24th Feb 2026)
+=============================
+[FIXED] in dashboard j methods updated due to below method faced by customer
+
+2026-02-24 11:02:58,490 0 ERROR XXXXXXXXXXXXX odoo.sh: Worker process (pid=4) was killed by signal 9 (most likely hit a memory limit, please check your custom modules memory usage.)
+
+ 18.0.9.0.1(Date: 27th Feb 2026)
+================================
+[UPDATE] Translated vehicle dashboard card labels into Spanish language.
+
+ 18.0.9.0.2(Date: 10th March 2026)
+================================
+[FIXED] individual search upgrade on website search filter 
+
+18.0.9.0.3 (Date: 13th March 2026)
+================================
+[FIXED] User access rights changes 
