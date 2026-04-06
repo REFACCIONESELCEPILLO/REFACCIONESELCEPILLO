@@ -320,6 +320,12 @@ msgid "Auto Parts User"
 msgstr ""
 
 #. module: sh_auto_part_vehicle
+#. odoo-javascript
+#: code:addons/sh_auto_part_vehicle/static/src/components/sh_dashboard_template.xml:0
+msgid "Bar Chart"
+msgstr ""
+
+#. module: sh_auto_part_vehicle
 #: model:ir.actions.act_window,name:sh_auto_part_vehicle.sh_motorcycle_brand_action
 #: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_product_product__brand
 #: model:ir.ui.menu,name:sh_auto_part_vehicle.sh_motorcycle_brand_menuitem
@@ -356,12 +362,19 @@ msgid "Common Products?"
 msgstr ""
 
 #. module: sh_auto_part_vehicle
+#: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_brand__company_id
+#: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_engine__company_id
 #: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_garage__company_id
+#: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_garde__company_id
 #: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_make__company_id
 #: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_mmodel__company_id
 #: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_motorcycle__company_id
+#: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_product_type__company_id
+#: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_transmission__company_id
 #: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_type__company_id
 #: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_year__company_id
+#: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_sh_product_specification__company_id
+#: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_sh_vehicle_oem__company_id
 msgid "Company"
 msgstr ""
 
@@ -448,6 +461,18 @@ msgid "Currently there are no vehicles stored in your garage"
 msgstr ""
 
 #. module: sh_auto_part_vehicle
+#. odoo-javascript
+#: code:addons/sh_auto_part_vehicle/static/src/components/sh_dashboard_template.xml:0
+msgid "Daily Sales"
+msgstr ""
+
+#. module: sh_auto_part_vehicle
+#: model:ir.actions.client,name:sh_auto_part_vehicle.custom_dashboard_action
+#: model:ir.ui.menu,name:sh_auto_part_vehicle.custom_dashboard_menu
+msgid "Dashboard"
+msgstr ""
+
+#. module: sh_auto_part_vehicle
 #: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_brand__display_name
 #: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_engine__display_name
 #: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_garage__display_name
@@ -483,6 +508,18 @@ msgid "Do not consider vehicle when click on category"
 msgstr ""
 
 #. module: sh_auto_part_vehicle
+#. odoo-javascript
+#: code:addons/sh_auto_part_vehicle/static/src/components/sh_dashboard_template.xml:0
+msgid "Doughnut Chart"
+msgstr ""
+
+#. module: sh_auto_part_vehicle
+#. odoo-javascript
+#: code:addons/sh_auto_part_vehicle/static/src/components/sh_dashboard_template.xml:0
+msgid "End Date"
+msgstr ""
+
+#. module: sh_auto_part_vehicle
 #: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_motorcycle__end_year_id
 #: model_terms:ir.ui.view,arch_db:sh_auto_part_vehicle.sh_motorcycle_motorcycle_search
 msgid "End year"
@@ -494,6 +531,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_product_product__engine
 #: model:ir.ui.menu,name:sh_auto_part_vehicle.sh_motorcycle_engine_menuitem
 msgid "Engine"
+msgstr ""
+
+#. module: sh_auto_part_vehicle
+#. odoo-javascript
+#: code:addons/sh_auto_part_vehicle/static/src/components/sh_dashboard_template.xml:0
+msgid "Filter by"
 msgstr ""
 
 #. module: sh_auto_part_vehicle
@@ -562,6 +605,11 @@ msgid "Is visible on website?"
 msgstr ""
 
 #. module: sh_auto_part_vehicle
+#: model:ir.model,name:sh_auto_part_vehicle.model_account_move
+msgid "Journal Entry"
+msgstr ""
+
+#. module: sh_auto_part_vehicle
 #: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_sh_product_specification__name
 msgid "Label"
 msgstr ""
@@ -603,6 +651,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_sh_product_specification__write_date
 #: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_sh_vehicle_oem__write_date
 msgid "Last Updated on"
+msgstr ""
+
+#. module: sh_auto_part_vehicle
+#. odoo-javascript
+#: code:addons/sh_auto_part_vehicle/static/src/components/sh_dashboard_template.xml:0
+msgid "Line Chart"
 msgstr ""
 
 #. module: sh_auto_part_vehicle
@@ -652,6 +706,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sh_auto_part_vehicle.sh_supported_vehicles_tabs
 #, python-format
 msgid "Model"
+msgstr ""
+
+#. module: sh_auto_part_vehicle
+#. odoo-javascript
+#: code:addons/sh_auto_part_vehicle/static/src/components/sh_dashboard_template.xml:0
+msgid "Monthly Sales"
 msgstr ""
 
 #. module: sh_auto_part_vehicle
@@ -718,6 +778,8 @@ msgid "Name"
 msgstr ""
 
 #. module: sh_auto_part_vehicle
+#. odoo-javascript
+#: code:addons/sh_auto_part_vehicle/static/src/components/sh_dashboard_template.xml:0
 #: model_terms:ir.ui.view,arch_db:sh_auto_part_vehicle.sh_motorcycle_snippet_snippet_options
 msgid "None"
 msgstr ""
@@ -750,6 +812,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sh_auto_part_vehicle.sh_supported_vehicles_tabs
 #, python-format
 msgid "Particulars"
+msgstr ""
+
+#. module: sh_auto_part_vehicle
+#. odoo-javascript
+#: code:addons/sh_auto_part_vehicle/static/src/components/sh_dashboard_template.xml:0
+msgid "Pie Chart"
 msgstr ""
 
 #. module: sh_auto_part_vehicle
@@ -823,6 +891,12 @@ msgid "Select"
 msgstr ""
 
 #. module: sh_auto_part_vehicle
+#. odoo-javascript
+#: code:addons/sh_auto_part_vehicle/static/src/components/sh_dashboard_template.xml:0
+msgid "Select Chart Type:"
+msgstr ""
+
+#. module: sh_auto_part_vehicle
 #: model_terms:ir.ui.view,arch_db:sh_auto_part_vehicle.sh_motorcycle_website_sale_products
 msgid "Select your vehicle"
 msgstr ""
@@ -861,6 +935,12 @@ msgid "Specifications Details"
 msgstr ""
 
 #. module: sh_auto_part_vehicle
+#. odoo-javascript
+#: code:addons/sh_auto_part_vehicle/static/src/components/sh_dashboard_template.xml:0
+msgid "Start Date"
+msgstr ""
+
+#. module: sh_auto_part_vehicle
 #: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_garage__year_id
 #: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_motorcycle__year_id
 #: model_terms:ir.ui.view,arch_db:sh_auto_part_vehicle.sh_motorcycle_motorcycle_search
@@ -887,6 +967,18 @@ msgstr ""
 #. module: sh_auto_part_vehicle
 #: model:res.groups,comment:sh_auto_part_vehicle.group_sh_motorcycle_manager
 msgid "The user will have access to CRUD motorcycle data."
+msgstr ""
+
+#. module: sh_auto_part_vehicle
+#. odoo-javascript
+#: code:addons/sh_auto_part_vehicle/static/src/components/sh_dashboard_template.xml:0
+msgid "Top 5 Customer"
+msgstr ""
+
+#. module: sh_auto_part_vehicle
+#. odoo-javascript
+#: code:addons/sh_auto_part_vehicle/static/src/components/sh_dashboard_template.xml:0
+msgid "Top 5 Products"
 msgstr ""
 
 #. module: sh_auto_part_vehicle
@@ -949,13 +1041,38 @@ msgid "Vehicle Product Type"
 msgstr ""
 
 #. module: sh_auto_part_vehicle
+#. odoo-javascript
+#: code:addons/sh_auto_part_vehicle/static/src/components/sh_dashboard_template.xml:0
+msgid "Vehicle Statistics"
+msgstr ""
+
+#. module: sh_auto_part_vehicle
 #: model_terms:ir.ui.view,arch_db:sh_auto_part_vehicle.sh_motorcycle_product_normal_form
 msgid "Vehicles"
 msgstr ""
 
 #. module: sh_auto_part_vehicle
 #: model:ir.model,name:sh_auto_part_vehicle.model_website
+#: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_brand__website_id
+#: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_engine__website_id
+#: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_garage__website_id
+#: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_garde__website_id
+#: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_make__website_id
+#: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_mmodel__website_id
+#: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_motorcycle__website_id
+#: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_product_type__website_id
+#: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_transmission__website_id
+#: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_type__website_id
+#: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_motorcycle_year__website_id
+#: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_sh_product_specification__website_id
+#: model:ir.model.fields,field_description:sh_auto_part_vehicle.field_sh_vehicle_oem__website_id
 msgid "Website"
+msgstr ""
+
+#. module: sh_auto_part_vehicle
+#. odoo-javascript
+#: code:addons/sh_auto_part_vehicle/static/src/components/sh_dashboard_template.xml:0
+msgid "Weekly Sales"
 msgstr ""
 
 #. module: sh_auto_part_vehicle
@@ -994,6 +1111,11 @@ msgstr ""
 #. module: sh_auto_part_vehicle
 #: model:ir.model,name:sh_auto_part_vehicle.model_motorcycle_mmodel
 msgid "mmodel"
+msgstr ""
+
+#. module: sh_auto_part_vehicle
+#: model:ir.model,name:sh_auto_part_vehicle.model_sale_order
+msgid "sale order"
 msgstr ""
 
 #. module: sh_auto_part_vehicle
