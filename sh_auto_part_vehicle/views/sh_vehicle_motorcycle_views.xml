@@ -7,7 +7,7 @@
 	    sequence="1"
 	    name="Auto Parts"
 	    groups="group_sh_motorcycle_user,group_sh_motorcycle_manager" 
-	    web_icon="sh_motorcycle_backend,static/src/img/menu_icon.png"
+	    web_icon="sh_auto_part_vehicle,static/src/img/menu_icon.png"
     />
 
     <menuitem id="sh_motorcycle_menuitem_config" sequence="3" name="Configurations" parent="sh_motorcycle_menuitem_root" groups="group_sh_motorcycle_manager" />
