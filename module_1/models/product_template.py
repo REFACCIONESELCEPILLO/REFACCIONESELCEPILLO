@@ -20,31 +20,26 @@ class ProductTemplate(models.Model):
         string='Suc. Manantial',
         compute='_compute_branch_quantities',
         compute_sudo=True,
-        store=True,
     )
     suc_magon = fields.Float(
         string='Suc. Magon',
         compute='_compute_branch_quantities',
         compute_sudo=True,
-        store=True,
     )
     suc_poza_rica = fields.Float(
         string='Suc. Poza Rica',
         compute='_compute_branch_quantities',
         compute_sudo=True,
-        store=True,
     )
     suc_papantla = fields.Float(
         string='Suc. Papantla',
         compute='_compute_branch_quantities',
         compute_sudo=True,
-        store=True,
     )
     suc_tuxpan = fields.Float(
         string='Suc. Tuxpan',
         compute='_compute_branch_quantities',
         compute_sudo=True,
-        store=True,
     )
 
     @api.depends(
@@ -130,13 +125,20 @@ class ProductTemplate(models.Model):
             ])
             for quant in quants:
                 template = variant_to_template[quant.product_id.id]
-                field_name = branch_field_by_code.get(quant.location_id.branch)
+                field_name = branch_field_by_code.get(self._get_location_branch(quant.location_id))
                 if field_name:
                     quantities[template.id][field_name] += quant.quantity - quant.reserved_quantity
 
         for product in self:
             for field_name, quantity in quantities[product.id].items():
                 product[field_name] = quantity
+
+    def _get_location_branch(self, location):
+        while location:
+            if location.branch:
+                return location.branch
+            location = location.location_id
+        return False
 
     def action_open_warehouse_availability(self):
         self.ensure_one()

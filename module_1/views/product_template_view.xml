@@ -20,9 +20,23 @@
             </xpath>
             <xpath expr="//notebook" position="inside">
                 <page string="Existencias" groups="stock.group_stock_user,sales_team.group_sale_salesman">
+                    <group string="Disponible por sucursal">
+                        <group>
+                            <field name="suc_manantial" readonly="1"/>
+                            <field name="suc_magon" readonly="1"/>
+                            <field name="suc_poza_rica" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="suc_papantla" readonly="1"/>
+                            <field name="suc_tuxpan" readonly="1"/>
+                            <field name="warehouse_free_qty_kanban" readonly="1" widget="text"/>
+                        </group>
+                    </group>
                     <field name="warehouse_availability_ids" readonly="1" nolabel="1">
                         <list create="0" edit="0" delete="0">
                             <field name="warehouse_name"/>
+                            <field name="quantity_on_hand" string="Fisico" sum="Total fisico"/>
+                            <field name="reserved_quantity" string="Reservado" sum="Total reservado"/>
                             <field name="free_quantity" string="Disponible" sum="Total disponible"/>
                             <field name="product_uom_id" string="UdM"/>
                             <field name="company_id" groups="base.group_multi_company"/>
