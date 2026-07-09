@@ -13,7 +13,7 @@ class ProductTemplate(models.Model):
         compute_sudo=True,
     )
     warehouse_availability_html = fields.Html(
-        string='Existencias por almacen',
+        string='Resumen de existencias por almacen',
         compute='_compute_warehouse_availability_html',
         compute_sudo=True,
         sanitize=False,
