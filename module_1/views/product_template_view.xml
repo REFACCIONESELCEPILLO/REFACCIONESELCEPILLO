@@ -1,34 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="product_template_inherit_id" model="ir.ui.view">
-        <field name="name">product.template.inherit</field>
+    <record id="product_template_warehouse_availability_form_inherit" model="ir.ui.view">
+        <field name="name">product.template.warehouse.availability.form.inherit</field>
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_only_form_view"/>
         <field name="arch" type="xml">
-            <field name="barcode" position="after">
-                <field name="suc_manantial"/>
-                <field name="suc_magon"/>
-                <field name="suc_poza_rica"/>
-                <field name="suc_papantla"/>
-                <field name="suc_tuxpan"/>
-            </field>
-
-        </field>
-    </record>
-
-    <record id="product_template_kanban_inherit_id" model="ir.ui.view">
-        <field name="name">product.template.kanban.inherit</field>
-        <field name="model">product.template</field>
-        <field name="inherit_id" ref="product.product_template_kanban_view"/>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='product_properties']" position="before">
-                <div t-if="record.suc_manantial.value &gt; 0">Suc. Manantial: <field name="suc_manantial"/></div>
-                <div t-if="record.suc_magon.value &gt; 0">Suc. Magon: <field name="suc_magon"/></div>
-                <div t-if="record.suc_poza_rica.value &gt; 0">Suc. Poza Rica: <field name="suc_poza_rica"/></div>
-                <div t-if="record.suc_papantla.value &gt; 0">Suc. Papantla: <field name="suc_papantla"/></div>
-                <div t-if="record.suc_tuxpan.value &gt; 0">Suc. Tuxpan: <field name="suc_tuxpan"/></div>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    name="action_open_warehouse_availability"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-building-o"
+                    groups="stock.group_stock_user">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Disponible</span>
+                        <span class="o_stat_text">por almacen</span>
+                    </div>
+                </button>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Existencias" groups="stock.group_stock_user,sales_team.group_sale_salesman">
+                    <field name="warehouse_availability_ids" readonly="1" nolabel="1">
+                        <list create="0" edit="0" delete="0">
+                            <field name="warehouse_name"/>
+                            <field name="free_quantity" string="Disponible" sum="Total disponible"/>
+                            <field name="product_uom_id" string="UdM"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </list>
+                    </field>
+                </page>
             </xpath>
         </field>
     </record>
-
 </odoo>

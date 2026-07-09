@@ -395,7 +395,7 @@ class ProductProduct(models.Model):
         comodel_name='motorcycle.engine', string='Engine')
     product_type = fields.Many2many(
         comodel_name='motorcycle.product.type', string='Vehicle Product Type')
-    brand = fields.Many2one(comodel_name='motorcycle.brand', string='Brand')
+    brand = fields.Many2one(comodel_name='motorcycle.brand', string='Vehicle Brand')
     made_in = fields.Many2one(comodel_name='res.country', string='Made In')
     transmission_ids = fields.Many2many(
         comodel_name='motorcycle.transmission', string='Transmission')

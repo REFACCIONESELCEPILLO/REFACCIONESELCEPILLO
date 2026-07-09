@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
-import logging
-from odoo import api, models, fields, _
-
-_logger = logging.getLogger(__name__)
+from odoo import fields, models
 
 
 class StockLocation(models.Model):
     _inherit = 'stock.location'
 
     branch = fields.Selection(
-        selection=[('MAN', 'Manantial'), 
-                   ('MAG', 'Magon'),
-                   ('POZ', 'Poza Rica'),
-                   ('PAP', 'Papantla'),
-                   ('TUX', 'Tuxpan'),],
+        selection=[
+            ('MAN', 'Manantial'),
+            ('MAG', 'Magon'),
+            ('POZ', 'Poza Rica'),
+            ('PAP', 'Papantla'),
+            ('TUX', 'Tuxpan'),
+        ],
         string='Sucursal',
     )

@@ -2,4 +2,4 @@
 
 from . import product_template
 from . import stock_location
-from . import sale_report
+from . import product_warehouse_availability
