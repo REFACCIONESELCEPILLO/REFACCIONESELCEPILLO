@@ -35,4 +35,25 @@
             </xpath>
         </field>
     </record>
+
+    <record id="product_template_warehouse_availability_kanban_inherit" model="ir.ui.view">
+        <field name="name">product.template.warehouse.availability.kanban.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_kanban_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//kanban/templates" position="before">
+                <field name="warehouse_free_qty_kanban"/>
+            </xpath>
+            <xpath expr="//templates/t[@t-name='card']" position="inside">
+                <div
+                    t-if="record.warehouse_free_qty_kanban.raw_value"
+                    class="small text-muted mt-1"
+                    style="white-space: pre-line;">
+                    <strong>Por almacen:</strong>
+                    <br/>
+                    <t t-esc="record.warehouse_free_qty_kanban.raw_value"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
 </odoo>
