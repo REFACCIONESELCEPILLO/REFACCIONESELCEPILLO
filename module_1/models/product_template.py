@@ -16,31 +16,6 @@ class ProductTemplate(models.Model):
         inverse_name='product_tmpl_id',
         string='Existencias por almacen',
     )
-    suc_manantial = fields.Float(
-        string='Suc. Manantial',
-        compute='_compute_branch_quantities',
-        compute_sudo=True,
-    )
-    suc_magon = fields.Float(
-        string='Suc. Magon',
-        compute='_compute_branch_quantities',
-        compute_sudo=True,
-    )
-    suc_poza_rica = fields.Float(
-        string='Suc. Poza Rica',
-        compute='_compute_branch_quantities',
-        compute_sudo=True,
-    )
-    suc_papantla = fields.Float(
-        string='Suc. Papantla',
-        compute='_compute_branch_quantities',
-        compute_sudo=True,
-    )
-    suc_tuxpan = fields.Float(
-        string='Suc. Tuxpan',
-        compute='_compute_branch_quantities',
-        compute_sudo=True,
-    )
 
     @api.depends(
         'product_variant_ids.stock_quant_ids.quantity',
@@ -94,51 +69,6 @@ class ProductTemplate(models.Model):
                         product.uom_id.name,
                     ))
             product.warehouse_free_qty_kanban = '\n'.join(lines)
-
-    @api.depends(
-        'product_variant_ids.stock_quant_ids.quantity',
-        'product_variant_ids.stock_quant_ids.reserved_quantity',
-        'product_variant_ids.stock_quant_ids.location_id.branch',
-    )
-    def _compute_branch_quantities(self):
-        branch_field_by_code = {
-            'MAN': 'suc_manantial',
-            'MAG': 'suc_magon',
-            'POZ': 'suc_poza_rica',
-            'PAP': 'suc_papantla',
-            'TUX': 'suc_tuxpan',
-        }
-        variant_to_template = {
-            variant.id: template
-            for template in self
-            for variant in template.product_variant_ids
-        }
-        quantities = {
-            template.id: {field_name: 0.0 for field_name in branch_field_by_code.values()}
-            for template in self
-        }
-        if variant_to_template:
-            quants = self.env['stock.quant'].sudo().search([
-                ('product_id', 'in', list(variant_to_template)),
-                ('location_id.usage', '=', 'internal'),
-                ('location_id.branch', '!=', False),
-            ])
-            for quant in quants:
-                template = variant_to_template[quant.product_id.id]
-                field_name = branch_field_by_code.get(self._get_location_branch(quant.location_id))
-                if field_name:
-                    quantities[template.id][field_name] += quant.quantity - quant.reserved_quantity
-
-        for product in self:
-            for field_name, quantity in quantities[product.id].items():
-                product[field_name] = quantity
-
-    def _get_location_branch(self, location):
-        while location:
-            if location.branch:
-                return location.branch
-            location = location.location_id
-        return False
 
     def action_open_warehouse_availability(self):
         self.ensure_one()

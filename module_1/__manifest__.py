@@ -9,12 +9,12 @@
     'category': 'Inventory/Inventory',
     'depends': [
         'product',
-        'sale',
         'sales_team',
         'stock',
     ],
     'data': [
         'security/ir.model.access.csv',
+        'views/legacy_cleanup.xml',
         'views/product_warehouse_availability_views.xml',
         'views/product_template_view.xml',
     ],

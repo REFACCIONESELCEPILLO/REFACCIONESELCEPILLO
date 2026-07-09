@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_template_inherit_id" model="ir.ui.view">
+        <field name="name">product.template.legacy.branch.form.disabled</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="active" eval="False"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_template_kanban_inherit_id" model="ir.ui.view">
+        <field name="name">product.template.legacy.branch.kanban.disabled</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_kanban_view"/>
+        <field name="active" eval="False"/>
+        <field name="arch" type="xml">
+            <xpath expr="//kanban" position="inside">
+                <field name="name"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="sale_report_pivot_inherit_id" model="ir.ui.view">
+        <field name="name">product.template.legacy.branch.pivot.disabled</field>
+        <field name="model">product.template</field>
+        <field name="active" eval="False"/>
+        <field name="arch" type="xml">
+            <pivot string="Legacy disabled">
+                <field name="name" type="row"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="stock_location_inherit_id" model="ir.ui.view">
+        <field name="name">stock.location.legacy.branch.form.disabled</field>
+        <field name="model">stock.location</field>
+        <field name="inherit_id" ref="stock.view_location_form"/>
+        <field name="active" eval="False"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
