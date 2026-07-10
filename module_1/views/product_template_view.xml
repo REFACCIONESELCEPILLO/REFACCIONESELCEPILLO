@@ -35,11 +35,11 @@
             <xpath expr="//kanban/templates" position="before">
                 <field name="warehouse_free_qty_kanban"/>
             </xpath>
-            <xpath expr="//templates/t[@t-name='card']" position="inside">
+            <xpath expr="//templates//field[@name='qty_available'][1]" position="after">
                 <div
                     t-if="record.warehouse_free_qty_kanban.raw_value"
-                    class="small text-muted mt-1 w-100"
-                    style="white-space: pre-line; flex-basis: 100%; order: 99;">
+                    class="small text-muted mt-1"
+                    style="white-space: pre-line;">
                     <strong>Por almacen:</strong>
                     <br/>
                     <t t-esc="record.warehouse_free_qty_kanban.raw_value"/>
