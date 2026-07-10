@@ -35,7 +35,7 @@
             <xpath expr="//kanban/templates" position="before">
                 <field name="warehouse_free_qty_kanban"/>
             </xpath>
-            <xpath expr="//templates//field[@name='qty_available'][1]" position="after">
+            <xpath expr="//templates//field[@name='qty_available'][1]/following-sibling::field[@name='uom_id'][1]" position="after">
                 <div
                     t-if="record.warehouse_free_qty_kanban.raw_value"
                     class="small text-muted mt-1"
