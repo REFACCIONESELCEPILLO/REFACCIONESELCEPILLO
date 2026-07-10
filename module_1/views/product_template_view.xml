@@ -22,16 +22,6 @@
             <xpath expr="//notebook" position="inside">
                 <page string="Existencias" groups="stock.group_stock_user,sales_team.group_sale_salesman">
                     <field name="warehouse_availability_html" readonly="1" widget="html" nolabel="1"/>
-                    <field name="warehouse_availability_ids" readonly="1" nolabel="1">
-                        <list create="0" edit="0" delete="0">
-                            <field name="warehouse_name"/>
-                            <field name="quantity_on_hand" string="Fisico" sum="Total fisico"/>
-                            <field name="reserved_quantity" string="Reservado" sum="Total reservado"/>
-                            <field name="free_quantity" string="Disponible" sum="Total disponible"/>
-                            <field name="product_uom_id" string="UdM"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
-                        </list>
-                    </field>
                 </page>
             </xpath>
         </field>
@@ -48,8 +38,8 @@
             <xpath expr="//templates/t[@t-name='card']" position="inside">
                 <div
                     t-if="record.warehouse_free_qty_kanban.raw_value"
-                    class="small text-muted mt-1"
-                    style="white-space: pre-line;">
+                    class="small text-muted mt-1 w-100"
+                    style="white-space: pre-line; flex-basis: 100%; order: 99;">
                     <strong>Por almacen:</strong>
                     <br/>
                     <t t-esc="record.warehouse_free_qty_kanban.raw_value"/>
