@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="products_item_sku_and_availability" inherit_id="website_sale.products_item" name="Ickab: SKU and availability in product cards" priority="25">
+        <xpath expr="//div[hasclass('oe_product_image')]" position="inside">
+            <div t-attf-class="ick_availability_ribbon #{'ick_available' if product.ick_website_has_free_stock else 'ick_unavailable'}">
+                <t t-if="product.ick_website_has_free_stock">Disponible</t>
+                <t t-else="">No disponible</t>
+            </div>
+        </xpath>
+
+        <xpath expr="//*[hasclass('o_wsale_products_item_title')]" position="after">
+            <div t-if="product.ick_default_code" class="ick_product_sku small">
+                <span>sku : </span>
+                <span t-out="product.ick_default_code"/>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="product_detail_sku" inherit_id="website_sale.product" name="Ickab: SKU in product detail" priority="30">
+        <xpath expr="//h1[@t-field='product.name']" position="after">
+            <div t-if="product.ick_default_code" class="ick_product_detail_sku">
+                <span>sku : </span>
+                <span t-out="product.ick_default_code"/>
+            </div>
+        </xpath>
+    </template>
+</odoo>
