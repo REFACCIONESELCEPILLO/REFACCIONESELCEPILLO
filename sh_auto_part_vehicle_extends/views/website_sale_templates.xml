@@ -50,6 +50,18 @@
         </xpath>
     </template>
 
+    <template id="product_detail_oem_code_links" inherit_id="sh_auto_part_vehicle.sh_detail_page_oem_tmpl" name="Ickab: Linked compatible OEM codes" priority="35">
+        <xpath expr="//span[hasclass('oem_code')]" position="replace">
+            <t t-set="compatible_product" t-value="line.sudo().ick_get_compatible_product()"/>
+            <a
+                t-if="compatible_product"
+                class="oem_code ick_oem_product_link"
+                t-att-href="compatible_product.website_url"
+                t-esc="line.sudo().name"/>
+            <span t-else="" class="oem_code" t-esc="line.sudo().name"/>
+        </xpath>
+    </template>
+
     <template id="product_detail_oem_bookmark_title" inherit_id="sh_auto_part_vehicle.sh_auto_part_vehicle_bookmark_links" name="Ickab: OEM bookmark as compatible parts" priority="30">
         <xpath expr="//a[@href='#sh_auto_oem_section']" position="replace">
             <a t-if="product.vehicle_oem_lines" href="#sh_auto_oem_section" class="js_cls_auto_parts_links mx-2 d-inline-block">Piezas compatibles</a>
