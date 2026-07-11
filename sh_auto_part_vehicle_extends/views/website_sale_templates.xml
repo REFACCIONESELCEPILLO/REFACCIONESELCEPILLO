@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <template id="vehicle_search_make_label" inherit_id="sh_auto_part_vehicle.sh_motorcycle_website_sale_products" name="Ickab: Vehicle make label" priority="30">
+        <xpath expr="//select[hasclass('id_sh_motorcycle_make_select')]/option[hasclass('blank')]" position="replace">
+            <option value="" class="blank">Marca</option>
+        </xpath>
+    </template>
+
     <template id="products_item_sku_and_availability" inherit_id="website_sale.products_item" name="Ickab: SKU and availability in product cards" priority="25">
         <xpath expr="//div[hasclass('oe_product_image')]" position="inside">
             <div t-attf-class="ick_availability_ribbon #{'ick_available' if product.ick_website_has_free_stock else 'ick_unavailable'}">
@@ -22,6 +28,31 @@
                 <span>sku : </span>
                 <span t-out="product.ick_default_code"/>
             </div>
+        </xpath>
+    </template>
+
+    <template id="product_detail_availability" inherit_id="website_sale.product" name="Ickab: Product availability detail" priority="11">
+        <xpath expr="//section[@id='product_detail']" position="inside">
+            <section class="ick_product_availability_detail" t-if="product.ick_website_availability_text">
+                <div class="container">
+                    <h5>Disponibilidad</h5>
+                    <div class="ick_product_availability_text" style="white-space: pre-line;">
+                        <t t-esc="product.ick_website_availability_text"/>
+                    </div>
+                </div>
+            </section>
+        </xpath>
+    </template>
+
+    <template id="product_detail_oem_title" inherit_id="sh_auto_part_vehicle.sh_detail_page_oem_tmpl" name="Ickab: OEM title as compatible parts" priority="30">
+        <xpath expr="//section[@id='sh_auto_oem_section']//h3[1]" position="replace">
+            <h3>Piezas compatibles</h3>
+        </xpath>
+    </template>
+
+    <template id="product_detail_oem_bookmark_title" inherit_id="sh_auto_part_vehicle.sh_auto_part_vehicle_bookmark_links" name="Ickab: OEM bookmark as compatible parts" priority="30">
+        <xpath expr="//a[@href='#sh_auto_oem_section']" position="replace">
+            <a t-if="product.vehicle_oem_lines" href="#sh_auto_oem_section" class="js_cls_auto_parts_links mx-2 d-inline-block">Piezas compatibles</a>
         </xpath>
     </template>
 </odoo>

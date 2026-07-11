@@ -22,6 +22,16 @@ class ProductTemplate(models.Model):
         compute="_compute_ick_website_availability",
         compute_sudo=True,
     )
+    ick_website_availability_text = fields.Text(
+        string="Disponibilidad web",
+        compute="_compute_ick_website_availability",
+        compute_sudo=True,
+    )
+    ick_oem_codes_kanban = fields.Text(
+        string="Compatibilidad OEM",
+        compute="_compute_ick_oem_codes_kanban",
+        compute_sudo=True,
+    )
 
     @api.depends("product_variant_ids.default_code")
     def _compute_ick_default_code(self):
@@ -35,15 +45,44 @@ class ProductTemplate(models.Model):
         "product_variant_ids.stock_quant_ids.location_id",
     )
     def _compute_ick_website_availability(self):
-        _warehouse_data, quantities = self._get_warehouse_quantities()
+        warehouse_data, quantities = self._get_warehouse_quantities()
 
         for product in self:
+            lines = []
             free_qty = sum(
                 values["free_quantity"]
                 for values in quantities.get(product.id, {}).values()
             )
+            for warehouse, __parent_path in warehouse_data:
+                warehouse_qty = quantities[product.id][warehouse.id]["free_quantity"]
+                if warehouse_qty > 0:
+                    lines.append(
+                        "%s: %.3f %s"
+                        % (warehouse.display_name, warehouse_qty, product.uom_id.name)
+                    )
             product.ick_website_free_qty = free_qty
             product.ick_website_has_free_stock = free_qty > 0
+            if lines:
+                product.ick_website_availability_text = "\n".join([
+                    "Disponible total: %.3f %s"
+                    % (free_qty, product.uom_id.name),
+                    *lines,
+                ])
+            else:
+                product.ick_website_availability_text = "No disponible"
+
+    @api.depends("vehicle_oem_lines.name", "vehicle_oem_lines.supplier_id")
+    def _compute_ick_oem_codes_kanban(self):
+        for product in self:
+            lines = []
+            for oem_line in product.vehicle_oem_lines:
+                if not oem_line.name:
+                    continue
+                if oem_line.supplier_id:
+                    lines.append("%s: %s" % (oem_line.supplier_id.name, oem_line.name))
+                else:
+                    lines.append(oem_line.name)
+            product.ick_oem_codes_kanban = "\n".join(lines)
 
     @api.model
     def _search_get_detail(self, website, order, options):

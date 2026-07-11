@@ -18,6 +18,7 @@ SKU en tienda, busqueda por OEM y cintillos de disponibilidad por almacen.
         "stock",
     ],
     "data": [
+        "views/product_template_views.xml",
         "views/website_sale_templates.xml",
     ],
     "assets": {
