@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_template_search_oem_inherit" model="ir.ui.view">
+        <field name="name">product.template.search.oem.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name'][1]" position="attributes">
+                <attribute name="filter_domain">['|', '|', '|', '|', ('default_code', 'ilike', self), ('product_variant_ids.default_code', 'ilike', self), ('name', 'ilike', self), ('barcode', 'ilike', self), ('vehicle_oem_lines.name', 'ilike', self)]</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_template_kanban_oem_inherit" model="ir.ui.view">
+        <field name="name">product.template.kanban.oem.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_kanban_view"/>
+        <field name="priority" eval="100"/>
+        <field name="arch" type="xml">
+            <xpath expr="//kanban/templates" position="before">
+                <field name="ick_oem_codes_kanban"/>
+            </xpath>
+            <xpath expr="//templates//div[@t-if='record.warehouse_free_qty_kanban.raw_value'][1]" position="replace">
+                <div
+                    t-if="record.warehouse_free_qty_kanban.raw_value or record.ick_oem_codes_kanban.raw_value"
+                    class="small text-muted mt-1"
+                    style="display: flex; gap: 12px; align-items: flex-start;">
+                    <div
+                        t-if="record.warehouse_free_qty_kanban.raw_value"
+                        style="flex: 1 1 0; min-width: 0; white-space: pre-line;">
+                        <strong>Por almacen:</strong>
+                        <br/>
+                        <t t-esc="record.warehouse_free_qty_kanban.raw_value"/>
+                    </div>
+                    <div
+                        t-if="record.ick_oem_codes_kanban.raw_value"
+                        style="flex: 1 1 0; min-width: 0; white-space: pre-line;">
+                        <strong>Compatibilidad:</strong>
+                        <br/>
+                        <t t-esc="record.ick_oem_codes_kanban.raw_value"/>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

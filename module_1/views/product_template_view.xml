@@ -1,34 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="product_template_inherit_id" model="ir.ui.view">
-        <field name="name">product.template.inherit</field>
+    <record id="product_template_warehouse_availability_form_inherit" model="ir.ui.view">
+        <field name="name">product.template.warehouse.availability.form.inherit</field>
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="priority" eval="90"/>
         <field name="arch" type="xml">
-            <field name="barcode" position="after">
-                <field name="suc_manantial"/>
-                <field name="suc_magon"/>
-                <field name="suc_poza_rica"/>
-                <field name="suc_papantla"/>
-                <field name="suc_tuxpan"/>
-            </field>
-
-        </field>
-    </record>
-
-    <record id="product_template_kanban_inherit_id" model="ir.ui.view">
-        <field name="name">product.template.kanban.inherit</field>
-        <field name="model">product.template</field>
-        <field name="inherit_id" ref="product.product_template_kanban_view"/>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='product_properties']" position="before">
-                <div t-if="record.suc_manantial.value &gt; 0">Suc. Manantial: <field name="suc_manantial"/></div>
-                <div t-if="record.suc_magon.value &gt; 0">Suc. Magon: <field name="suc_magon"/></div>
-                <div t-if="record.suc_poza_rica.value &gt; 0">Suc. Poza Rica: <field name="suc_poza_rica"/></div>
-                <div t-if="record.suc_papantla.value &gt; 0">Suc. Papantla: <field name="suc_papantla"/></div>
-                <div t-if="record.suc_tuxpan.value &gt; 0">Suc. Tuxpan: <field name="suc_tuxpan"/></div>
+            <xpath expr="//button[@name='action_product_tmpl_forecast_report' or @name='action_product_forecast_report' or .//field[@name='virtual_available']][1]" position="after">
+                <button
+                    name="action_open_warehouse_availability"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-building-o"
+                    groups="stock.group_stock_user">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Disponible</span>
+                        <span class="o_stat_text">por almacen</span>
+                    </div>
+                </button>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Existencias" groups="stock.group_stock_user,sales_team.group_sale_salesman">
+                    <field name="warehouse_availability_html" readonly="1" widget="html" nolabel="1"/>
+                </page>
             </xpath>
         </field>
     </record>
 
+    <record id="product_template_warehouse_availability_kanban_inherit" model="ir.ui.view">
+        <field name="name">product.template.warehouse.availability.kanban.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_kanban_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//kanban/templates" position="before">
+                <field name="warehouse_free_qty_kanban"/>
+            </xpath>
+            <xpath expr="//templates//field[@name='qty_available'][1]/following-sibling::field[@name='uom_id'][1]" position="after">
+                <div
+                    t-if="record.warehouse_free_qty_kanban.raw_value"
+                    class="small text-muted mt-1"
+                    style="white-space: pre-line;">
+                    <strong>Por almacen:</strong>
+                    <br/>
+                    <t t-esc="record.warehouse_free_qty_kanban.raw_value"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
 </odoo>

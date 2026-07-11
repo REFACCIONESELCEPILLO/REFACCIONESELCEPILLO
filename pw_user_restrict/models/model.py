@@ -10,9 +10,9 @@ class ResUsers(models.Model):
     _inherit = 'res.users'
 
     def write(self, values):
-        self.env.user.clear_caches()
-        self.env['ir.ui.view'].clear_caches()
-        return super(ResUsers, self).write(values)
+        result = super().write(values)
+        self.env.registry.clear_cache()
+        return result
 
 
 class ir_ui_view(models.Model):

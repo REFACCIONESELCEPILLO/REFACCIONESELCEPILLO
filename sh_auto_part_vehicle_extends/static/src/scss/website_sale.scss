@@ -1,0 +1,71 @@
+.oe_product_cart {
+    .oe_product_image {
+        .ick_availability_ribbon {
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            z-index: 3;
+            padding: 0.25rem 0.625rem;
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            line-height: 1.2;
+            text-transform: uppercase;
+            letter-spacing: 0;
+            border-radius: 0.125rem;
+            box-shadow: 0 0.125rem 0.375rem rgba(0, 0, 0, 0.16);
+            pointer-events: none;
+        }
+
+        .ick_available {
+            background-color: #1f9d45;
+        }
+
+        .ick_unavailable {
+            background-color: #c62828;
+        }
+    }
+}
+
+.ick_product_sku,
+.ick_product_detail_sku {
+    color: #4a4f59;
+    font-weight: 600;
+    letter-spacing: 0;
+}
+
+.ick_product_sku {
+    margin-top: -0.25rem;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+.ick_product_detail_sku {
+    margin-top: -0.25rem;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    text-transform: uppercase;
+}
+
+.ick_product_availability_detail {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+
+    h5 {
+        margin-bottom: 0.375rem;
+        color: #a20f0f;
+        font-weight: 700;
+    }
+
+    .ick_product_availability_text {
+        color: #3f4652;
+        font-weight: 500;
+    }
+}
+
+.ick_oem_product_link {
+    color: #9f1515;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 0.125rem;
+}
