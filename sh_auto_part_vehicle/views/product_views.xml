@@ -66,7 +66,8 @@
 					 <field name="vehicle_oem_lines" widget="one2many" context="{'show_attribute': False}">
                         <list string="Variants" editable="bottom">
                         	 <field name="name"/>
-                        	 <field name="supplier_id" string="Marca" domain="[('is_oem_brand', '=', True)]" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+                             <field name="oem_brand_category_ids" column_invisible="1"/>
+                        	 <field name="supplier_id" string="Marca" domain="[('category_id', 'in', oem_brand_category_ids)]" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
                         	 <field name="is_visible_website"/>
                              <field name="company_id" groups="base.group_multi_company"/>
                              <field name="website_id" groups="website.group_multi_website"/>
