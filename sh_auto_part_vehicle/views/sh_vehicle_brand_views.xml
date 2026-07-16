@@ -8,6 +8,7 @@
             <list editable="bottom">
                 <field name="sequence" widget="handle" />
                 <field name="name" />
+                <field name="partner_id" optional="hide"/>
                 <field name="company_id" groups="base.group_multi_company"/>
                 <field name="website_id" groups="website.group_multi_website"/>
             </list>

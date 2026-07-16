@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Softhealer Technologies.
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class MotorcycleBrand(models.Model):
@@ -20,7 +20,50 @@ class MotorcycleBrand(models.Model):
         'website',
         string='Website'
     )
-    
+    partner_id = fields.Many2one(
+        'res.partner',
+        string='Marca',
+        copy=False,
+        ondelete='set null',
+    )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        brands = super().create(vals_list)
+        brands._ensure_brand_partner()
+        return brands
+
+    def write(self, vals):
+        result = super().write(vals)
+        if not self.env.context.get('skip_brand_partner_sync') and {'name', 'partner_id'} & set(vals):
+            self._ensure_brand_partner()
+        return result
+
+    def _ensure_brand_partner(self):
+        Partner = self.env['res.partner'].sudo()
+        for brand in self:
+            if not brand.name:
+                continue
+            partner = brand.partner_id
+            if not partner:
+                partner = Partner.search([
+                    ('name', '=', brand.name),
+                ], limit=1)
+            if not partner:
+                partner = Partner.create({
+                    'name': brand.name,
+                    'is_oem_brand': True,
+                    'company_id': brand.company_id.id,
+                })
+            else:
+                values = {'is_oem_brand': True}
+                if partner.name != brand.name:
+                    values['name'] = brand.name
+                partner.write(values)
+            if brand.partner_id.id != partner.id:
+                brand.with_context(skip_brand_partner_sync=True).write({
+                    'partner_id': partner.id,
+                })
 
 
 
