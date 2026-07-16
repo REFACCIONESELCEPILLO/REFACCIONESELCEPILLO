@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_partner_category_oem_brand" model="res.partner.category">
+        <field name="name">Marca OEM</field>
+        <field name="color" eval="2"/>
+    </record>
+</odoo>

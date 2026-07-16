@@ -52,14 +52,15 @@ class MotorcycleBrand(models.Model):
             if not partner:
                 partner = Partner.create({
                     'name': brand.name,
-                    'is_oem_brand': True,
                     'company_id': brand.company_id.id,
                 })
             else:
-                values = {'is_oem_brand': True}
+                values = {}
                 if partner.name != brand.name:
                     values['name'] = brand.name
-                partner.write(values)
+                if values:
+                    partner.write(values)
+            partner._set_oem_brand_flag(True)
             if brand.partner_id.id != partner.id:
                 brand.with_context(skip_brand_partner_sync=True).write({
                     'partner_id': partner.id,
