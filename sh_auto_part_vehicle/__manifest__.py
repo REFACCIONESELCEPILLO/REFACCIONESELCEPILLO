@@ -31,6 +31,7 @@
         "views/sh_vehicle_engine_views.xml",
         "views/sh_vehicle_transmission_views.xml",
         "views/sh_vehicle_brand_views.xml",
+        "views/res_partner_views.xml",
         "views/sh_vehicle_product_type_views.xml",
 
         "views/sh_vehicle_snippet_templates.xml",

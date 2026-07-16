@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_form_oem_brand_inherit" model="ir.ui.view">
+        <field name="name">res.partner.form.oem.brand.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='category_id']" position="after">
+                <field name="is_oem_brand"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_res_partner_filter_oem_brand_inherit" model="ir.ui.view">
+        <field name="name">res.partner.search.oem.brand.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <filter name="is_oem_brand" string="esMarca" domain="[('is_oem_brand', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

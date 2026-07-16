@@ -8,7 +8,11 @@ class ShVehicleOEM(models.Model):
     _description = "Vehicle OEM"
 
     name = fields.Char('Code', required=True)
-    supplier_id = fields.Many2one('res.partner', string="Supplier")
+    supplier_id = fields.Many2one(
+        'res.partner',
+        string="Marca",
+        domain=[('is_oem_brand', '=', True)],
+    )
     is_visible_website = fields.Boolean('Is visible on website?')
     product_id = fields.Many2one('product.template', string='Product')
     company_id = fields.Many2one(
