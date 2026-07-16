@@ -20,6 +20,7 @@
     "data": [
         "security/motorcycle_security.xml",
         "security/ir.model.access.csv",
+        "data/res_partner_category_data.xml",
         "data/website_sale_data.xml",
         "views/sh_vehicle_motorcycle_views.xml",
         "views/sh_vehicle_type_views.xml",
