@@ -1,21 +1,23 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Product Qty Warehouse Compatibility',
-    'version': '18.0.1.0.0',
-    'summary': 'Alias tecnico para el modulo de existencias por almacen',
-    'description': """
-Modulo puente para conservar el nombre tecnico product_qty_warehouse.
-La funcionalidad real se mantiene en module_1 para no romper bases donde ya
-esta instalado.
-    """,
+    'name': 'Product Qty Warehouse',
+    'version': '18.0.1.0.7',
+    'summary': 'Muestra disponibilidad libre de productos por almacen',
+    'description': 'Disponibilidad de producto por almacen para Odoo 18.',
     'author': 'IcTechnologyMx',
     'license': 'LGPL-3',
     'category': 'Inventory/Inventory',
     'depends': [
-        'module_1',
+        'product',
+        'sales_team',
+        'stock',
     ],
-    'data': [],
+    'data': [
+        'security/ir.model.access.csv',
+        'views/legacy_cleanup.xml',
+        'views/product_warehouse_availability_views.xml',
+        'views/product_template_view.xml',
+    ],
     'application': False,
     'installable': True,
-}
-
+} 

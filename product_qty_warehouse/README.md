@@ -1,6 +1,12 @@
-# Product Qty Warehouse Compatibility
+# Product Qty Warehouse
 
-Este modulo conserva el nombre tecnico `product_qty_warehouse`.
+Muestra la disponibilidad libre de productos por almacen.
 
-La logica de existencias por almacen vive en `module_1` para mantener
-compatibilidad con bases donde ese modulo ya estaba instalado.
+La disponibilidad libre se calcula por almacen con base en `stock.quant`:
+
+`Libre disponible = A mano - Reservado`
+
+El addon agrega un boton inteligente en la ficha de producto y un reporte de inventario por almacen.
+
+El modulo no depende de codigos fijos de sucursal. La agrupacion se obtiene
+directamente de los almacenes configurados en Inventario.

@@ -12,7 +12,7 @@ SKU en tienda, busqueda por OEM y cintillos de disponibilidad por almacen.
     "license": "LGPL-3",
     "depends": [
         "sh_auto_part_vehicle",
-        "module_1",
+        "product_qty_warehouse",
         "sale_management",
         "website_sale",
         "stock",
