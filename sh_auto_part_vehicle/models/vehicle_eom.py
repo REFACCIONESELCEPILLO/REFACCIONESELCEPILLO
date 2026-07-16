@@ -8,7 +8,7 @@ class ShVehicleOEM(models.Model):
     _description = "Vehicle OEM"
 
     name = fields.Char('Code', required=True)
-    supplier_id = fields.Many2one(
+    brand_id = fields.Many2one(
         'motorcycle.brand',
         string="Marca",
     )

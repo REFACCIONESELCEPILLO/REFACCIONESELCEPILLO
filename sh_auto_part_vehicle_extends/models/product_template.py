@@ -71,15 +71,15 @@ class ProductTemplate(models.Model):
             else:
                 product.ick_website_availability_text = "No disponible"
 
-    @api.depends("vehicle_oem_lines.name", "vehicle_oem_lines.supplier_id")
+    @api.depends("vehicle_oem_lines.name", "vehicle_oem_lines.brand_id")
     def _compute_ick_oem_codes_kanban(self):
         for product in self:
             lines = []
             for oem_line in product.vehicle_oem_lines:
                 if not oem_line.name:
                     continue
-                if oem_line.supplier_id:
-                    lines.append("%s: %s" % (oem_line.supplier_id.name, oem_line.name))
+                if oem_line.brand_id:
+                    lines.append("%s: %s" % (oem_line.brand_id.name, oem_line.name))
                 else:
                     lines.append(oem_line.name)
             product.ick_oem_codes_kanban = "\n".join(lines)
