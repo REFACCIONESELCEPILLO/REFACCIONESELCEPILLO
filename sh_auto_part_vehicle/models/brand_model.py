@@ -20,12 +20,6 @@ class MotorcycleBrand(models.Model):
         'website',
         string='Website'
     )
-    partner_id = fields.Many2one(
-        'res.partner',
-        string='Marca',
-        copy=False,
-        ondelete='set null',
-    )
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -35,7 +29,7 @@ class MotorcycleBrand(models.Model):
 
     def write(self, vals):
         result = super().write(vals)
-        if not self.env.context.get('skip_brand_partner_sync') and {'name', 'partner_id'} & set(vals):
+        if 'name' in vals:
             self._ensure_brand_partner()
         return result
 
@@ -44,11 +38,9 @@ class MotorcycleBrand(models.Model):
         for brand in self:
             if not brand.name:
                 continue
-            partner = brand.partner_id
-            if not partner:
-                partner = Partner.search([
-                    ('name', '=', brand.name),
-                ], limit=1)
+            partner = Partner.search([
+                ('name', '=', brand.name),
+            ], limit=1)
             if not partner:
                 partner = Partner.create({
                     'name': brand.name,
@@ -61,10 +53,6 @@ class MotorcycleBrand(models.Model):
                 if values:
                     partner.write(values)
             partner._set_oem_brand_flag(True)
-            if brand.partner_id.id != partner.id:
-                brand.with_context(skip_brand_partner_sync=True).write({
-                    'partner_id': partner.id,
-                })
 
 
 
