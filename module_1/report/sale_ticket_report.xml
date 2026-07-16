@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_saleorder_ticket" inherit_id="sale.report_saleorder_document" priority="90">
+        <xpath expr="//div[hasclass('page')]" position="attributes">
+            <attribute name="class" add="o_el_cepillo_ticket" separator=" "/>
+        </xpath>
+
+        <xpath expr="//t[@t-set='layout_document_title']" position="replace">
+            <t t-set="layout_document_title">
+                <span t-if="is_proforma">Pro-Forma </span>
+                <span t-elif="doc.state in ['draft', 'sent']">Cotización </span>
+                <span t-else="">Orden </span>
+                <span t-field="doc.name">S00000</span>
+            </t>
+        </xpath>
+
+        <xpath expr="//div[@id='informations']" position="replace">
+            <table class="o_ticket_order_info">
+                <tbody>
+                    <tr>
+                        <td>
+                            <strong t-if="is_proforma">Fecha de emisión</strong>
+                            <strong t-elif="doc.state in ['draft', 'sent']">Fecha de cotización</strong>
+                            <strong t-else="">Fecha de la orden</strong>
+                            <div t-field="doc.date_order">16/07/2026 11:10:54</div>
+                        </td>
+                        <td>
+                            <strong>Vendedor</strong>
+                            <div t-field="doc.user_id">Ana María Barrios Vargas</div>
+                        </td>
+                    </tr>
+                    <tr t-if="doc.client_order_ref or (doc.validity_date and doc.state in ['draft', 'sent'])">
+                        <td t-if="doc.client_order_ref">
+                            <strong>Referencia</strong>
+                            <div t-field="doc.client_order_ref">Referencia del cliente</div>
+                        </td>
+                        <td t-if="doc.validity_date and doc.state in ['draft', 'sent']">
+                            <strong>Vigencia</strong>
+                            <div t-field="doc.validity_date">31/07/2026</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </xpath>
+
+        <xpath expr="//table[hasclass('o_main_table')]" position="replace">
+            <table class="o_ticket_product_table">
+                <thead>
+                    <tr>
+                        <th class="o_ticket_qty">Cant.</th>
+                        <th class="o_ticket_product">Producto</th>
+                        <th class="o_ticket_amount">Importe</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="lines_to_report" t-as="line">
+                        <tr t-if="not line.display_type and line.product_type != 'combo'" class="o_ticket_product_line">
+                            <td class="o_ticket_qty">
+                                <span t-field="line.product_uom_qty">1.00</span>
+                            </td>
+                            <td class="o_ticket_product">
+                                <t t-set="product_code" t-value="line.product_id.default_code or ''"/>
+                                <t t-set="ticket_name" t-value="line.name or ''"/>
+                                <t t-if="product_code and ticket_name.startswith('[' + product_code + ']')">
+                                    <t t-set="ticket_name" t-value="ticket_name[len(product_code) + 2:].lstrip()"/>
+                                </t>
+                                <t t-set="ticket_name_lines" t-value="ticket_name.split('\n')"/>
+                                <div class="o_ticket_product_name" t-esc="ticket_name_lines[0] if ticket_name_lines else ticket_name"/>
+                                <t t-foreach="ticket_name_lines[1:]" t-as="detail">
+                                    <div t-if="detail" class="o_ticket_product_detail" t-esc="detail"/>
+                                </t>
+                                <div t-if="product_code" class="o_ticket_product_code">
+                                    Código: <span t-esc="product_code"/>
+                                </div>
+                            </td>
+                            <td class="o_ticket_amount">
+                                <span t-field="line.price_total">2,750.00</span>
+                            </td>
+                        </tr>
+                        <tr t-elif="line.display_type == 'line_section' or line.product_type == 'combo'" class="o_ticket_section">
+                            <td colspan="3"><span t-field="line.name">Sección</span></td>
+                        </tr>
+                        <tr t-elif="line.display_type == 'line_note'" class="o_ticket_note">
+                            <td colspan="3"><span t-field="line.name">Nota</span></td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+        </xpath>
+
+        <xpath expr="//div[@name='so_total_summary']" position="attributes">
+            <attribute name="class" add="o_ticket_totals" separator=" "/>
+        </xpath>
+
+        <xpath expr="//span[@name='order_note']/parent::div" position="attributes">
+            <attribute name="class" add="o_ticket_terms" separator=" "/>
+        </xpath>
+
+        <xpath expr="//span[@name='order_note']/parent::div" position="after">
+            <div class="o_ticket_thanks">
+                <strong>¡Gracias por su compra!</strong>
+                <div t-if="doc.company_id.website" t-field="doc.company_id.website">refacciones-el-cepillo.com</div>
+                <div>Conserve este ticket para cualquier aclaración.</div>
+            </div>
+        </xpath>
+    </template>
+</odoo>
