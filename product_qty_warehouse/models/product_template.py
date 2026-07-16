@@ -144,7 +144,7 @@ class ProductTemplate(models.Model):
     def action_open_warehouse_availability(self):
         self.ensure_one()
         action = self.env.ref(
-            'module_1.product_warehouse_availability_action'
+            'product_qty_warehouse.product_warehouse_availability_action'
         ).sudo().read()[0]
         action['domain'] = [('product_tmpl_id', '=', self.id)]
         action['context'] = {

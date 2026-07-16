@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Softhealer Technologies.
-from odoo import api, fields, models
+from odoo import fields, models
 
 
 class MotorcycleBrand(models.Model):
@@ -20,42 +20,6 @@ class MotorcycleBrand(models.Model):
         'website',
         string='Website'
     )
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        brands = super().create(vals_list)
-        brands._ensure_brand_partner()
-        return brands
-
-    def write(self, vals):
-        result = super().write(vals)
-        if 'name' in vals:
-            self._ensure_brand_partner()
-        return result
-
-    def _ensure_brand_partner(self):
-        Partner = self.env['res.partner'].sudo()
-        for brand in self:
-            if not brand.name:
-                continue
-            partner = Partner.search([
-                ('name', '=', brand.name),
-            ], limit=1)
-            if not partner:
-                partner = Partner.create({
-                    'name': brand.name,
-                    'company_id': brand.company_id.id,
-                })
-            else:
-                values = {}
-                if partner.name != brand.name:
-                    values['name'] = brand.name
-                if values:
-                    partner.write(values)
-            partner._set_oem_brand_flag(True)
-
-
-
 
     def viewVehicleBrand(self,domain=None):
         return {

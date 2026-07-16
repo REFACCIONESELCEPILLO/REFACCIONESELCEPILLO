@@ -20,7 +20,7 @@
     "data": [
         "security/motorcycle_security.xml",
         "security/ir.model.access.csv",
-        "data/res_partner_category_data.xml",
+        "data/oem_brand_cleanup.xml",
         "data/website_sale_data.xml",
         "views/sh_vehicle_motorcycle_views.xml",
         "views/sh_vehicle_type_views.xml",
@@ -32,7 +32,6 @@
         "views/sh_vehicle_engine_views.xml",
         "views/sh_vehicle_transmission_views.xml",
         "views/sh_vehicle_brand_views.xml",
-        "views/res_partner_views.xml",
         "views/sh_vehicle_product_type_views.xml",
 
         "views/sh_vehicle_snippet_templates.xml",

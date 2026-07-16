@@ -40,7 +40,7 @@
                             <t t-foreach="product.vehicle_oem_lines" t-as="line">
                                 <div class="col-lg-4 col-md-6 col-sm-12" t-if="line.sudo().is_visible_website">
                                     <div class="section">
-                                        <span class="oem_name" t-esc="line.sudo().supplier_id.name"></span><br />
+                                        <span class="oem_name" t-esc="line.sudo().brand_id.name"></span><br />
                                         <i class="fa fa-hashtag mr-1"></i><span class="oem_code" t-esc="line.sudo().name"></span>
                                     </div>
                                 </div>

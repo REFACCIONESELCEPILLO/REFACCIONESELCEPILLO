@@ -15,5 +15,4 @@ from . import product_type_model
 from . import transmission_model
 from . import res_config_settings
 from . import vehicle_eom
-from . import res_partner
 from . import sale_order
