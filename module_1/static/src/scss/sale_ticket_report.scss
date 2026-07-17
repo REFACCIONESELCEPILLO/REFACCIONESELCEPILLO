@@ -20,9 +20,9 @@
 
     .o_ticket_logo {
         display: block;
-        max-width: 52mm;
-        max-height: 22mm;
-        margin: 0 auto 1.5mm;
+        max-width: 48mm;
+        max-height: 20mm;
+        margin: 0 auto 1mm;
         object-fit: contain;
     }
 
@@ -32,8 +32,15 @@
         letter-spacing: 0.3px;
     }
 
+    .o_ticket_company_tagline {
+        margin-top: 0.5mm;
+        color: #555;
+        font-size: 6.5pt;
+        letter-spacing: 1.2px;
+    }
+
     .o_ticket_branch {
-        margin-top: 2mm;
+        margin-top: 3mm;
         font-size: 7.5pt;
         line-height: 1.3;
     }
@@ -77,7 +84,7 @@
 
     .o_ticket_rule {
         width: 100%;
-        margin: 2.5mm 0;
+        margin: 3mm 0;
         border-top: 0.25mm dashed #555;
     }
 
@@ -104,7 +111,7 @@
     }
 
     .o_ticket_product_table th {
-        padding: 1.2mm 0.6mm;
+        padding: 1.3mm 0.6mm;
         border-top: 0.25mm solid #333;
         border-bottom: 0.25mm solid #333;
         font-size: 7pt;
@@ -113,7 +120,7 @@
     }
 
     .o_ticket_product_table td {
-        padding: 1.5mm 0.6mm;
+        padding: 1.7mm 0.6mm;
         border: 0;
         vertical-align: top;
     }
@@ -210,7 +217,7 @@
     }
 
     .o_ticket_website {
-        margin-bottom: 2mm;
+        margin-bottom: 2.5mm;
         color: #444;
     }
 

@@ -40,9 +40,11 @@
                             t-att-src="image_data_uri(doc.company_id.logo)"
                             alt="Logo"/>
                         <div t-else="" class="o_ticket_company_name" t-field="doc.company_id.name"/>
-                        <div class="o_ticket_company_name" t-if="doc.company_id.logo" t-field="doc.company_id.name"/>
+                        <div class="o_ticket_company_tagline">REFACCIONARIA</div>
                         <div class="o_ticket_branch">
-                            <div class="o_ticket_label">Sucursal</div>
+                            <div class="o_ticket_label">
+                                Sucursal<span t-if="doc.company_id.city"> <span t-field="doc.company_id.city"/></span>
+                            </div>
                             <div t-if="doc.company_id.street" t-field="doc.company_id.street"/>
                             <div t-if="doc.company_id.street2" t-field="doc.company_id.street2"/>
                             <div>
