@@ -1,5 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="paperformat_sale_ticket_80mm" model="report.paperformat">
+        <field name="name">Ticket de venta 80 mm</field>
+        <field name="default" eval="False"/>
+        <field name="format">custom</field>
+        <field name="page_width">80</field>
+        <field name="page_height">297</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">3</field>
+        <field name="margin_bottom">3</field>
+        <field name="margin_left">3</field>
+        <field name="margin_right">3</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_report_sale_ticket" model="ir.actions.report">
+        <field name="name">Ticket de venta</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">sale.report_saleorder</field>
+        <field name="report_file">sale.report_saleorder</field>
+        <field name="paperformat_id" ref="module_1.paperformat_sale_ticket_80mm"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'Ticket - %s' % (object.name)</field>
+    </record>
+
     <template id="report_saleorder_ticket" inherit_id="sale.report_saleorder_document" priority="90">
         <xpath expr="//div[hasclass('page')]" position="attributes">
             <attribute name="class" add="o_el_cepillo_ticket" separator=" "/>
