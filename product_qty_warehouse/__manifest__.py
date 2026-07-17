@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Product Qty Warehouse',
-    'version': '18.0.1.0.7',
+    'version': '18.0.1.0.9',
     'summary': 'Muestra disponibilidad libre de productos por almacen',
     'description': 'Disponibilidad de producto por almacen para Odoo 18.',
     'author': 'IcTechnologyMx',
@@ -14,10 +14,10 @@
     ],
     'data': [
         'security/ir.model.access.csv',
-        'views/legacy_cleanup.xml',
         'views/product_warehouse_availability_views.xml',
         'views/product_template_view.xml',
     ],
+    'pre_init_hook': 'pre_init_hook',
     'application': False,
     'installable': True,
 } 

@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <delete model="ir.actions.report" search="[('model', '=', 'sale.order'), ('name', '=', 'Ticket')]"/>
+
+    <record id="paperformat_sale_ticket_80mm" model="report.paperformat">
+        <field name="name">Ticket de venta 76 mm</field>
+        <field name="default" eval="False"/>
+        <field name="format">custom</field>
+        <field name="page_width">76</field>
+        <field name="page_height">297</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">3</field>
+        <field name="margin_bottom">3</field>
+        <field name="margin_left">2</field>
+        <field name="margin_right">2</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_report_sale_ticket" model="ir.actions.report">
+        <field name="name">Ticket de venta</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">module_1.report_saleorder_ticket_document</field>
+        <field name="report_file">module_1.report_saleorder_ticket_document</field>
+        <field name="paperformat_id" ref="module_1.paperformat_sale_ticket_80mm"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'Ticket - %s' % (object.name)</field>
+    </record>
+
+    <template id="report_saleorder_ticket_document">
+        <t t-call="web.html_container">
+            <meta charset="utf-8"/>
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+            <style type="text/css">
+                .o_el_cepillo_ticket {
+                    width: 72mm !important;
+                    max-width: 72mm !important;
+                    min-height: 0 !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    overflow: hidden !important;
+                    color: #000 !important;
+                    font-family: Arial, Helvetica, sans-serif !important;
+                    font-size: 7.2pt !important;
+                    line-height: 1.25 !important;
+                }
+                .o_el_cepillo_ticket * { box-sizing: border-box !important; }
+                .o_el_cepillo_ticket .o_ticket_header { text-align: center !important; }
+                .o_el_cepillo_ticket .o_ticket_logo {
+                    display: block !important;
+                    max-width: 42mm !important;
+                    max-height: 17mm !important;
+                    margin: 0 auto 1mm !important;
+                    object-fit: contain !important;
+                }
+                .o_el_cepillo_ticket .o_ticket_company_name { font-size: 9pt !important; font-weight: bold !important; }
+                .o_el_cepillo_ticket .o_ticket_company_tagline {
+                    margin-top: .5mm !important;
+                    color: #555 !important;
+                    font-size: 6pt !important;
+                    letter-spacing: 1.1px !important;
+                }
+                .o_el_cepillo_ticket .o_ticket_branch {
+                    margin-top: 3mm !important;
+                    text-align: center !important;
+                    font-size: 6.7pt !important;
+                    line-height: 1.3 !important;
+                }
+                .o_el_cepillo_ticket .o_ticket_label { margin-bottom: .6mm !important; font-weight: bold !important; }
+                .o_el_cepillo_ticket .o_ticket_contact_folio,
+                .o_el_cepillo_ticket .o_ticket_order_info {
+                    display: table !important;
+                    width: 100% !important;
+                    table-layout: fixed !important;
+                }
+                .o_el_cepillo_ticket .o_ticket_contact_folio &gt; div,
+                .o_el_cepillo_ticket .o_ticket_order_info &gt; div {
+                    display: table-cell !important;
+                    width: 50% !important;
+                    vertical-align: bottom !important;
+                }
+                .o_el_cepillo_ticket .o_ticket_contact_folio { margin-top: 3mm !important; }
+                .o_el_cepillo_ticket .o_ticket_folio { text-align: right !important; }
+                .o_el_cepillo_ticket .o_ticket_folio strong { display: block !important; font-size: 9pt !important; }
+                .o_el_cepillo_ticket .o_ticket_order_info &gt; div + div { padding-left: 2mm !important; }
+                .o_el_cepillo_ticket .o_ticket_rule {
+                    width: 100% !important;
+                    height: 0 !important;
+                    margin: 3.2mm 0 !important;
+                    border-top: .25mm dashed #555 !important;
+                }
+                .o_el_cepillo_ticket .o_ticket_product_table {
+                    width: 72mm !important;
+                    max-width: 72mm !important;
+                    margin: 0 !important;
+                    border: 0 !important;
+                    border-collapse: collapse !important;
+                    table-layout: fixed !important;
+                    font-size: 6.2pt !important;
+                    line-height: 1.18 !important;
+                }
+                .o_el_cepillo_ticket .o_ticket_col_qty { width: 9mm !important; }
+                .o_el_cepillo_ticket .o_ticket_col_product { width: 43mm !important; }
+                .o_el_cepillo_ticket .o_ticket_col_amount { width: 20mm !important; }
+                .o_el_cepillo_ticket .o_ticket_product_table th {
+                    padding: 1.3mm .5mm !important;
+                    border-top: .25mm solid #333 !important;
+                    border-bottom: .25mm solid #333 !important;
+                    font-size: 6.2pt !important;
+                    font-weight: bold !important;
+                    text-align: left !important;
+                }
+                .o_el_cepillo_ticket .o_ticket_product_table td {
+                    padding: 2.2mm .5mm !important;
+                    border: 0 !important;
+                    vertical-align: top !important;
+                }
+                .o_el_cepillo_ticket .o_ticket_product_line { border-bottom: .25mm dashed #999 !important; }
+                .o_el_cepillo_ticket .o_ticket_qty,
+                .o_el_cepillo_ticket .o_ticket_amount { white-space: nowrap !important; }
+                .o_el_cepillo_ticket .o_ticket_amount { text-align: right !important; }
+                .o_el_cepillo_ticket .o_ticket_product,
+                .o_el_cepillo_ticket .o_ticket_product_name,
+                .o_el_cepillo_ticket .o_ticket_product_detail {
+                    max-width: 43mm !important;
+                    overflow-wrap: anywhere !important;
+                    word-break: break-word !important;
+                    white-space: normal !important;
+                }
+                .o_el_cepillo_ticket .o_ticket_product_name { font-weight: bold !important; }
+                .o_el_cepillo_ticket .o_ticket_product_detail {
+                    margin-top: .8mm !important;
+                    color: #444 !important;
+                    font-size: 5.5pt !important;
+                    line-height: 1.15 !important;
+                }
+                .o_el_cepillo_ticket .o_ticket_totals {
+                    width: 44mm !important;
+                    margin-left: auto !important;
+                    font-size: 7pt !important;
+                }
+                .o_el_cepillo_ticket .o_ticket_total_row { display: table !important; width: 100% !important; padding: .8mm 0 !important; }
+                .o_el_cepillo_ticket .o_ticket_total_row &gt; span { display: table-cell !important; width: 50% !important; }
+                .o_el_cepillo_ticket .o_ticket_total_row &gt; span:last-child { text-align: right !important; white-space: nowrap !important; }
+                .o_el_cepillo_ticket .o_ticket_grand_total {
+                    border-top: .25mm solid #333 !important;
+                    font-size: 8.5pt !important;
+                    font-weight: bold !important;
+                }
+                .o_el_cepillo_ticket .o_ticket_footer {
+                    text-align: center !important;
+                    font-size: 6.2pt !important;
+                    line-height: 1.35 !important;
+                    overflow-wrap: anywhere !important;
+                }
+                .o_el_cepillo_ticket .o_ticket_website { margin-bottom: 2.5mm !important; color: #444 !important; }
+                .o_el_cepillo_ticket .o_ticket_footer strong { display: block !important; margin-bottom: .8mm !important; font-size: 8pt !important; }
+            </style>
+            <t t-foreach="docs" t-as="doc">
+                <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)"/>
+                <div class="page o_el_cepillo_ticket">
+                    <header class="o_ticket_header">
+                        <img
+                            t-if="doc.company_id.logo"
+                            class="o_ticket_logo"
+                            t-att-src="image_data_uri(doc.company_id.logo)"
+                            alt="Logo"/>
+                        <div t-else="" class="o_ticket_company_name" t-field="doc.company_id.name"/>
+                        <div class="o_ticket_company_tagline">REFACCIONARIA</div>
+                        <div class="o_ticket_branch">
+                            <div class="o_ticket_label">
+                                Sucursal<span t-if="doc.company_id.city"> <span t-field="doc.company_id.city"/></span>
+                            </div>
+                            <div t-if="doc.company_id.street" t-field="doc.company_id.street"/>
+                            <div t-if="doc.company_id.street2" t-field="doc.company_id.street2"/>
+                            <div>
+                                <span t-if="doc.company_id.city" t-field="doc.company_id.city"/>
+                                <span t-if="doc.company_id.state_id">, <span t-field="doc.company_id.state_id"/></span>
+                                <span t-if="doc.company_id.zip"> · C.P. <span t-field="doc.company_id.zip"/></span>
+                            </div>
+                            <div t-if="doc.company_id.country_id" t-field="doc.company_id.country_id"/>
+                        </div>
+                    </header>
+
+                    <section class="o_ticket_contact_folio">
+                        <div>
+                            <div class="o_ticket_label">Teléfono</div>
+                            <div t-if="doc.company_id.phone" t-field="doc.company_id.phone"/>
+                            <div t-else="">Sin teléfono registrado</div>
+                        </div>
+                        <div class="o_ticket_folio">
+                            <div>Orden</div>
+                            <strong t-field="doc.name"/>
+                        </div>
+                    </section>
+
+                    <div class="o_ticket_rule"/>
+
+                    <section class="o_ticket_order_info">
+                        <div>
+                            <div class="o_ticket_label">Fecha de la orden</div>
+                            <div t-field="doc.date_order"/>
+                        </div>
+                        <div>
+                            <div class="o_ticket_label">Vendedor</div>
+                            <div t-field="doc.user_id"/>
+                        </div>
+                    </section>
+
+                    <div class="o_ticket_rule"/>
+
+                    <table class="o_ticket_product_table">
+                        <colgroup>
+                            <col class="o_ticket_col_qty"/>
+                            <col class="o_ticket_col_product"/>
+                            <col class="o_ticket_col_amount"/>
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>Cant.</th>
+                                <th>Producto</th>
+                                <th class="o_ticket_amount">Importe</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="doc.order_line" t-as="line">
+                                <tr t-if="not line.display_type and line.product_type != 'combo'" class="o_ticket_product_line">
+                                    <td class="o_ticket_qty"><span t-field="line.product_uom_qty"/></td>
+                                    <td class="o_ticket_product">
+                                        <t t-set="product_code" t-value="line.product_id.default_code or ''"/>
+                                        <t t-set="ticket_name" t-value="line.name or ''"/>
+                                        <t t-if="product_code and ticket_name.startswith('[' + product_code + ']')">
+                                            <t t-set="ticket_name" t-value="ticket_name[len(product_code) + 2:].lstrip()"/>
+                                        </t>
+                                        <t t-set="ticket_name_lines" t-value="ticket_name.split('\n')"/>
+                                        <div class="o_ticket_product_name" t-esc="ticket_name_lines[0] if ticket_name_lines else ticket_name"/>
+                                        <t t-foreach="ticket_name_lines[1:]" t-as="detail">
+                                            <div t-if="detail" class="o_ticket_product_detail" t-esc="detail"/>
+                                        </t>
+                                        <div t-if="product_code" class="o_ticket_product_detail">
+                                            Código: <span t-esc="product_code"/>
+                                        </div>
+                                    </td>
+                                    <td class="o_ticket_amount"><span t-field="line.price_total"/></td>
+                                </tr>
+                                <tr t-elif="line.display_type == 'line_section' or line.product_type == 'combo'" class="o_ticket_section">
+                                    <td colspan="3"><span t-field="line.name"/></td>
+                                </tr>
+                                <tr t-elif="line.display_type == 'line_note'" class="o_ticket_note">
+                                    <td colspan="3"><span t-field="line.name"/></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <div class="o_ticket_rule"/>
+
+                    <section class="o_ticket_totals">
+                        <div class="o_ticket_total_row">
+                            <span>Subtotal</span>
+                            <span t-field="doc.amount_untaxed"/>
+                        </div>
+                        <div class="o_ticket_total_row">
+                            <span>Impuestos</span>
+                            <span t-field="doc.amount_tax"/>
+                        </div>
+                        <div class="o_ticket_total_row o_ticket_grand_total">
+                            <span>TOTAL</span>
+                            <span t-field="doc.amount_total"/>
+                        </div>
+                    </section>
+
+                    <div class="o_ticket_rule"/>
+
+                    <footer class="o_ticket_footer">
+                        <div t-if="doc.note" class="o_ticket_terms" t-field="doc.note"/>
+                        <div t-if="doc.company_id.website" class="o_ticket_website" t-field="doc.company_id.website"/>
+                        <strong>¡Gracias por su compra!</strong>
+                        <div>Conserve este ticket para cualquier aclaración.</div>
+                    </footer>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>
