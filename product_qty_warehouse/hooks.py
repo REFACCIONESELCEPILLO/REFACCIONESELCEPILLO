@@ -3,7 +3,7 @@
 
 
 def pre_init_hook(env):
-    """Remove an obsolete OEM helper field from persisted product views.
+    """Disable product views that still reference an obsolete OEM field.
 
     Older versions of ``sh_auto_part_vehicle`` stored
     ``oem_brand_category_ids`` in a product-template view. The field was
@@ -13,16 +13,9 @@ def pre_init_hook(env):
     env.cr.execute(
         """
         UPDATE ir_ui_view
-           SET arch_db = replace(
-               replace(
-                   arch_db,
-                   '<field name="oem_brand_category_ids" column_invisible="1"/>',
-                   ''
-               ),
-               ' domain="[(\'category_id\', \'in\', oem_brand_category_ids)]"',
-               ''
-           )
+           SET active = FALSE
          WHERE model = 'product.template'
-           AND arch_db LIKE '%oem_brand_category_ids%'
-        """
+           AND arch_db::text LIKE %s
+        """,
+        ("%oem_brand_category_ids%",),
     )
