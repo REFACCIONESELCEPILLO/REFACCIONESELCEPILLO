@@ -1,154 +1,222 @@
 .o_el_cepillo_ticket {
+    width: 74mm !important;
+    max-width: 74mm !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
     color: #000;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 9pt;
-    line-height: 1.28;
-    padding: 0 !important;
+    font-size: 8pt;
+    line-height: 1.25;
+    overflow: hidden;
 
+    * {
+        box-sizing: border-box;
+    }
+
+    .o_ticket_header {
+        text-align: center;
+    }
+
+    .o_ticket_logo {
+        display: block;
+        max-width: 52mm;
+        max-height: 22mm;
+        margin: 0 auto 1.5mm;
+        object-fit: contain;
+    }
+
+    .o_ticket_company_name {
+        font-size: 10pt;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+    }
+
+    .o_ticket_branch {
+        margin-top: 2mm;
+        font-size: 7.5pt;
+        line-height: 1.3;
+    }
+
+    .o_ticket_label {
+        margin-bottom: 0.5mm;
+        font-weight: 700;
+    }
+
+    .o_ticket_contact_folio,
     .o_ticket_order_info {
+        display: table;
         width: 100%;
-        margin: 3mm 0;
-        border-collapse: collapse;
-        border-top: 1px dashed #555;
-        border-bottom: 1px dashed #555;
-        font-size: 8pt;
+        table-layout: fixed;
+    }
 
-        td {
-            width: 50%;
-            padding: 2mm 1mm;
-            vertical-align: top;
-        }
+    .o_ticket_contact_folio > div,
+    .o_ticket_order_info > div {
+        display: table-cell;
+        width: 50%;
+        vertical-align: bottom;
+    }
 
-        td + td {
-            padding-left: 2.5mm;
-        }
+    .o_ticket_contact_folio {
+        margin-top: 3mm;
+    }
 
-        strong {
-            display: block;
-            margin-bottom: 0.5mm;
-            font-weight: 700;
-        }
+    .o_ticket_folio {
+        text-align: right;
+    }
+
+    .o_ticket_folio strong {
+        display: block;
+        font-size: 11pt;
+        letter-spacing: 0.3px;
+    }
+
+    .o_ticket_order_info > div + div {
+        padding-left: 2mm;
+    }
+
+    .o_ticket_rule {
+        width: 100%;
+        margin: 2.5mm 0;
+        border-top: 0.25mm dashed #555;
     }
 
     .o_ticket_product_table {
-        width: 100%;
-        margin: 0;
+        width: 74mm !important;
+        max-width: 74mm !important;
+        margin: 0 !important;
+        border: 0 !important;
         border-collapse: collapse;
-        table-layout: fixed;
+        table-layout: fixed !important;
+        font-size: 7.5pt;
+    }
 
-        th {
-            padding: 1.5mm 0.8mm;
-            border-top: 1px solid #333;
-            border-bottom: 1px solid #333;
-            font-size: 7.5pt;
-            font-weight: 700;
-        }
+    .o_ticket_col_qty {
+        width: 10mm;
+    }
 
-        td {
-            padding: 2mm 0.8mm;
-            vertical-align: top;
-        }
+    .o_ticket_col_product {
+        width: 42mm;
+    }
 
-        .o_ticket_qty {
-            width: 14%;
-            text-align: left;
-            white-space: nowrap;
-        }
+    .o_ticket_col_amount {
+        width: 22mm;
+    }
 
-        .o_ticket_product {
-            width: 58%;
-            text-align: left;
-            overflow-wrap: break-word;
-            word-wrap: break-word;
-        }
+    .o_ticket_product_table th {
+        padding: 1.2mm 0.6mm;
+        border-top: 0.25mm solid #333;
+        border-bottom: 0.25mm solid #333;
+        font-size: 7pt;
+        font-weight: 700;
+        text-align: left;
+    }
 
-        .o_ticket_amount {
-            width: 28%;
-            text-align: right;
-            white-space: nowrap;
-        }
+    .o_ticket_product_table td {
+        padding: 1.5mm 0.6mm;
+        border: 0;
+        vertical-align: top;
+    }
 
-        .o_ticket_product_line {
-            border-bottom: 1px dashed #999;
-            font-size: 8.5pt;
-        }
+    .o_ticket_product_line {
+        border-bottom: 0.25mm dashed #999;
+    }
 
-        .o_ticket_product_name {
-            font-weight: 700;
-        }
+    .o_ticket_qty,
+    .o_ticket_amount {
+        white-space: nowrap;
+    }
 
-        .o_ticket_product_detail,
-        .o_ticket_product_code {
-            margin-top: 0.6mm;
-            color: #444;
-            font-size: 7.5pt;
-            line-height: 1.2;
-        }
+    .o_ticket_amount {
+        text-align: right !important;
+    }
 
-        .o_ticket_section td {
-            padding-top: 2.5mm;
-            border-bottom: 1px solid #555;
-            font-size: 8pt;
-            font-weight: 700;
-        }
+    .o_ticket_product,
+    .o_ticket_product_name,
+    .o_ticket_product_detail {
+        max-width: 42mm;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+        white-space: normal;
+    }
 
-        .o_ticket_note td {
-            color: #444;
-            font-size: 7.5pt;
-            font-style: italic;
-        }
+    .o_ticket_product_name {
+        font-weight: 700;
+    }
+
+    .o_ticket_product_detail {
+        margin-top: 0.4mm;
+        color: #444;
+        font-size: 6.7pt;
+        line-height: 1.15;
+    }
+
+    .o_ticket_section td {
+        padding-top: 2mm;
+        border-bottom: 0.25mm solid #555;
+        font-weight: 700;
+    }
+
+    .o_ticket_note td {
+        color: #444;
+        font-size: 7pt;
+        font-style: italic;
     }
 
     .o_ticket_totals {
-        margin-top: 1mm !important;
-        font-size: 8.5pt;
+        width: 48mm;
+        margin-left: auto;
+        font-size: 8pt;
+    }
 
-        #total > div {
-            width: 68% !important;
-            max-width: 68% !important;
-            margin-left: auto !important;
-            padding: 0 !important;
-        }
+    .o_ticket_total_row {
+        display: table;
+        width: 100%;
+        padding: 0.7mm 0;
+    }
 
-        .o_total_table {
-            margin: 0 !important;
+    .o_ticket_total_row > span {
+        display: table-cell;
+        width: 50%;
+    }
 
-            td {
-                padding: 1mm 0.8mm !important;
-            }
+    .o_ticket_total_row > span:last-child {
+        text-align: right;
+        white-space: nowrap;
+    }
 
-            tr:last-child {
-                border-top: 1px solid #333;
-                font-size: 10pt;
-                font-weight: 700;
-            }
-        }
+    .o_ticket_grand_total {
+        margin-top: 0.7mm;
+        padding-top: 1.2mm;
+        border-top: 0.25mm solid #333;
+        font-size: 10pt;
+        font-weight: 700;
+    }
+
+    .o_ticket_footer {
+        text-align: center;
+        font-size: 7pt;
+        line-height: 1.3;
+        overflow-wrap: anywhere;
     }
 
     .o_ticket_terms {
-        margin-top: 3mm;
-        padding-top: 2mm;
-        border-top: 1px dashed #555;
-        font-size: 7pt;
-        line-height: 1.2;
-        overflow-wrap: anywhere;
-        word-break: break-word;
-
-        p {
-            margin: 0 0 1mm;
-        }
+        margin-bottom: 2mm;
+        color: #444;
     }
 
-    .o_ticket_thanks {
-        margin-top: 3mm;
-        text-align: center;
-        font-size: 7.5pt;
-        line-height: 1.35;
+    .o_ticket_terms p {
+        margin: 0 0 0.7mm;
+    }
 
-        strong {
-            display: block;
-            margin-bottom: 1mm;
-            font-size: 9pt;
-        }
+    .o_ticket_website {
+        margin-bottom: 2mm;
+        color: #444;
+    }
+
+    .o_ticket_footer strong {
+        display: block;
+        margin-bottom: 0.7mm;
+        font-size: 9pt;
     }
 }
