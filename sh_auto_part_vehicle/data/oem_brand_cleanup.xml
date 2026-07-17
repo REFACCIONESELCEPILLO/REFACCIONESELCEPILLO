@@ -2,4 +2,6 @@
 <odoo>
     <delete model="ir.ui.view" search="[('name', '=', 'res.partner.form.oem.brand.inherit'), ('model', '=', 'res.partner')]"/>
     <delete model="ir.ui.view" search="[('name', '=', 'res.partner.search.oem.brand.inherit'), ('model', '=', 'res.partner')]"/>
+    <delete model="ir.ui.view" search="[('model', '=', 'res.partner'), ('arch_db', 'ilike', 'is_oem_brand')]"/>
+    <delete model="ir.ui.view.custom" search="[('arch', 'ilike', 'is_oem_brand')]"/>
 </odoo>
