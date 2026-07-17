@@ -1,6 +1,6 @@
 .o_el_cepillo_ticket {
-    width: 66mm !important;
-    max-width: 66mm !important;
+    width: 72mm !important;
+    max-width: 72mm !important;
     min-height: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -89,8 +89,8 @@
     }
 
     .o_ticket_product_table {
-        width: 66mm !important;
-        max-width: 66mm !important;
+        width: 72mm !important;
+        max-width: 72mm !important;
         margin: 0 !important;
         border: 0 !important;
         border-collapse: collapse;
@@ -99,15 +99,15 @@
     }
 
     .o_ticket_col_qty {
-        width: 8mm;
+        width: 9mm;
     }
 
     .o_ticket_col_product {
-        width: 39mm;
+        width: 43mm;
     }
 
     .o_ticket_col_amount {
-        width: 19mm;
+        width: 20mm;
     }
 
     .o_ticket_product_table th {
@@ -141,7 +141,7 @@
     .o_ticket_product,
     .o_ticket_product_name,
     .o_ticket_product_detail {
-        max-width: 39mm;
+        max-width: 43mm;
         overflow-wrap: anywhere;
         word-break: break-word;
         white-space: normal;

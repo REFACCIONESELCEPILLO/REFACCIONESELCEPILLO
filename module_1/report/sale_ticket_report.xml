@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="paperformat_sale_ticket_80mm" model="report.paperformat">
-        <field name="name">Ticket de venta 70 mm</field>
+        <field name="name">Ticket de venta 76 mm</field>
         <field name="default" eval="False"/>
         <field name="format">custom</field>
-        <field name="page_width">70</field>
+        <field name="page_width">76</field>
         <field name="page_height">297</field>
         <field name="orientation">Portrait</field>
         <field name="margin_top">3</field>
@@ -32,8 +32,8 @@
         <t t-call="web.html_container">
             <style type="text/css">
                 .o_el_cepillo_ticket {
-                    width: 66mm !important;
-                    max-width: 66mm !important;
+                    width: 72mm !important;
+                    max-width: 72mm !important;
                     min-height: 0 !important;
                     margin: 0 !important;
                     padding: 0 !important;
@@ -89,8 +89,8 @@
                     border-top: .25mm dashed #555 !important;
                 }
                 .o_el_cepillo_ticket .o_ticket_product_table {
-                    width: 66mm !important;
-                    max-width: 66mm !important;
+                    width: 72mm !important;
+                    max-width: 72mm !important;
                     margin: 0 !important;
                     border: 0 !important;
                     border-collapse: collapse !important;
@@ -98,9 +98,9 @@
                     font-size: 6.2pt !important;
                     line-height: 1.18 !important;
                 }
-                .o_el_cepillo_ticket .o_ticket_col_qty { width: 8mm !important; }
-                .o_el_cepillo_ticket .o_ticket_col_product { width: 39mm !important; }
-                .o_el_cepillo_ticket .o_ticket_col_amount { width: 19mm !important; }
+                .o_el_cepillo_ticket .o_ticket_col_qty { width: 9mm !important; }
+                .o_el_cepillo_ticket .o_ticket_col_product { width: 43mm !important; }
+                .o_el_cepillo_ticket .o_ticket_col_amount { width: 20mm !important; }
                 .o_el_cepillo_ticket .o_ticket_product_table th {
                     padding: 1.3mm .5mm !important;
                     border-top: .25mm solid #333 !important;
@@ -121,7 +121,7 @@
                 .o_el_cepillo_ticket .o_ticket_product,
                 .o_el_cepillo_ticket .o_ticket_product_name,
                 .o_el_cepillo_ticket .o_ticket_product_detail {
-                    max-width: 39mm !important;
+                    max-width: 43mm !important;
                     overflow-wrap: anywhere !important;
                     word-break: break-word !important;
                     white-space: normal !important;
