@@ -11,7 +11,7 @@
         <field name="orientation">Portrait</field>
         <field name="margin_top">3</field>
         <field name="margin_bottom">3</field>
-        <field name="margin_left">2</field>
+        <field name="margin_left">4</field>
         <field name="margin_right">2</field>
         <field name="header_line" eval="False"/>
         <field name="header_spacing">0</field>
@@ -45,7 +45,7 @@
                 @media print {
                     @page {
                         size: auto;
-                        margin: 2mm;
+                        margin: 2mm 2mm 2mm 4mm;
                     }
                     html,
                     body,
@@ -54,9 +54,9 @@
                     .o_report_layout_boxed,
                     .o_report_layout_bold,
                     .article {
-                        width: 76mm !important;
-                        min-width: 76mm !important;
-                        max-width: 76mm !important;
+                        width: 70mm !important;
+                        min-width: 70mm !important;
+                        max-width: 70mm !important;
                         min-height: 0 !important;
                         height: auto !important;
                         margin: 0 !important;
@@ -78,15 +78,15 @@
                     }
                 }
                 .o_el_cepillo_ticket {
-                    width: 72mm !important;
-                    max-width: 72mm !important;
+                    width: 70mm !important;
+                    max-width: 70mm !important;
                     min-height: 0 !important;
                     margin: 0 !important;
                     padding: 0 !important;
                     overflow: hidden !important;
                     color: #000 !important;
                     font-family: Arial, Helvetica, sans-serif !important;
-                    font-size: 7.2pt !important;
+                    font-size: 8pt !important;
                     line-height: 1.25 !important;
                 }
                 .o_el_cepillo_ticket * { box-sizing: border-box !important; }
@@ -102,13 +102,13 @@
                 .o_el_cepillo_ticket .o_ticket_company_tagline {
                     margin-top: .5mm !important;
                     color: #555 !important;
-                    font-size: 6pt !important;
+                    font-size: 6.5pt !important;
                     letter-spacing: 1.1px !important;
                 }
                 .o_el_cepillo_ticket .o_ticket_branch {
                     margin-top: 3mm !important;
                     text-align: center !important;
-                    font-size: 6.7pt !important;
+                    font-size: 7.3pt !important;
                     line-height: 1.3 !important;
                 }
                 .o_el_cepillo_ticket .o_ticket_label { margin-bottom: .6mm !important; font-weight: bold !important; }
@@ -135,23 +135,23 @@
                     border-top: .25mm dashed #555 !important;
                 }
                 .o_el_cepillo_ticket .o_ticket_product_table {
-                    width: 72mm !important;
-                    max-width: 72mm !important;
+                    width: 70mm !important;
+                    max-width: 70mm !important;
                     margin: 0 !important;
                     border: 0 !important;
                     border-collapse: collapse !important;
                     table-layout: fixed !important;
-                    font-size: 6.2pt !important;
+                    font-size: 7pt !important;
                     line-height: 1.18 !important;
                 }
-                .o_el_cepillo_ticket .o_ticket_col_qty { width: 9mm !important; }
-                .o_el_cepillo_ticket .o_ticket_col_product { width: 43mm !important; }
-                .o_el_cepillo_ticket .o_ticket_col_amount { width: 20mm !important; }
+                .o_el_cepillo_ticket .o_ticket_col_qty { width: 25% !important; }
+                .o_el_cepillo_ticket .o_ticket_col_product { width: 50% !important; }
+                .o_el_cepillo_ticket .o_ticket_col_amount { width: 25% !important; }
                 .o_el_cepillo_ticket .o_ticket_product_table th {
                     padding: 1.3mm .5mm !important;
                     border-top: .25mm solid #333 !important;
                     border-bottom: .25mm solid #333 !important;
-                    font-size: 6.2pt !important;
+                    font-size: 7pt !important;
                     font-weight: bold !important;
                     text-align: left !important;
                 }
@@ -163,11 +163,12 @@
                 .o_el_cepillo_ticket .o_ticket_product_line { border-bottom: .25mm dashed #999 !important; }
                 .o_el_cepillo_ticket .o_ticket_qty,
                 .o_el_cepillo_ticket .o_ticket_amount { white-space: nowrap !important; }
+                .o_el_cepillo_ticket .o_ticket_qty { text-align: center !important; }
                 .o_el_cepillo_ticket .o_ticket_amount { text-align: right !important; }
                 .o_el_cepillo_ticket .o_ticket_product,
                 .o_el_cepillo_ticket .o_ticket_product_name,
                 .o_el_cepillo_ticket .o_ticket_product_detail {
-                    max-width: 43mm !important;
+                    max-width: 35mm !important;
                     overflow-wrap: anywhere !important;
                     word-break: break-word !important;
                     white-space: normal !important;
@@ -176,13 +177,13 @@
                 .o_el_cepillo_ticket .o_ticket_product_detail {
                     margin-top: .8mm !important;
                     color: #444 !important;
-                    font-size: 5.5pt !important;
+                    font-size: 6.3pt !important;
                     line-height: 1.15 !important;
                 }
                 .o_el_cepillo_ticket .o_ticket_totals {
                     width: 44mm !important;
                     margin-left: auto !important;
-                    font-size: 7pt !important;
+                    font-size: 7.8pt !important;
                 }
                 .o_el_cepillo_ticket .o_ticket_total_row { display: table !important; width: 100% !important; padding: .8mm 0 !important; }
                 .o_el_cepillo_ticket .o_ticket_total_row &gt; span { display: table-cell !important; width: 50% !important; }
@@ -194,7 +195,7 @@
                 }
                 .o_el_cepillo_ticket .o_ticket_footer {
                     text-align: center !important;
-                    font-size: 6.2pt !important;
+                    font-size: 7pt !important;
                     line-height: 1.35 !important;
                     overflow-wrap: anywhere !important;
                 }
@@ -203,6 +204,8 @@
             </style>
             <t t-foreach="docs" t-as="doc">
                 <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)"/>
+                <t t-set="ticket_warehouse" t-value="doc.warehouse_id"/>
+                <t t-set="ticket_branch" t-value="ticket_warehouse.partner_id or doc.company_id.partner_id"/>
                 <div class="page o_el_cepillo_ticket">
                     <header class="o_ticket_header">
                         <img
@@ -214,23 +217,24 @@
                         <div class="o_ticket_company_tagline">REFACCIONARIA</div>
                         <div class="o_ticket_branch">
                             <div class="o_ticket_label">
-                                Sucursal<span t-if="doc.company_id.city"> <span t-field="doc.company_id.city"/></span>
+                                Sucursal <span t-field="ticket_warehouse.name"/>
                             </div>
-                            <div t-if="doc.company_id.street" t-field="doc.company_id.street"/>
-                            <div t-if="doc.company_id.street2" t-field="doc.company_id.street2"/>
+                            <div t-if="ticket_branch.street" t-field="ticket_branch.street"/>
+                            <div t-if="ticket_branch.street2" t-field="ticket_branch.street2"/>
                             <div>
-                                <span t-if="doc.company_id.city" t-field="doc.company_id.city"/>
-                                <span t-if="doc.company_id.state_id">, <span t-field="doc.company_id.state_id"/></span>
-                                <span t-if="doc.company_id.zip"> · C.P. <span t-field="doc.company_id.zip"/></span>
+                                <span t-if="ticket_branch.city" t-field="ticket_branch.city"/>
+                                <span t-if="ticket_branch.state_id">, <span t-field="ticket_branch.state_id"/></span>
+                                <span t-if="ticket_branch.zip"> · C.P. <span t-field="ticket_branch.zip"/></span>
                             </div>
-                            <div t-if="doc.company_id.country_id" t-field="doc.company_id.country_id"/>
+                            <div t-if="ticket_branch.country_id" t-field="ticket_branch.country_id"/>
                         </div>
                     </header>
 
                     <section class="o_ticket_contact_folio">
                         <div>
                             <div class="o_ticket_label">Teléfono</div>
-                            <div t-if="doc.company_id.phone" t-field="doc.company_id.phone"/>
+                            <div t-if="ticket_branch.phone" t-field="ticket_branch.phone"/>
+                            <div t-elif="ticket_branch.mobile" t-field="ticket_branch.mobile"/>
                             <div t-else="">Sin teléfono registrado</div>
                         </div>
                         <div class="o_ticket_folio">

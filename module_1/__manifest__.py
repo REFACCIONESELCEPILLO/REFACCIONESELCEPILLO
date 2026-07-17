@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'design_ticket_sale',
-    'version': '18.0.3.6.0',
+    'version': '18.0.4.0.0',
     'summary': 'Diseño térmico para órdenes de venta',
     'description': 'Personaliza exclusivamente el ticket de orden de venta de El Cepillo.',
     'author': 'IcTechnologyMx',
@@ -9,6 +9,7 @@
     'category': 'Sales/Sales',
     'depends': [
         'sale',
+        'sale_stock',
     ],
     'data': [
         'report/sale_ticket_report.xml',
