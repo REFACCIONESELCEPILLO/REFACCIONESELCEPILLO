@@ -176,12 +176,12 @@
                 }
                 .o_el_cepillo_ticket .o_ticket_product_code {
                     margin-bottom: .8mm !important;
-                    font-size: 7.6pt !important;
+                    font-size: 8pt !important;
                     font-weight: bold !important;
                     line-height: 1.15 !important;
                 }
                 .o_el_cepillo_ticket .o_ticket_product_name {
-                    font-size: 6.3pt !important;
+                    font-size: 6.5pt !important;
                     font-weight: normal !important;
                     line-height: 1.15 !important;
                 }
