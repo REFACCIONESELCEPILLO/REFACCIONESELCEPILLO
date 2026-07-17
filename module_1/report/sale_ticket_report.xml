@@ -21,10 +21,10 @@
     <record id="action_report_sale_ticket" model="ir.actions.report">
         <field name="name">Ticket de venta</field>
         <field name="model">sale.order</field>
-        <field name="report_type">qweb-pdf</field>
+        <field name="report_type">qweb-html</field>
         <field name="report_name">module_1.report_saleorder_ticket_document</field>
         <field name="report_file">module_1.report_saleorder_ticket_document</field>
-        <field name="paperformat_id" ref="module_1.paperformat_sale_ticket_80mm"/>
+        <field name="paperformat_id" eval="False"/>
         <field name="binding_model_id" ref="sale.model_sale_order"/>
         <field name="binding_type">report</field>
         <field name="print_report_name">'Ticket - %s' % (object.name)</field>
@@ -34,7 +34,49 @@
         <t t-call="web.html_container">
             <meta charset="utf-8"/>
             <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+            <script type="text/javascript">
+                window.addEventListener('load', function () {
+                    window.setTimeout(function () {
+                        window.print();
+                    }, 250);
+                });
+            </script>
             <style type="text/css">
+                @media print {
+                    @page {
+                        size: auto;
+                        margin: 2mm;
+                    }
+                    html,
+                    body,
+                    main,
+                    .o_report_layout_standard,
+                    .o_report_layout_boxed,
+                    .o_report_layout_bold,
+                    .article {
+                        width: 76mm !important;
+                        min-width: 76mm !important;
+                        max-width: 76mm !important;
+                        min-height: 0 !important;
+                        height: auto !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                    }
+                    .o_el_cepillo_ticket {
+                        page-break-before: auto !important;
+                        page-break-after: auto !important;
+                        break-before: auto !important;
+                        break-after: auto !important;
+                    }
+                    .o_ticket_product_line,
+                    .o_ticket_section,
+                    .o_ticket_note,
+                    .o_ticket_totals,
+                    .o_ticket_footer {
+                        page-break-inside: avoid !important;
+                        break-inside: avoid !important;
+                    }
+                }
                 .o_el_cepillo_ticket {
                     width: 72mm !important;
                     max-width: 72mm !important;
