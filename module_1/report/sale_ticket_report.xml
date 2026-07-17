@@ -166,6 +166,7 @@
                 .o_el_cepillo_ticket .o_ticket_qty { text-align: center !important; }
                 .o_el_cepillo_ticket .o_ticket_amount { text-align: right !important; }
                 .o_el_cepillo_ticket .o_ticket_product,
+                .o_el_cepillo_ticket .o_ticket_product_code,
                 .o_el_cepillo_ticket .o_ticket_product_name,
                 .o_el_cepillo_ticket .o_ticket_product_detail {
                     max-width: 35mm !important;
@@ -173,7 +174,17 @@
                     word-break: break-word !important;
                     white-space: normal !important;
                 }
-                .o_el_cepillo_ticket .o_ticket_product_name { font-weight: bold !important; }
+                .o_el_cepillo_ticket .o_ticket_product_code {
+                    margin-bottom: .8mm !important;
+                    font-size: 7.6pt !important;
+                    font-weight: bold !important;
+                    line-height: 1.15 !important;
+                }
+                .o_el_cepillo_ticket .o_ticket_product_name {
+                    font-size: 6.3pt !important;
+                    font-weight: normal !important;
+                    line-height: 1.15 !important;
+                }
                 .o_el_cepillo_ticket .o_ticket_product_detail {
                     margin-top: .8mm !important;
                     color: #444 !important;
@@ -282,13 +293,13 @@
                                             <t t-set="ticket_name" t-value="ticket_name[len(product_code) + 2:].lstrip()"/>
                                         </t>
                                         <t t-set="ticket_name_lines" t-value="ticket_name.split('\n')"/>
+                                        <div t-if="product_code" class="o_ticket_product_code">
+                                            Código: <span t-esc="product_code"/>
+                                        </div>
                                         <div class="o_ticket_product_name" t-esc="ticket_name_lines[0] if ticket_name_lines else ticket_name"/>
                                         <t t-foreach="ticket_name_lines[1:]" t-as="detail">
                                             <div t-if="detail" class="o_ticket_product_detail" t-esc="detail"/>
                                         </t>
-                                        <div t-if="product_code" class="o_ticket_product_detail">
-                                            Código: <span t-esc="product_code"/>
-                                        </div>
                                     </td>
                                     <td class="o_ticket_amount"><span t-field="line.price_total"/></td>
                                 </tr>
