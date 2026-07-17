@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <delete model="ir.actions.report" search="[('model', '=', 'sale.order'), ('name', '=', 'Ticket')]"/>
+
     <record id="paperformat_sale_ticket_80mm" model="report.paperformat">
         <field name="name">Ticket de venta 76 mm</field>
         <field name="default" eval="False"/>
