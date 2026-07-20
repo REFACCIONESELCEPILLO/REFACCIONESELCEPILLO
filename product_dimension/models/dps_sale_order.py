@@ -80,12 +80,12 @@ class SaleOrderLine(models.Model):
         "product_template_attribute_value_ids.pricing_mode",
         "product_template_attribute_value_ids.dimension_price",
         "product_template_attribute_value_ids.price_extra",
-        "product_template_attribute_value_ids.attribute_id.dimension_type",
+        "product_template_attribute_value_ids.attribute_line_id.attribute_id.dimension_type",
         "product_no_variant_attribute_value_ids",
         "product_no_variant_attribute_value_ids.pricing_mode",
         "product_no_variant_attribute_value_ids.dimension_price",
         "product_no_variant_attribute_value_ids.price_extra",
-        "product_no_variant_attribute_value_ids.attribute_id.dimension_type",
+        "product_no_variant_attribute_value_ids.attribute_line_id.attribute_id.dimension_type",
     )
     def _compute_base_dimension_price(self):
         for line in self:
