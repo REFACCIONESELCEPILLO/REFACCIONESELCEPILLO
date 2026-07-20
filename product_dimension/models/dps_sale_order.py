@@ -16,8 +16,20 @@ class SaleOrderLine(models.Model):
 
     width_cm = fields.Float("Ancho (cm)", digits=(16, 2), copy=False)
     height_cm = fields.Float("Alto (cm)", digits=(16, 2), copy=False)
-    m2 = fields.Float("M²", compute="_compute_dimensions", store=True, digits=(16, 4))
-    ml = fields.Float("ML", compute="_compute_dimensions", store=True, digits=(16, 4))
+    m2 = fields.Float(
+        "M²",
+        compute="_compute_dimensions",
+        store=True,
+        precompute=True,
+        digits=(16, 4),
+    )
+    ml = fields.Float(
+        "ML",
+        compute="_compute_dimensions",
+        store=True,
+        precompute=True,
+        digits=(16, 4),
+    )
     dimension_base_currency_id = fields.Many2one(
         "res.currency",
         related="product_template_id.currency_id",
@@ -27,6 +39,7 @@ class SaleOrderLine(models.Model):
         "Precio dimensional base",
         compute="_compute_base_dimension_price",
         store=True,
+        precompute=True,
         currency_field="dimension_base_currency_id",
     )
     dimension_enabled = fields.Boolean(

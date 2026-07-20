@@ -85,6 +85,13 @@ class TestDimensionFlow(TransactionCase):
         self.assertAlmostEqual(large.m2, 10.0)
         self.assertAlmostEqual(large.ml, 14.0)
 
+    def test_price_dependencies_are_precomputed(self):
+        sale_line_fields = self.env["sale.order.line"]._fields
+        self.assertTrue(sale_line_fields["m2"].precompute)
+        self.assertTrue(sale_line_fields["ml"].precompute)
+        self.assertTrue(sale_line_fields["base_dimension_price"].precompute)
+        self.assertTrue(sale_line_fields["price_unit"].precompute)
+
     def test_component_factor_must_be_positive(self):
         with self.assertRaises(ValidationError):
             self.ptav.component_qty_factor = 0.0
