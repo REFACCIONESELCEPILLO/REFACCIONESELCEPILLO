@@ -1,0 +1,36 @@
+<odoo>
+    <record id="mrp_production_form_dimension_mocalli" model="ir.ui.view">
+        <field name="name">mrp.production.form.dimension.mocalli</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_id'][@default_focus='1']" position="after">
+                <field name="dimension_sale_line_id" readonly="1" invisible="not dimension_sale_line_id"/>
+                <field name="dimension_width_cm" readonly="state != 'draft'" invisible="not dimension_sale_line_id"/>
+                <field name="dimension_height_cm" readonly="state != 'draft'" invisible="not dimension_sale_line_id"/>
+                <field name="dimension_m2" readonly="1" invisible="not dimension_sale_line_id"/>
+                <field name="dimension_ml" readonly="1" invisible="not dimension_sale_line_id"/>
+            </xpath>
+            <xpath expr="//field[@name='bom_id'][@context]" position="after">
+                <field name="dimension_value_ids"
+                       widget="many2many_tags"
+                       readonly="state != 'draft'"
+                       invisible="not dimension_sale_line_id"/>
+            </xpath>
+            <xpath expr="//field[@name='move_raw_ids']/list/field[@name='product_id']" position="after">
+                <field name="dimension_value_id" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="mrp_bom_form_dimension_mocalli" model="ir.ui.view">
+        <field name="name">mrp.bom.form.dimension.mocalli</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='bom_line_ids']/list/field[@name='product_id']" position="after">
+                <field name="dimension_attribute_id" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

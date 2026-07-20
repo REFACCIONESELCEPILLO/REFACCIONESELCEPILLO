@@ -1,0 +1,32 @@
+<odoo>
+    <record id="dps_sale_order_inherited_view_form_01" model="ir.ui.view">
+        <field name="name">sale.order.form.dimension.mocalli</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="before">
+                <field name="dimension_enabled" column_invisible="1"/>
+                <field name="width_cm" string="Ancho (cm)" optional="show"/>
+                <field name="height_cm" string="Alto (cm)" optional="show"/>
+                <field name="m2" readonly="1" optional="hide"/>
+                <field name="ml" readonly="1" optional="hide"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/list/field[@name='price_unit']" position="before">
+                <field name="dimension_base_currency_id" column_invisible="1"/>
+                <field name="base_dimension_price" readonly="1" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_attribute_inherited_view_form_01" model="ir.ui.view">
+        <field name="name">product.attribute.form.dimension.mocalli</field>
+        <field name="model">product.attribute</field>
+        <field name="inherit_id" ref="product.product_attribute_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='create_variant']" position="after">
+                <field name="dimension_type"/>
+                <field name="component_required"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

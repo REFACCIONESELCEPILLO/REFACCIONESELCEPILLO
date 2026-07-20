@@ -1,0 +1,49 @@
+<odoo>
+    <record id="product_template_form_dimension_mocalli" model="ir.ui.view">
+        <field name="name">product.template.form.dimension.mocalli</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='group_general']/field[@name='type']" position="after">
+                <field name="dimension_enabled"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_template_attribute_value_form_dimension_mocalli" model="ir.ui.view">
+        <field name="name">product.template.attribute.value.form.dimension.mocalli</field>
+        <field name="model">product.template.attribute.value</field>
+        <field name="inherit_id" ref="product.product_template_attribute_value_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='price_extra']" position="after">
+                <separator string="Precio dimensional"/>
+                <field name="pricing_mode"/>
+                <field name="dimension_price"
+                       invisible="pricing_mode not in ['attribute', 'area', 'perimeter']"/>
+                <separator string="Componente para fabricación"/>
+                <field name="skip_component"/>
+                <field name="component_product_id" invisible="skip_component"/>
+                <field name="component_sku" readonly="1" invisible="not component_product_id"/>
+                <field name="component_calculation" invisible="skip_component"/>
+                <field name="component_qty_factor" invisible="skip_component"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_template_attribute_value_list_dimension_mocalli" model="ir.ui.view">
+        <field name="name">product.template.attribute.value.list.dimension.mocalli</field>
+        <field name="model">product.template.attribute.value</field>
+        <field name="inherit_id" ref="product.product_template_attribute_value_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='price_extra']" position="after">
+                <field name="pricing_mode" optional="show"/>
+                <field name="dimension_price" optional="show"/>
+                <field name="skip_component" optional="show"/>
+                <field name="component_product_id" optional="show"/>
+                <field name="component_sku" optional="show"/>
+                <field name="component_calculation" optional="hide"/>
+                <field name="component_qty_factor" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

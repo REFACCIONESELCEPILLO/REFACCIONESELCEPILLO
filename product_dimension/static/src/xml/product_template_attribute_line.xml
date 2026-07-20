@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t t-name="product_dimension.ptav_select_search">
+        <div class="o_mocalli_ptav_search d-flex flex-column flex-grow-1 gap-2">
+            <input
+                type="search"
+                class="o_input"
+                t-att-placeholder="dimensionSearchPlaceholder"
+                t-att-value="dimensionSearch.query"
+                t-on-input="updateDimensionSearch"
+            />
+            <select
+                class="o_input w-100"
+                t-on-change="updateSelectedPTAV"
+                t-att-name="'ptal-' + this.props.id">
+                <option
+                    t-if="!filteredDimensionValues.length"
+                    disabled="disabled"
+                    t-out="dimensionNoResultsText"
+                />
+                <option
+                    t-foreach="filteredDimensionValues"
+                    t-as="ptav"
+                    t-key="ptav.id"
+                    t-att-value="ptav.id"
+                    t-att-selected="this.props.selected_attribute_value_ids.includes(ptav.id)"
+                    t-out="getDimensionPTAVSelectName(ptav)"
+                    t-att-class="{ 'css_not_available': ptav.excluded }"
+                />
+            </select>
+            <small class="text-muted">
+                <t t-out="filteredDimensionValues.length"/> / <t t-out="this.props.attribute_values.length"/>
+            </small>
+        </div>
+    </t>
+</templates>
