@@ -20,7 +20,7 @@ patch(ProductTemplateAttributeLine, {
                 ...attributeValuesProp.element,
                 shape: {
                     ...attributeValuesProp.element.shape,
-                    component_sku: {
+                    internal_reference: {
                         type: [Boolean, String],
                         optional: true,
                     },
@@ -59,10 +59,17 @@ patch(ProductTemplateAttributeLine.prototype, {
         );
     },
 
+    get dimensionValuesWithReferences() {
+        return this.sortedDimensionValues.map((value) => ({
+            ...value,
+            internal_reference: this.getDimensionInternalReference(value),
+        }));
+    },
+
     openDimensionValueSearch() {
         this.dialog.add(AttributeValueSearchDialog, {
             title: `${_t("Seleccionar valor")}: ${this.props.attribute.name}`,
-            values: this.sortedDimensionValues,
+            values: this.dimensionValuesWithReferences,
             selectedValueId: this.props.selected_attribute_value_ids[0],
             currencyId: this.env.currency.id,
             confirm: (ptavId) => this.env.updateProductTemplateSelectedPTAV(
@@ -75,12 +82,13 @@ patch(ProductTemplateAttributeLine.prototype, {
     },
 
     getDimensionPTAVSelectName(value) {
-        const parts = [];
-        if (value.component_sku && !value.name.includes(value.component_sku)) {
-            parts.push(value.component_sku);
-        }
+        const parts = [this.getDimensionInternalReference(value)];
         parts.push(value.name);
         parts.push(formatCurrency(value.price_extra || 0, this.env.currency.id));
-        return parts.join(" - ");
+        return parts.filter(Boolean).join(" - ");
+    },
+
+    getDimensionInternalReference(value) {
+        return value.internal_reference || "";
     },
 });

@@ -170,6 +170,12 @@ class SaleOrderLine(models.Model):
                     "No se puede confirmar la cotización. Falta seleccionar un valor para: %(attributes)s",
                     attributes=", ".join(missing_attributes.mapped("display_name")),
                 ))
+            values_to_link = selected_values.filtered(
+                lambda value: value.attribute_id.component_required
+                and not value.skip_component
+                and not value.component_product_id
+            )
+            values_to_link.product_attribute_value_id._link_component_products_by_reference()
             missing_values = selected_values.filtered(
                 lambda value: value.attribute_id.component_required
                 and not value.skip_component
@@ -178,7 +184,11 @@ class SaleOrderLine(models.Model):
             if missing_values:
                 raise ValidationError(_(
                     "No se puede confirmar la cotización. Los siguientes valores no tienen un "
-                    "producto componente asociado: %(values)s",
+                    "Producto componente asociado: %(values)s. Abra Configuración > Atributos, "
+                    "use Configurar sobre cada valor y seleccione el producto real. En la pestaña "
+                    "Compras de ese producto se configuran sus proveedores. Si su referencia "
+                    "interna coincide con un único producto existente, el sistema lo vincula "
+                    "automáticamente.",
                     values=", ".join(missing_values.mapped("display_name")),
                 ))
 

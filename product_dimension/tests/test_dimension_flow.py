@@ -91,6 +91,37 @@ class TestDimensionFlow(TransactionCase):
         self.assertEqual(action["res_id"], self.attribute_value.id)
         self.assertEqual(action["view_mode"], "form")
 
+    def test_component_is_linked_from_unique_internal_reference(self):
+        value = self.env["product.attribute.value"].create({
+            "name": "Moldura vinculada por referencia",
+            "attribute_id": self.attribute.id,
+            "component_internal_reference": self.component.default_code,
+        })
+        unresolved = value._link_component_products_by_reference()
+        self.assertFalse(unresolved)
+        self.assertEqual(value.component_product_id, self.component)
+
+    def test_component_reference_must_be_unique_to_link(self):
+        duplicate_reference = "MOL-DUPLICADA"
+        self.env["product.product"].create({
+            "name": "Componente duplicado 1",
+            "default_code": duplicate_reference,
+            "type": "consu",
+        })
+        self.env["product.product"].create({
+            "name": "Componente duplicado 2",
+            "default_code": duplicate_reference,
+            "type": "consu",
+        })
+        value = self.env["product.attribute.value"].create({
+            "name": "Moldura con referencia duplicada",
+            "attribute_id": self.attribute.id,
+            "component_internal_reference": duplicate_reference,
+        })
+        unresolved = value._link_component_products_by_reference()
+        self.assertEqual(unresolved, value)
+        self.assertFalse(value.component_product_id)
+
     def test_dimension_quantities_and_explicit_zero_price(self):
         self.assertAlmostEqual(
             self.ptav._get_component_quantity(1.92, 5.6, 2.0),

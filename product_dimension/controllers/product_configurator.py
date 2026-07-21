@@ -31,7 +31,10 @@ class DimensionSaleProductConfiguratorController(SaleProductConfiguratorControll
         )
         component_data = {
             value.id: {
-                "component_sku": value.component_sku or False,
+                "internal_reference": (
+                    value.product_attribute_value_id.component_internal_reference
+                    or False
+                ),
                 "skip_component": value.skip_component,
             }
             for value in product_template.attribute_line_ids.product_template_value_ids
@@ -39,7 +42,7 @@ class DimensionSaleProductConfiguratorController(SaleProductConfiguratorControll
         for attribute_line in information["attribute_lines"]:
             for value in attribute_line["attribute_values"]:
                 value.update(component_data.get(value["id"], {
-                    "component_sku": False,
+                    "internal_reference": False,
                     "skip_component": False,
                 }))
             attribute_line["attribute_values"].sort(

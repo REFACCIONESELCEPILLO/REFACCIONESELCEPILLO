@@ -221,6 +221,40 @@ class ProductAttributeValue(models.Model):
             "target": "current",
         }
 
+    def action_open_component_product(self):
+        self.ensure_one()
+        if not self.component_product_id:
+            raise ValidationError(_(
+                "Seleccione primero el producto componente de %(value)s.",
+                value=self.display_name,
+            ))
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Producto componente y proveedores"),
+            "res_model": "product.product",
+            "res_id": self.component_product_id.id,
+            "view_mode": "form",
+            "target": "current",
+        }
+
+    def _link_component_products_by_reference(self):
+        """Link unconfigured values when one product has the exact same reference."""
+        unresolved = self.env[self._name]
+        for value in self.filtered(lambda item: not item.component_product_id):
+            reference = (value.component_internal_reference or "").strip()
+            if not reference:
+                unresolved |= value
+                continue
+            products = self.env["product.product"].search([
+                ("default_code", "=ilike", reference),
+                ("type", "=", "consu"),
+            ], limit=2)
+            if len(products) == 1:
+                value.component_product_id = products
+            else:
+                unresolved |= value
+        return unresolved
+
     @api.constrains("component_product_id", "component_qty_factor", "skip_component")
     def _check_component_configuration(self):
         for value in self:
@@ -290,6 +324,10 @@ class ProductTemplateAttributeValue(models.Model):
         for value in self:
             if value.component_sku:
                 value.display_name = "[%s] %s" % (value.component_sku, value.display_name)
+
+    def action_open_component_product(self):
+        self.ensure_one()
+        return self.product_attribute_value_id.action_open_component_product()
 
     def _get_effective_component_calculation(self):
         self.ensure_one()

@@ -29,7 +29,7 @@ export class AttributeValueSearchDialog extends Component {
             return this.props.values;
         }
         return this.props.values.filter((value) => {
-            const searchableText = `${value.component_sku || ""} ${value.name || ""}`;
+            const searchableText = `${value.internal_reference || ""} ${value.name || ""}`;
             return this._normalize(searchableText).includes(query);
         });
     }

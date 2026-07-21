@@ -1,6 +1,7 @@
 /** @odoo-module **/
 
 import { patch } from "@web/core/utils/patch";
+import { useService } from "@web/core/utils/hooks";
 import {
     ProductConfiguratorDialog,
 } from "@sale/js/product_configurator_dialog/product_configurator_dialog";
@@ -15,9 +16,15 @@ patch(ProductConfiguratorDialog, {
 });
 
 patch(ProductConfiguratorDialog.prototype, {
+    setup() {
+        super.setup(...arguments);
+        this.orm = useService("orm");
+    },
+
     async _loadData(onlyMainProduct) {
         const data = await super._loadData(...arguments);
         this.currency.id ??= data.currency_id;
+        await this._loadDimensionAttributeValueMetadata(data);
         if (this.props.edit) {
             return data;
         }
@@ -49,6 +56,63 @@ patch(ProductConfiguratorDialog.prototype, {
             }
         }
         return data;
+    },
+
+    async _loadDimensionAttributeValueMetadata(data) {
+        const products = [
+            ...(data.products || []),
+            ...(data.optional_products || []),
+        ];
+        const valuesById = new Map();
+        for (const product of products) {
+            for (const attributeLine of product.attribute_lines || []) {
+                for (const value of attributeLine.attribute_values || []) {
+                    valuesById.set(value.id, value);
+                }
+            }
+        }
+        if (!valuesById.size) {
+            return;
+        }
+
+        const ptavMetadata = await this.orm.read(
+            "product.template.attribute.value",
+            [...valuesById.keys()],
+            ["component_sku", "skip_component", "product_attribute_value_id"]
+        );
+        const valuesNeedingFallback = ptavMetadata.filter(
+            (value) => (
+                !value.component_sku
+                && !value.skip_component
+                && value.product_attribute_value_id
+            )
+        );
+        let referencesByAttributeValue = {};
+        if (valuesNeedingFallback.length) {
+            const attributeValues = await this.orm.read(
+                "product.attribute.value",
+                [...new Set(valuesNeedingFallback.map(
+                    (value) => value.product_attribute_value_id[0]
+                ))],
+                ["component_internal_reference"]
+            );
+            referencesByAttributeValue = Object.fromEntries(
+                attributeValues.map((value) => [
+                    value.id,
+                    value.component_internal_reference || "",
+                ])
+            );
+        }
+        for (const metadata of ptavMetadata) {
+            const value = valuesById.get(metadata.id);
+            const attributeValueId = metadata.product_attribute_value_id?.[0];
+            value.internal_reference = (
+                metadata.component_sku
+                || referencesByAttributeValue[attributeValueId]
+                || ""
+            );
+            value.skip_component = metadata.skip_component;
+        }
     },
 
     _getAdditionalRpcParams() {

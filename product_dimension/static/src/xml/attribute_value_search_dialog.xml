@@ -39,7 +39,7 @@
                                            t-att-checked="state.selectedValueId === value.id"
                                            t-att-disabled="value.excluded"/>
                                 </td>
-                                <td t-out="value.component_sku || ''"/>
+                                <td t-out="value.internal_reference || ''"/>
                                 <td t-out="value.name"/>
                                 <td class="text-end" t-out="formatPrice(value.price_extra)"/>
                             </tr>

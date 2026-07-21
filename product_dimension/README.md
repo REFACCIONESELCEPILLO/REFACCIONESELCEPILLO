@@ -18,6 +18,8 @@ comercial con el producto real que se fabrica, consume y compra.
    En una configuración nueva, esos valores aparecen primero y quedan seleccionados por defecto.
    Cada combo dispone de una búsqueda avanzada por referencia interna o nombre; la ventana permite
    seleccionar una sola opción y confirmarla sin recorrer listas extensas.
+   Ambos muestran el formato `Referencia interna - Nombre - Precio`. Si la referencia coincide con
+   un único producto existente, se vincula automáticamente como componente.
 5. En la lista de materiales, identifique cada producto `(Base)` con su
    **Atributo configurable**. Al crear la orden de fabricación, esa línea base será sustituida
    por el producto exacto seleccionado. Los componentes fijos de la lista no se alteran.

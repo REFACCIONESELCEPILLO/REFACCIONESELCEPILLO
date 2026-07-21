@@ -28,6 +28,12 @@
                         <group string="Componente para fabricación">
                             <field name="skip_component"/>
                             <field name="component_product_id" invisible="skip_component"/>
+                            <button name="action_open_component_product"
+                                    string="Configurar producto y proveedores"
+                                    type="object"
+                                    icon="fa-external-link"
+                                    class="btn-link"
+                                    invisible="skip_component or not component_product_id"/>
                             <field name="component_calculation" invisible="skip_component"/>
                             <field name="component_qty_factor" invisible="skip_component"/>
                         </group>
@@ -92,6 +98,12 @@
                 <separator string="Componente para fabricación"/>
                 <field name="skip_component"/>
                 <field name="component_product_id" invisible="skip_component"/>
+                <button name="action_open_component_product"
+                        string="Configurar producto y proveedores"
+                        type="object"
+                        icon="fa-external-link"
+                        class="btn-link"
+                        invisible="skip_component or not component_product_id"/>
                 <field name="component_calculation" invisible="skip_component"/>
                 <field name="component_qty_factor" invisible="skip_component"/>
             </xpath>
