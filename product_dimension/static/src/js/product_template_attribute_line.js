@@ -1,11 +1,13 @@
 /** @odoo-module **/
 
 import { _t } from "@web/core/l10n/translation";
+import { formatCurrency } from "@web/core/currency";
 import { patch } from "@web/core/utils/patch";
-import { useState } from "@odoo/owl";
+import { useService } from "@web/core/utils/hooks";
 import {
     ProductTemplateAttributeLine,
 } from "@sale/js/product_template_attribute_line/product_template_attribute_line";
+import { AttributeValueSearchDialog } from "./attribute_value_search_dialog";
 
 const attributeValuesProp = ProductTemplateAttributeLine.props.attribute_values;
 
@@ -22,6 +24,10 @@ patch(ProductTemplateAttributeLine, {
                         type: [Boolean, String],
                         optional: true,
                     },
+                    skip_component: {
+                        type: Boolean,
+                        optional: true,
+                    },
                 },
             },
         },
@@ -33,60 +39,48 @@ patch(ProductTemplateAttributeLine.prototype, {
         if (super.setup) {
             super.setup(...arguments);
         }
-        this.dimensionSearch = useState({ query: "" });
+        this.dialog = useService("dialog");
     },
 
     getPTAVTemplate() {
-        if (this.showDimensionSearch) {
-            return "product_dimension.ptav_select_search";
+        if (this.showDimensionSelector) {
+            return "product_dimension.ptav_select_lookup";
         }
         return super.getPTAVTemplate(...arguments);
     },
 
-    updateDimensionSearch(event) {
-        this.dimensionSearch.query = event.target.value;
+    get showDimensionSelector() {
+        return this.props.attribute.display_type === "select";
     },
 
-    get showDimensionSearch() {
-        return (
-            this.props.attribute.display_type === "select" &&
-            this.props.attribute_values.length >= 20
+    get sortedDimensionValues() {
+        return [...this.props.attribute_values].sort(
+            (left, right) => Number(Boolean(right.skip_component)) - Number(Boolean(left.skip_component))
         );
     },
 
-    get filteredDimensionValues() {
-        const query = this._normalizeDimensionSearch(this.dimensionSearch.query);
-        if (!query) {
-            return this.props.attribute_values;
-        }
-        return this.props.attribute_values.filter((value) => {
-            const searchableText = `${value.component_sku || ""} ${value.name}`;
-            return this._normalizeDimensionSearch(searchableText).includes(query);
+    openDimensionValueSearch() {
+        this.dialog.add(AttributeValueSearchDialog, {
+            title: `${_t("Seleccionar valor")}: ${this.props.attribute.name}`,
+            values: this.sortedDimensionValues,
+            selectedValueId: this.props.selected_attribute_value_ids[0],
+            currencyId: this.env.currency.id,
+            confirm: (ptavId) => this.env.updateProductTemplateSelectedPTAV(
+                this.props.productTmplId,
+                this.props.id,
+                ptavId,
+                false
+            ),
         });
     },
 
-    get dimensionSearchPlaceholder() {
-        return _t("Buscar por referencia interna o descripción...");
-    },
-
-    get dimensionNoResultsText() {
-        return _t("No hay valores que coincidan con la búsqueda");
-    },
-
     getDimensionPTAVSelectName(value) {
-        const name = this.getPTAVSelectName(value);
-        if (value.component_sku && !name.includes(value.component_sku)) {
-            return `[${value.component_sku}] ${name}`;
+        const parts = [];
+        if (value.component_sku && !value.name.includes(value.component_sku)) {
+            parts.push(value.component_sku);
         }
-        return name;
-    },
-
-    _normalizeDimensionSearch(value) {
-        return (value || "")
-            .toString()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .toLowerCase()
-            .trim();
+        parts.push(value.name);
+        parts.push(formatCurrency(value.price_extra || 0, this.env.currency.id));
+        return parts.join(" - ");
     },
 });

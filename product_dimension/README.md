@@ -15,6 +15,9 @@ comercial con el producto real que se fabrica, consume y compra.
    - el factor de consumo;
    - el modo y la tarifa de venta.
 4. Marque los valores `N/A` como **No genera componente**.
+   En una configuración nueva, esos valores aparecen primero y quedan seleccionados por defecto.
+   Cada combo dispone de una búsqueda avanzada por referencia interna o nombre; la ventana permite
+   seleccionar una sola opción y confirmarla sin recorrer listas extensas.
 5. En la lista de materiales, identifique cada producto `(Base)` con su
    **Atributo configurable**. Al crear la orden de fabricación, esa línea base será sustituida
    por el producto exacto seleccionado. Los componentes fijos de la lista no se alteran.

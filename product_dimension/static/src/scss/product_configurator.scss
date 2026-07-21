@@ -1,8 +1,28 @@
-.o_mocalli_ptav_search {
+.o_mocalli_ptav_selector {
     min-width: 0;
 
-    input[type="search"],
     select {
+        min-width: 0;
         max-width: 100%;
+    }
+
+    .o_mocalli_open_value_search {
+        flex: 0 0 auto;
+    }
+}
+
+.o_mocalli_attribute_value_dialog {
+    .o_mocalli_attribute_value_table {
+        max-height: 55vh;
+        overflow-y: auto;
+        border: 1px solid var(--border-color, #dee2e6);
+    }
+
+    .o_mocalli_selection_column {
+        width: 3rem;
+    }
+
+    tbody tr:not(.text-muted) {
+        cursor: pointer;
     }
 }

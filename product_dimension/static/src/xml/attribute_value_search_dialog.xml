@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t t-name="product_dimension.AttributeValueSearchDialog">
+        <Dialog size="'lg'" title="props.title">
+            <div class="o_mocalli_attribute_value_dialog d-flex flex-column gap-3">
+                <div class="input-group">
+                    <span class="input-group-text" aria-hidden="true">
+                        <i class="fa fa-search"/>
+                    </span>
+                    <input type="search"
+                           class="o_input form-control"
+                           placeholder="Buscar por referencia interna o nombre..."
+                           autofocus="autofocus"
+                           t-att-value="state.query"
+                           t-on-input="updateSearch"/>
+                </div>
+                <div class="table-responsive o_mocalli_attribute_value_table">
+                    <table class="table table-hover table-sm mb-0">
+                        <thead class="table-light sticky-top">
+                            <tr>
+                                <th class="o_mocalli_selection_column"/>
+                                <th>Referencia interna</th>
+                                <th>Nombre del valor</th>
+                                <th class="text-end">Precio extra</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="filteredValues"
+                                t-as="value"
+                                t-key="value.id"
+                                t-att-class="{
+                                    'table-active': state.selectedValueId === value.id,
+                                    'text-muted': value.excluded,
+                                }"
+                                t-on-click="() => this.selectValue(value)">
+                                <td class="text-center">
+                                    <input type="checkbox"
+                                           class="form-check-input"
+                                           t-att-checked="state.selectedValueId === value.id"
+                                           t-att-disabled="value.excluded"/>
+                                </td>
+                                <td t-out="value.component_sku || ''"/>
+                                <td t-out="value.name"/>
+                                <td class="text-end" t-out="formatPrice(value.price_extra)"/>
+                            </tr>
+                            <tr t-if="!filteredValues.length">
+                                <td colspan="4" class="text-center text-muted py-4">
+                                    No hay valores que coincidan con la búsqueda.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <t t-set-slot="footer">
+                <button class="btn btn-primary"
+                        t-att-disabled="!state.selectedValueId"
+                        t-on-click="confirmSelection">
+                    Confirmar
+                </button>
+                <button class="btn btn-secondary" t-on-click="props.close">
+                    Cancelar
+                </button>
+            </t>
+        </Dialog>
+    </t>
+</templates>

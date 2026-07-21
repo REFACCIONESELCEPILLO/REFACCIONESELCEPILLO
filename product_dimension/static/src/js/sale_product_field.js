@@ -15,6 +15,42 @@ patch(ProductConfiguratorDialog, {
 });
 
 patch(ProductConfiguratorDialog.prototype, {
+    async _loadData(onlyMainProduct) {
+        const data = await super._loadData(...arguments);
+        this.currency.id ??= data.currency_id;
+        if (this.props.edit) {
+            return data;
+        }
+
+        const products = [
+            ...(data.products || []),
+            ...(data.optional_products || []),
+        ];
+        for (const product of products) {
+            let selectionChanged = false;
+            for (const attributeLine of product.attribute_lines || []) {
+                const naValue = attributeLine.attribute_values.find(
+                    (value) => value.skip_component
+                );
+                if (
+                    naValue &&
+                    !attributeLine.selected_attribute_value_ids.includes(naValue.id)
+                ) {
+                    attributeLine.selected_attribute_value_ids = [naValue.id];
+                    selectionChanged = true;
+                }
+            }
+            if (selectionChanged) {
+                const updatedValues = await this._updateCombination(
+                    product,
+                    product.quantity
+                );
+                Object.assign(product, updatedValues);
+            }
+        }
+        return data;
+    },
+
     _getAdditionalRpcParams() {
         return {
             ...super._getAdditionalRpcParams(...arguments),

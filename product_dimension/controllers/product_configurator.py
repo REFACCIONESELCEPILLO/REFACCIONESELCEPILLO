@@ -29,13 +29,22 @@ class DimensionSaleProductConfiguratorController(SaleProductConfiguratorControll
             parent_combination=parent_combination,
             **kwargs,
         )
-        component_skus = {
-            value.id: value.component_sku or False
+        component_data = {
+            value.id: {
+                "component_sku": value.component_sku or False,
+                "skip_component": value.skip_component,
+            }
             for value in product_template.attribute_line_ids.product_template_value_ids
         }
         for attribute_line in information["attribute_lines"]:
             for value in attribute_line["attribute_values"]:
-                value["component_sku"] = component_skus.get(value["id"], False)
+                value.update(component_data.get(value["id"], {
+                    "component_sku": False,
+                    "skip_component": False,
+                }))
+            attribute_line["attribute_values"].sort(
+                key=lambda value: not value["skip_component"]
+            )
 
         if product_template.dimension_enabled:
             area = float(kwargs.get("m2") or 0.0)
