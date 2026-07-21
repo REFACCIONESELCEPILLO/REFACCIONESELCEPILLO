@@ -15,30 +15,26 @@
         <field name="model">product.attribute</field>
         <field name="inherit_id" ref="product.product_attribute_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='value_ids']/list/field[@name='name']" position="after">
-                <field name="skip_component"
-                       string="No genera componente"
-                       optional="show"
-                       column_invisible="not parent.component_required"/>
-                <field name="component_product_id"
-                       optional="show"
-                       column_invisible="not parent.component_required"/>
+            <xpath expr="//field[@name='value_ids']/list/field[@name='name']" position="before">
+                <field name="component_cost_currency_id" column_invisible="True"/>
                 <field name="component_internal_reference"
-                       optional="show"
                        readonly="1"
                        column_invisible="not parent.component_required"/>
-                <field name="component_cost_currency_id" column_invisible="True"/>
+            </xpath>
+            <xpath expr="//field[@name='value_ids']/list/field[@name='name']" position="after">
                 <field name="component_cost"
                        widget="monetary"
-                       optional="show"
                        readonly="1"
                        column_invisible="not parent.component_required"/>
-                <field name="component_calculation"
-                       optional="hide"
-                       column_invisible="not parent.component_required"/>
-                <field name="component_qty_factor"
-                       optional="hide"
-                       column_invisible="not parent.component_required"/>
+            </xpath>
+            <xpath expr="//field[@name='value_ids']/list/field[@name='is_custom']" position="attributes">
+                <attribute name="column_invisible">parent.component_required or parent.display_type == 'multi'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='value_ids']/list/field[@name='html_color']" position="attributes">
+                <attribute name="column_invisible">parent.component_required or parent.display_type != 'color'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='value_ids']/list/field[@name='image']" position="attributes">
+                <attribute name="column_invisible">parent.component_required or parent.display_type != 'color'</attribute>
             </xpath>
         </field>
     </record>
