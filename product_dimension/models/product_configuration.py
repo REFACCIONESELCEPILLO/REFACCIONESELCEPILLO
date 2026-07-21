@@ -301,7 +301,9 @@ class ProductAttributeValue(models.Model):
         if component:
             component_template.seller_ids.filtered(
                 lambda seller: seller.dimension_attribute_value_id == self
-            ).sudo().write({"product_id": component.id})
+            ).with_context(skip_dimension_supplier_sync=True).sudo().write({
+                "product_id": component.id,
+            })
         return component
 
     @api.constrains("component_product_id", "component_qty_factor", "skip_component")

@@ -93,21 +93,25 @@ class ProductSupplierInfo(models.Model):
         return sellers
 
     def write(self, values):
+        sync_dimension_variant = bool({
+            "product_tmpl_id",
+            "dimension_attribute_value_id",
+        }.intersection(values))
         sellers_to_generalize = self.env[self._name]
         if (
             "dimension_attribute_value_id" in values
             and not values["dimension_attribute_value_id"]
         ):
             sellers_to_generalize = self.filtered("dimension_attribute_value_id")
-        result = super().write(values)
+        # Odoo's supplierinfo sanitizer adds product_tmpl_id to the received dict
+        # whenever product_id is written. Work with a copy and keep the original
+        # trigger above, otherwise that internal addition starts a sync loop.
+        result = super().write(dict(values))
         if sellers_to_generalize:
             sellers_to_generalize.with_context(
                 skip_dimension_supplier_sync=True
             ).sudo().write({"product_id": False})
-        if {
-            "product_tmpl_id",
-            "dimension_attribute_value_id",
-        }.intersection(values):
+        if sync_dimension_variant:
             self._sync_dimension_product_variant()
         return result
 
