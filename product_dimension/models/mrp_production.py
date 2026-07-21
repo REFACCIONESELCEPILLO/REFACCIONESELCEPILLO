@@ -61,11 +61,22 @@ class MrpProduction(models.Model):
         for production in self.filtered(
             lambda mo: mo.dimension_sale_line_id and mo.state not in ("done", "cancel")
         ):
+            bom_lines_by_attribute = {
+                line.dimension_attribute_id.id: line
+                for line in production.bom_id.bom_line_ids.filtered("dimension_attribute_id")
+            }
             configuration_values = production.dimension_value_ids.filtered(
                 lambda value: value.attribute_id.component_required
                 or value.component_product_id
                 or value.skip_component
             )
+            for value in configuration_values.filtered(lambda item: not item.skip_component):
+                bom_line = bom_lines_by_attribute.get(value.attribute_id.id)
+                component = value._get_or_create_bom_component(bom_line)
+                if component and value.component_product_id != component:
+                    value.product_attribute_value_id.sudo().write({
+                        "component_product_id": component.id,
+                    })
             expected_values = configuration_values.filtered(
                 lambda value: value.component_product_id and not value.skip_component
             )
@@ -104,6 +115,7 @@ class MrpProduction(models.Model):
             new_moves = StockMove
             for value in expected_values:
                 component = value.component_product_id
+                bom_line = bom_lines_by_attribute.get(value.attribute_id.id)
                 quantity = value._get_component_quantity(
                     production.dimension_m2,
                     production.dimension_ml,
@@ -118,23 +130,36 @@ class MrpProduction(models.Model):
                         production._remove_dimension_moves(move)
                     continue
                 if move:
+                    move_updates = {}
+                    if bom_line and move.bom_line_id != bom_line:
+                        move_updates["bom_line_id"] = bom_line.id
                     if float_compare(
                         move.product_uom_qty,
                         quantity,
                         precision_rounding=component.uom_id.rounding,
                     ):
-                        move.with_context(skip_dimension_component_sync=True).write({
+                        move_updates.update({
                             "product_uom_qty": quantity,
                             "product_uom": component.uom_id.id,
                         })
+                    if move_updates:
+                        move.with_context(skip_dimension_component_sync=True).write(move_updates)
                     continue
 
                 move_values = production._get_move_raw_values(
                     component,
                     quantity,
                     component.uom_id,
+                    bom_line.operation_id.id if bom_line else False,
+                    bom_line,
                 )
                 move_values["dimension_value_id"] = value.id
+                buy_route = production.warehouse_id.buy_pull_id.route_id
+                if buy_route:
+                    move_values.update({
+                        "procure_method": "make_to_order",
+                        "route_ids": [(6, 0, buy_route.ids)],
+                    })
                 new_moves |= StockMove.create(move_values)
 
             if new_moves and production.state != "draft":

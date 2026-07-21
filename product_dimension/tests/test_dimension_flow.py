@@ -37,6 +37,16 @@ class TestDimensionFlow(TransactionCase):
             "type": "consu",
             "is_storable": True,
         })
+        cls.vendor = cls.env["res.partner"].create({
+            "name": "Proveedor de molduras",
+            "supplier_rank": 1,
+        })
+        cls.env["product.supplierinfo"].create({
+            "partner_id": cls.vendor.id,
+            "product_tmpl_id": cls.component.product_tmpl_id.id,
+            "min_qty": 0.0,
+            "price": 125.0,
+        })
         cls.placeholder = cls.env["product.product"].create({
             "name": "Molduras (Base)",
             "type": "consu",
@@ -121,6 +131,66 @@ class TestDimensionFlow(TransactionCase):
         unresolved = value._link_component_products_by_reference()
         self.assertEqual(unresolved, value)
         self.assertFalse(value.component_product_id)
+
+    def test_dynamic_base_variant_inherits_vendor(self):
+        dynamic_attribute = self.env["product.attribute"].create({
+            "name": "Impresión dinámica",
+            "create_variant": "dynamic",
+            "dimension_type": "area",
+            "component_required": True,
+        })
+        dynamic_value = self.env["product.attribute.value"].create({
+            "name": "Acrílico",
+            "attribute_id": dynamic_attribute.id,
+            "component_internal_reference": "IMP-ACR-001",
+        })
+        base_template = self.env["product.template"].create({
+            "name": "Impresión (Base)",
+            "type": "consu",
+            "is_storable": True,
+            "purchase_ok": True,
+        })
+        self.env["product.supplierinfo"].create({
+            "partner_id": self.vendor.id,
+            "product_tmpl_id": base_template.id,
+            "min_qty": 0.0,
+            "price": 250.0,
+        })
+        finished_template = self.env["product.template"].create({
+            "name": "Cuadro con impresión dinámica",
+            "dimension_enabled": True,
+        })
+        finished_line = self.env["product.template.attribute.line"].create({
+            "product_tmpl_id": finished_template.id,
+            "attribute_id": dynamic_attribute.id,
+            "value_ids": [Command.set(dynamic_value.ids)],
+        })
+        bom = self.env["mrp.bom"].create({
+            "product_tmpl_id": finished_template.id,
+            "product_qty": 1.0,
+            "product_uom_id": finished_template.uom_id.id,
+            "bom_line_ids": [Command.create({
+                "product_id": base_template.product_variant_id.id,
+                "product_qty": 1.0,
+                "product_uom_id": base_template.uom_id.id,
+                "dimension_attribute_id": dynamic_attribute.id,
+            })],
+        })
+
+        component = finished_line.product_template_value_ids._get_or_create_bom_component(
+            bom.bom_line_ids
+        )
+        self.assertTrue(component)
+        self.assertEqual(component.product_tmpl_id, base_template)
+        self.assertEqual(
+            base_template.attribute_line_ids.attribute_id,
+            dynamic_attribute,
+        )
+        self.assertEqual(
+            base_template.attribute_line_ids.value_ids,
+            dynamic_value,
+        )
+        self.assertEqual(component._prepare_sellers(False).partner_id, self.vendor)
 
     def test_dimension_quantities_and_explicit_zero_price(self):
         self.assertAlmostEqual(
@@ -228,3 +298,63 @@ class TestDimensionFlow(TransactionCase):
         )
         self.assertEqual(exact_move.product_id, self.component)
         self.assertAlmostEqual(exact_move.product_uom_qty, 5.6)
+        self.assertEqual(exact_move.bom_line_id, bom.bom_line_ids)
+        self.assertEqual(exact_move.procure_method, "make_to_order")
+        self.assertIn(warehouse.buy_pull_id.route_id, exact_move.route_ids)
+
+        production.action_confirm()
+        purchase_line = self.env["purchase.order.line"].search([
+            ("product_id", "=", self.component.id),
+            ("move_dest_ids", "in", exact_move.ids),
+        ], limit=1)
+        self.assertTrue(purchase_line)
+        self.assertEqual(purchase_line.order_id.partner_id, self.vendor)
+
+    def test_sale_confirmation_creates_mo_and_rfq_for_exact_component(self):
+        warehouse = self.env["stock.warehouse"].search(
+            [("company_id", "=", self.env.company.id)],
+            limit=1,
+        )
+        warehouse.buy_to_resupply = True
+        self.finished_template.route_ids = warehouse.manufacture_pull_id.route_id
+        bom = self.env["mrp.bom"].create({
+            "product_tmpl_id": self.finished_template.id,
+            "product_qty": 1.0,
+            "product_uom_id": self.finished_template.uom_id.id,
+            "bom_line_ids": [Command.create({
+                "product_id": self.placeholder.id,
+                "product_qty": 1.0,
+                "product_uom_id": self.placeholder.uom_id.id,
+                "dimension_attribute_id": self.attribute.id,
+            })],
+        })
+        partner = self.env["res.partner"].create({"name": "Cliente venta a compra"})
+        order = self.env["sale.order"].create({"partner_id": partner.id})
+        sale_line = self.env["sale.order.line"].create({
+            "order_id": order.id,
+            "product_id": self.finished_template.product_variant_id.id,
+            "product_uom_qty": 2.0,
+            "product_uom": self.finished_template.uom_id.id,
+            "width_cm": 120.0,
+            "height_cm": 160.0,
+            "product_no_variant_attribute_value_ids": [Command.set(self.ptav.ids)],
+        })
+
+        order.action_confirm()
+
+        production = self.env["mrp.production"].search([
+            ("dimension_sale_line_id", "=", sale_line.id),
+            ("bom_id", "=", bom.id),
+        ], limit=1)
+        self.assertTrue(production)
+        exact_move = production.move_raw_ids.filtered(
+            lambda move: move.dimension_value_id == self.ptav and move.state != "cancel"
+        )
+        self.assertEqual(exact_move.product_id, self.component)
+        self.assertAlmostEqual(exact_move.product_uom_qty, 11.2)
+        purchase_line = self.env["purchase.order.line"].search([
+            ("product_id", "=", self.component.id),
+            ("move_dest_ids", "in", exact_move.ids),
+        ], limit=1)
+        self.assertTrue(purchase_line)
+        self.assertEqual(purchase_line.order_id.partner_id, self.vendor)

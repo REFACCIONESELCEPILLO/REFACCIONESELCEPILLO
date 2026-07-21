@@ -153,6 +153,42 @@ class SaleOrderLine(models.Model):
         self._compute_base_dimension_price()
         self._compute_price_unit()
 
+    def _get_dimension_bom(self):
+        self.ensure_one()
+        if not self.product_id:
+            return self.env["mrp.bom"]
+        return self.env["mrp.bom"]._bom_find(
+            self.product_id,
+            company_id=self.order_id.company_id.id,
+            bom_type="normal",
+        )[self.product_id]
+
+    def _link_dimension_components_from_bom(self, selected_values):
+        self.ensure_one()
+        bom = self._get_dimension_bom()
+        bom_lines_by_attribute = {
+            line.dimension_attribute_id.id: line
+            for line in bom.bom_line_ids.filtered("dimension_attribute_id")
+        }
+        for value in selected_values.filtered(lambda item: not item.skip_component):
+            bom_line = bom_lines_by_attribute.get(value.attribute_id.id)
+            component = value._get_or_create_bom_component(bom_line)
+            if component and value.component_product_id != component:
+                value.product_attribute_value_id.sudo().write({
+                    "component_product_id": component.id,
+                })
+
+    def _get_dimension_manufacture_routes(self):
+        self.ensure_one()
+        candidate_routes = (
+            self.product_id.route_ids
+            | self.product_id.categ_id.total_route_ids
+            | self.route_id
+        )
+        return candidate_routes.filtered(
+            lambda route: "manufacture" in route.rule_ids.mapped("action")
+        )
+
     def _validate_dimension_configuration(self):
         for line in self.filtered(lambda item: not item.display_type and item.dimension_enabled):
             if line.width_cm <= 0.0 or line.height_cm <= 0.0:
@@ -170,6 +206,7 @@ class SaleOrderLine(models.Model):
                     "No se puede confirmar la cotización. Falta seleccionar un valor para: %(attributes)s",
                     attributes=", ".join(missing_attributes.mapped("display_name")),
                 ))
+            line._link_dimension_components_from_bom(selected_values)
             values_to_link = selected_values.filtered(
                 lambda value: value.attribute_id.component_required
                 and not value.skip_component
@@ -188,14 +225,55 @@ class SaleOrderLine(models.Model):
                     "use Configurar sobre cada valor y seleccione el producto real. En la pestaña "
                     "Compras de ese producto se configuran sus proveedores. Si su referencia "
                     "interna coincide con un único producto existente, el sistema lo vincula "
-                    "automáticamente.",
+                    "automáticamente. También verifique que la línea (Base) de la lista de "
+                    "materiales tenga informado el Atributo configurable y que dicho atributo "
+                    "use creación de variantes instantánea o dinámica.",
                     values=", ".join(missing_values.mapped("display_name")),
+                ))
+            company = line.order_id.company_id
+            missing_sellers = selected_values.filtered(lambda value: (
+                not value.skip_component
+                and value.component_product_id
+                and not value.component_product_id.sudo().with_company(
+                    company
+                )._prepare_sellers(False).filtered(
+                    lambda seller: not seller.company_id or seller.company_id == company
+                )
+            ))
+            if missing_sellers:
+                raise ValidationError(_(
+                    "No se puede generar la compra. Los siguientes componentes no tienen "
+                    "proveedor: %(values)s. Configure el proveedor en la pestaña Compras del "
+                    "producto (Base); sus variantes exactas usarán esa misma lista.",
+                    values=", ".join(missing_sellers.mapped("display_name")),
+                ))
+            warehouse = line.order_id.warehouse_id
+            manufacture_routes = line._get_dimension_manufacture_routes()
+            if not manufacture_routes:
+                raise ValidationError(_(
+                    "Configure la ruta Fabricar en %(product)s. La ruta Comprar se utiliza "
+                    "solamente para los componentes seleccionados.",
+                    product=line.product_id.display_name,
+                ))
+            if (
+                selected_values.filtered(lambda value: not value.skip_component)
+                and (
+                    not warehouse.buy_to_resupply
+                    or not warehouse.buy_pull_id
+                    or not warehouse.buy_pull_id.active
+                )
+            ):
+                raise ValidationError(_(
+                    "Active la ruta Comprar del almacén %(warehouse)s para generar las "
+                    "solicitudes de cotización de los componentes.",
+                    warehouse=warehouse.display_name,
                 ))
 
     def _prepare_procurement_values(self, group_id=False):
         values = super()._prepare_procurement_values(group_id=group_id)
         self.ensure_one()
         if self.dimension_enabled:
+            manufacture_routes = self._get_dimension_manufacture_routes()
             values.update({
                 "dimension_sale_line_id": self.id,
                 "dimension_width_cm": self.width_cm,
@@ -204,6 +282,8 @@ class SaleOrderLine(models.Model):
                 "dimension_ml": self.ml,
                 "dimension_value_ids": self._get_all_selected_dimension_values().ids,
             })
+            if manufacture_routes:
+                values["route_ids"] = manufacture_routes
         return values
 
     def _prepare_invoice_line(self, **optional_values):

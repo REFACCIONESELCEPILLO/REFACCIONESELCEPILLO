@@ -9,8 +9,8 @@ comercial con el producto real que se fabrica, consume y compra.
 2. En cada atributo indique su cálculo (`Área`, `Perímetro` o `Normal`) y active
    **Requiere componente** cuando el valor deba generar materia prima.
 3. En **Valores del atributo**, capture la **Referencia interna**, el **Valor**, el **Costo** y el
-   **Precio adicional**. Use el botón **Configurar** para abrir la ficha del valor y asignar el
-   producto o variante comprable exacto. En esa pantalla también puede revisar:
+   **Precio adicional**. Use el botón **Configurar** para revisar o asignar manualmente el
+   producto comprable exacto. En esa pantalla también puede revisar:
    - el cálculo de consumo;
    - el factor de consumo;
    - el modo y la tarifa de venta.
@@ -21,11 +21,13 @@ comercial con el producto real que se fabrica, consume y compra.
    Ambos muestran el formato `Referencia interna - Nombre - Precio`. Si la referencia coincide con
    un único producto existente, se vincula automáticamente como componente.
 5. En la lista de materiales, identifique cada producto `(Base)` con su
-   **Atributo configurable**. Al crear la orden de fabricación, esa línea base será sustituida
-   por el producto exacto seleccionado. Los componentes fijos de la lista no se alteran.
-6. Configure el producto componente con su referencia interna, costo, proveedor, unidad de medida y las rutas
-   estándar de Odoo necesarias. Para crear una solicitud de cotización desde la demanda de la
-   orden de fabricación, use las rutas **Reabastecer bajo pedido (MTO)** y **Comprar**.
+   **Atributo configurable**. El atributo debe usar creación de variantes **Instantánea** o
+   **Dinámica**. Si el valor elegido todavía no existe en el producto `(Base)`, el módulo lo agrega
+   y resuelve o crea su variante exacta al confirmar la venta; no es necesario volver a cargar
+   manualmente todos los valores en cada producto Base.
+6. Configure los proveedores en la pestaña **Compras** del producto `(Base)`. Las variantes
+   exactas heredan esos proveedores. El producto terminado debe usar la ruta **Fabricar**; el
+   módulo aplica **Reabastecer bajo pedido** y **Comprar** a la demanda exacta de materia prima.
 
 ## Flujo resultante
 
