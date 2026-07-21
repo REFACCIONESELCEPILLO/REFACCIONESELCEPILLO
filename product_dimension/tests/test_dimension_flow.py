@@ -33,6 +33,7 @@ class TestDimensionFlow(TransactionCase):
         cls.component = cls.env["product.product"].create({
             "name": "Moldura nogal ML",
             "default_code": "MOL-NOG-001",
+            "standard_price": 125.0,
             "type": "consu",
             "is_storable": True,
         })
@@ -41,13 +42,26 @@ class TestDimensionFlow(TransactionCase):
             "type": "consu",
             "is_storable": True,
         })
-        cls.ptav.write({
+        cls.attribute_value.write({
             "component_product_id": cls.component.id,
             "component_calculation": "attribute",
             "component_qty_factor": 1.0,
+        })
+        cls.ptav.write({
             "pricing_mode": "perimeter",
             "dimension_price": 100.0,
         })
+
+    def test_component_is_configured_on_attribute_value(self):
+        self.assertEqual(self.attribute_value.component_product_id, self.component)
+        self.assertEqual(
+            self.attribute_value.component_internal_reference,
+            "MOL-NOG-001",
+        )
+        self.assertAlmostEqual(self.attribute_value.component_cost, 125.0)
+        self.assertEqual(self.ptav.component_product_id, self.component)
+        self.assertEqual(self.ptav.component_sku, "MOL-NOG-001")
+        self.assertAlmostEqual(self.ptav.component_cost, 125.0)
 
     def test_dimension_quantities_and_explicit_zero_price(self):
         self.assertAlmostEqual(

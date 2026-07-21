@@ -88,27 +88,31 @@ class ProductAttribute(models.Model):
     )
 
 
-class ProductTemplateAttributeValue(models.Model):
-    _inherit = "product.template.attribute.value"
+class ProductAttributeValue(models.Model):
+    _inherit = "product.attribute.value"
 
-    dimension_price = fields.Float("Precio dimensional", digits="Product Price")
-    pricing_mode = fields.Selection([
-        ("attribute", "Según atributo (compatibilidad)"),
-        ("included", "Incluido / sin cargo"),
-        ("fixed", "Precio fijo"),
-        ("area", "Precio por área"),
-        ("perimeter", "Precio por perímetro"),
-    ], string="Modo de precio", default="attribute", required=True)
     component_product_id = fields.Many2one(
         "product.product",
         string="Producto componente",
         domain="[('type', '=', 'consu')]",
-        help="Producto o variante real que se consumirá y abastecerá para este valor.",
+        help="Producto o variante real que se consumirá y abastecerá al seleccionar este valor.",
     )
-    component_sku = fields.Char(
+    component_internal_reference = fields.Char(
         related="component_product_id.default_code",
-        string="SKU del componente",
-        store=True,
+        string="Referencia interna",
+        readonly=True,
+    )
+    component_cost_currency_id = fields.Many2one(
+        related="component_product_id.cost_currency_id",
+        readonly=True,
+    )
+    component_cost = fields.Float(
+        related="component_product_id.standard_price",
+        string="Costo",
+        digits="Product Price",
+        readonly=True,
+        groups="base.group_user",
+        help="Costo vigente del producto componente. Se administra en la ficha del producto.",
     )
     component_calculation = fields.Selection([
         ("attribute", "Según atributo"),
@@ -140,6 +144,55 @@ class ProductTemplateAttributeValue(models.Model):
                     "El factor de consumo de %(value)s debe ser mayor que cero.",
                     value=value.display_name,
                 ))
+
+
+class ProductTemplateAttributeValue(models.Model):
+    _inherit = "product.template.attribute.value"
+
+    dimension_price = fields.Float("Precio dimensional", digits="Product Price")
+    pricing_mode = fields.Selection([
+        ("attribute", "Según atributo (compatibilidad)"),
+        ("included", "Incluido / sin cargo"),
+        ("fixed", "Precio fijo"),
+        ("area", "Precio por área"),
+        ("perimeter", "Precio por perímetro"),
+    ], string="Modo de precio", default="attribute", required=True)
+    component_product_id = fields.Many2one(
+        related="product_attribute_value_id.component_product_id",
+        string="Producto componente",
+        domain="[('type', '=', 'consu')]",
+        readonly=False,
+        help="Producto o variante real que se consumirá y abastecerá para este valor.",
+    )
+    component_sku = fields.Char(
+        related="product_attribute_value_id.component_internal_reference",
+        string="Referencia interna",
+        readonly=True,
+    )
+    component_cost_currency_id = fields.Many2one(
+        related="product_attribute_value_id.component_cost_currency_id",
+        readonly=True,
+    )
+    component_cost = fields.Float(
+        related="product_attribute_value_id.component_cost",
+        string="Costo",
+        digits="Product Price",
+        readonly=True,
+        groups="base.group_user",
+        help="Costo vigente del producto componente. Se administra en la ficha del producto.",
+    )
+    component_calculation = fields.Selection(
+        related="product_attribute_value_id.component_calculation",
+        readonly=False,
+    )
+    component_qty_factor = fields.Float(
+        related="product_attribute_value_id.component_qty_factor",
+        readonly=False,
+    )
+    skip_component = fields.Boolean(
+        related="product_attribute_value_id.skip_component",
+        readonly=False,
+    )
 
     @api.depends("name", "component_sku")
     def _compute_display_name(self):

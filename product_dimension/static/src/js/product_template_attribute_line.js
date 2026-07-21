@@ -66,7 +66,7 @@ patch(ProductTemplateAttributeLine.prototype, {
     },
 
     get dimensionSearchPlaceholder() {
-        return _t("Buscar por SKU o descripción...");
+        return _t("Buscar por referencia interna o descripción...");
     },
 
     get dimensionNoResultsText() {
