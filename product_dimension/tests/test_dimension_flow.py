@@ -63,6 +63,34 @@ class TestDimensionFlow(TransactionCase):
         self.assertEqual(self.ptav.component_sku, "MOL-NOG-001")
         self.assertAlmostEqual(self.ptav.component_cost, 125.0)
 
+    def test_reference_and_cost_are_editable_from_both_interfaces(self):
+        self.attribute_value.write({
+            "component_internal_reference": "MOL-NOG-EDIT",
+            "component_cost": 130.0,
+        })
+        self.assertEqual(self.ptav.component_sku, "MOL-NOG-EDIT")
+        self.assertAlmostEqual(self.ptav.component_cost, 130.0)
+        self.assertEqual(self.component.default_code, "MOL-NOG-EDIT")
+        self.assertAlmostEqual(self.component.standard_price, 130.0)
+
+        self.ptav.write({
+            "component_sku": "MOL-NOG-PTAV",
+            "component_cost": 135.0,
+        })
+        self.assertEqual(
+            self.attribute_value.component_internal_reference,
+            "MOL-NOG-PTAV",
+        )
+        self.assertAlmostEqual(self.attribute_value.component_cost, 135.0)
+        self.assertEqual(self.component.default_code, "MOL-NOG-PTAV")
+        self.assertAlmostEqual(self.component.standard_price, 135.0)
+
+    def test_attribute_value_configuration_action(self):
+        action = self.attribute_value.action_open_dimension_configuration()
+        self.assertEqual(action["res_model"], "product.attribute.value")
+        self.assertEqual(action["res_id"], self.attribute_value.id)
+        self.assertEqual(action["view_mode"], "form")
+
     def test_dimension_quantities_and_explicit_zero_price(self):
         self.assertAlmostEqual(
             self.ptav._get_component_quantity(1.92, 5.6, 2.0),

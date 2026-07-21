@@ -8,9 +8,9 @@ comercial con el producto real que se fabrica, consume y compra.
 1. Active **Configuración dimensional Mocalli** en `Cuadro personalizado`.
 2. En cada atributo indique su cálculo (`Área`, `Perímetro` o `Normal`) y active
    **Requiere componente** cuando el valor deba generar materia prima.
-3. Desde **Configurar** en la línea de atributo del producto, asigne a cada valor el producto o
-   variante comprable exacto. La **Referencia interna** y el **Costo** se muestran desde la ficha
-   de ese componente y no se capturan por duplicado. En esa pantalla también puede revisar:
+3. En **Valores del atributo**, capture la **Referencia interna**, el **Valor**, el **Costo** y el
+   **Precio adicional**. Use el botón **Configurar** para abrir la ficha del valor y asignar el
+   producto o variante comprable exacto. En esa pantalla también puede revisar:
    - el cálculo de consumo;
    - el factor de consumo;
    - el modo y la tarifa de venta.

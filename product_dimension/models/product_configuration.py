@@ -98,21 +98,20 @@ class ProductAttributeValue(models.Model):
         help="Producto o variante real que se consumirá y abastecerá al seleccionar este valor.",
     )
     component_internal_reference = fields.Char(
-        related="component_product_id.default_code",
         string="Referencia interna",
-        readonly=True,
+        index=True,
+        help="Referencia interna del valor configurable.",
     )
     component_cost_currency_id = fields.Many2one(
-        related="component_product_id.cost_currency_id",
+        "res.currency",
+        compute="_compute_component_cost_currency_id",
         readonly=True,
     )
     component_cost = fields.Float(
-        related="component_product_id.standard_price",
         string="Costo",
         digits="Product Price",
-        readonly=True,
         groups="base.group_user",
-        help="Costo vigente del producto componente. Se administra en la ficha del producto.",
+        help="Costo de referencia del valor configurable.",
     )
     component_calculation = fields.Selection([
         ("attribute", "Según atributo"),
@@ -130,6 +129,97 @@ class ProductAttributeValue(models.Model):
         "No genera componente (N/A)",
         help="El valor puede seleccionarse, pero no agrega materia prima a la orden de fabricación.",
     )
+
+    @api.depends("component_product_id.cost_currency_id")
+    @api.depends_context("company")
+    def _compute_component_cost_currency_id(self):
+        company_currency = self.env.company.currency_id
+        for value in self:
+            value.component_cost_currency_id = (
+                value.component_product_id.cost_currency_id or company_currency
+            )
+
+    @api.onchange("component_product_id")
+    def _onchange_component_product_id(self):
+        for value in self.filtered("component_product_id"):
+            if not value.component_internal_reference:
+                value.component_internal_reference = value.component_product_id.default_code
+            if not value.component_cost:
+                value.component_cost = value.component_product_id.standard_price
+
+    @api.model
+    def _add_component_defaults(self, vals, current_value=None):
+        vals = dict(vals)
+        if vals.get("component_product_id"):
+            component = self.env["product.product"].browse(vals["component_product_id"])
+            if (
+                "component_internal_reference" not in vals
+                and not (current_value and current_value.component_internal_reference)
+            ):
+                vals["component_internal_reference"] = component.default_code
+            if (
+                "component_cost" not in vals
+                and not (current_value and current_value.component_cost)
+            ):
+                vals["component_cost"] = component.standard_price
+        return vals
+
+    def _sync_component_metadata(self, field_names):
+        for value in self.filtered("component_product_id"):
+            component_vals = {}
+            if "component_internal_reference" in field_names:
+                component_vals["default_code"] = value.component_internal_reference
+            if "component_cost" in field_names:
+                component_vals["standard_price"] = value.component_cost
+            if component_vals:
+                value.component_product_id.write(component_vals)
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        values = super().create([
+            self._add_component_defaults(vals, self.env[self._name])
+            for vals in vals_list
+        ])
+        for value, vals in zip(values, vals_list):
+            synchronized_fields = {
+                field_name
+                for field_name in ("component_internal_reference", "component_cost")
+                if field_name in vals
+            }
+            value._sync_component_metadata(synchronized_fields)
+        return values
+
+    def write(self, vals):
+        if "component_product_id" in vals and len(self) > 1:
+            return all(value.write(vals) for value in self)
+        prepared_vals = self._add_component_defaults(vals, self[:1])
+        result = super().write(prepared_vals)
+        synchronized_fields = {
+            field_name
+            for field_name in ("component_internal_reference", "component_cost")
+            if field_name in prepared_vals
+        }
+        if vals.get("component_product_id"):
+            synchronized_fields.update(("component_internal_reference", "component_cost"))
+        self._sync_component_metadata(synchronized_fields)
+        return result
+
+    def action_open_dimension_configuration(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Configurar valor de atributo"),
+            "res_model": self._name,
+            "res_id": self.id,
+            "view_mode": "form",
+            "views": [(
+                self.env.ref(
+                    "product_dimension.product_attribute_value_form_dimension_mocalli"
+                ).id,
+                "form",
+            )],
+            "target": "current",
+        }
 
     @api.constrains("component_product_id", "component_qty_factor", "skip_component")
     def _check_component_configuration(self):
@@ -167,7 +257,7 @@ class ProductTemplateAttributeValue(models.Model):
     component_sku = fields.Char(
         related="product_attribute_value_id.component_internal_reference",
         string="Referencia interna",
-        readonly=True,
+        readonly=False,
     )
     component_cost_currency_id = fields.Many2one(
         related="product_attribute_value_id.component_cost_currency_id",
@@ -177,9 +267,9 @@ class ProductTemplateAttributeValue(models.Model):
         related="product_attribute_value_id.component_cost",
         string="Costo",
         digits="Product Price",
-        readonly=True,
+        readonly=False,
         groups="base.group_user",
-        help="Costo vigente del producto componente. Se administra en la ficha del producto.",
+        help="Costo de referencia del valor configurable.",
     )
     component_calculation = fields.Selection(
         related="product_attribute_value_id.component_calculation",

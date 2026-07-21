@@ -10,6 +10,33 @@
         </field>
     </record>
 
+    <record id="product_attribute_value_form_dimension_mocalli" model="ir.ui.view">
+        <field name="name">product.attribute.value.form.dimension.mocalli</field>
+        <field name="model">product.attribute.value</field>
+        <field name="arch" type="xml">
+            <form string="Valor del atributo">
+                <sheet>
+                    <group>
+                        <group string="Información del valor">
+                            <field name="component_internal_reference"/>
+                            <field name="name"/>
+                            <field name="component_cost_currency_id" invisible="1"/>
+                            <field name="component_cost" widget="monetary"/>
+                            <field name="default_extra_price"/>
+                            <field name="attribute_id" readonly="1"/>
+                        </group>
+                        <group string="Componente para fabricación">
+                            <field name="skip_component"/>
+                            <field name="component_product_id" invisible="skip_component"/>
+                            <field name="component_calculation" invisible="skip_component"/>
+                            <field name="component_qty_factor" invisible="skip_component"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
     <record id="product_attribute_form_dimension_mocalli" model="ir.ui.view">
         <field name="name">product.attribute.form.dimension.mocalli</field>
         <field name="model">product.attribute</field>
@@ -18,13 +45,11 @@
             <xpath expr="//field[@name='value_ids']/list/field[@name='name']" position="before">
                 <field name="component_cost_currency_id" column_invisible="True"/>
                 <field name="component_internal_reference"
-                       readonly="1"
                        column_invisible="not parent.component_required"/>
             </xpath>
             <xpath expr="//field[@name='value_ids']/list/field[@name='name']" position="after">
                 <field name="component_cost"
                        widget="monetary"
-                       readonly="1"
                        column_invisible="not parent.component_required"/>
             </xpath>
             <xpath expr="//field[@name='value_ids']/list/field[@name='is_custom']" position="attributes">
@@ -36,6 +61,14 @@
             <xpath expr="//field[@name='value_ids']/list/field[@name='image']" position="attributes">
                 <attribute name="column_invisible">parent.component_required or parent.display_type != 'color'</attribute>
             </xpath>
+            <xpath expr="//field[@name='value_ids']/list" position="inside">
+                <button name="action_open_dimension_configuration"
+                        string="Configurar"
+                        type="object"
+                        icon="fa-cog"
+                        class="btn-link"
+                        column_invisible="not parent.component_required"/>
+            </xpath>
         </field>
     </record>
 
@@ -44,6 +77,13 @@
         <field name="model">product.template.attribute.value</field>
         <field name="inherit_id" ref="product.product_template_attribute_value_view_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="before">
+                <field name="component_cost_currency_id" invisible="1"/>
+                <field name="component_sku"/>
+            </xpath>
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="component_cost" widget="monetary"/>
+            </xpath>
             <xpath expr="//field[@name='price_extra']" position="after">
                 <separator string="Precio dimensional"/>
                 <field name="pricing_mode"/>
@@ -52,12 +92,6 @@
                 <separator string="Componente para fabricación"/>
                 <field name="skip_component"/>
                 <field name="component_product_id" invisible="skip_component"/>
-                <field name="component_sku" readonly="1" invisible="not component_product_id"/>
-                <field name="component_cost_currency_id" invisible="1"/>
-                <field name="component_cost"
-                       widget="monetary"
-                       readonly="1"
-                       invisible="not component_product_id"/>
                 <field name="component_calculation" invisible="skip_component"/>
                 <field name="component_qty_factor" invisible="skip_component"/>
             </xpath>
@@ -69,14 +103,18 @@
         <field name="model">product.template.attribute.value</field>
         <field name="inherit_id" ref="product.product_template_attribute_value_view_tree"/>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_tmpl_id']" position="before">
+                <field name="component_cost_currency_id" column_invisible="True"/>
+                <field name="component_sku"/>
+            </xpath>
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="component_cost" widget="monetary"/>
+            </xpath>
             <xpath expr="//field[@name='price_extra']" position="after">
                 <field name="pricing_mode" optional="show"/>
                 <field name="dimension_price" optional="show"/>
                 <field name="skip_component" optional="show"/>
                 <field name="component_product_id" optional="show"/>
-                <field name="component_sku" optional="show"/>
-                <field name="component_cost_currency_id" column_invisible="True"/>
-                <field name="component_cost" widget="monetary" optional="show"/>
                 <field name="component_calculation" optional="hide"/>
                 <field name="component_qty_factor" optional="show"/>
             </xpath>
