@@ -132,4 +132,32 @@
             </xpath>
         </field>
     </record>
+
+    <record id="product_supplierinfo_list_dimension_mocalli" model="ir.ui.view">
+        <field name="name">product.supplierinfo.list.dimension.mocalli</field>
+        <field name="model">product.supplierinfo</field>
+        <field name="inherit_id" ref="purchase.product_supplierinfo_tree_view2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="dimension_attribute_id" column_invisible="True"/>
+                <field name="dimension_attribute_value_id"
+                       string="Valor del atributo"
+                       optional="show"
+                       options="{'no_create': True, 'no_open': True}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_supplierinfo_form_dimension_mocalli" model="ir.ui.view">
+        <field name="name">product.supplierinfo.form.dimension.mocalli</field>
+        <field name="model">product.supplierinfo</field>
+        <field name="inherit_id" ref="product.product_supplierinfo_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_id']" position="before">
+                <field name="dimension_attribute_id" invisible="1"/>
+                <field name="dimension_attribute_value_id"
+                       options="{'no_create': True, 'no_open': True}"/>
+            </xpath>
+        </field>
+    </record>
 </odoo>

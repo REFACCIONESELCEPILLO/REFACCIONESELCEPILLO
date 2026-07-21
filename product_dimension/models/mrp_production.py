@@ -186,3 +186,23 @@ class StockMove(models.Model):
         index=True,
         ondelete="set null",
     )
+
+    def _prepare_procurement_values(self):
+        values = super()._prepare_procurement_values()
+        self.ensure_one()
+        if not self.dimension_value_id or not self.product_id:
+            return values
+
+        planned_date = fields.Date.to_date(values.get("date_planned"))
+        sellers = self.product_id.with_company(self.company_id)._get_filtered_sellers(
+            quantity=self.product_uom_qty,
+            date=planned_date,
+            uom_id=self.product_uom,
+        )
+        attribute_value = self.dimension_value_id.product_attribute_value_id
+        variant_sellers = sellers.filtered(
+            lambda seller: seller.dimension_attribute_value_id == attribute_value
+        )
+        if variant_sellers:
+            values["supplierinfo_id"] = variant_sellers[:1]
+        return values

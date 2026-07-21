@@ -255,6 +255,55 @@ class ProductAttributeValue(models.Model):
                 unresolved |= value
         return unresolved
 
+    def _get_or_create_bom_component(self, bom_line):
+        """Resolve the exact Base variant represented by this attribute value."""
+        self.ensure_one()
+        if not bom_line or bom_line.dimension_attribute_id != self.attribute_id:
+            return self.env["product.product"]
+
+        component_template = bom_line.product_id.product_tmpl_id.sudo()
+        component_attribute_line = component_template.attribute_line_ids.filtered(
+            lambda line: line.attribute_id == self.attribute_id
+        )
+        if self.attribute_id.create_variant == "no_variant":
+            return self.env["product.product"]
+        if not component_attribute_line:
+            component_attribute_line = self.env[
+                "product.template.attribute.line"
+            ].sudo().create({
+                "product_tmpl_id": component_template.id,
+                "attribute_id": self.attribute_id.id,
+                "value_ids": [Command.set(self.ids)],
+            })
+        elif len(component_attribute_line) != 1:
+            return self.env["product.product"]
+        elif self not in component_attribute_line.value_ids:
+            component_attribute_line.sudo().write({
+                "value_ids": [Command.link(self.id)],
+            })
+
+        component_value = component_attribute_line.product_template_value_ids.filtered(
+            lambda value: value.product_attribute_value_id == self and value.ptav_active
+        )
+        if len(component_value) != 1:
+            return self.env["product.product"]
+
+        combination = component_template._get_first_possible_combination()
+        combination -= combination.filtered(
+            lambda value: value.attribute_id == self.attribute_id
+        )
+        combination |= component_value
+        if self.attribute_id.create_variant == "dynamic":
+            component = component_template._create_product_variant(combination)
+        else:
+            component = component_template._get_variant_for_combination(combination)
+        component = component.filtered("active")
+        if component:
+            component_template.seller_ids.filtered(
+                lambda seller: seller.dimension_attribute_value_id == self
+            ).sudo().write({"product_id": component.id})
+        return component
+
     @api.constrains("component_product_id", "component_qty_factor", "skip_component")
     def _check_component_configuration(self):
         for value in self:
@@ -330,51 +379,8 @@ class ProductTemplateAttributeValue(models.Model):
         return self.product_attribute_value_id.action_open_component_product()
 
     def _get_or_create_bom_component(self, bom_line):
-        """Resolve the exact variant of a configurable BoM placeholder."""
         self.ensure_one()
-        if not bom_line or bom_line.dimension_attribute_id != self.attribute_id:
-            return self.env["product.product"]
-
-        component_template = bom_line.product_id.product_tmpl_id.sudo()
-        component_attribute_line = component_template.attribute_line_ids.filtered(
-            lambda line: line.attribute_id == self.attribute_id
-        )
-        if self.attribute_id.create_variant == "no_variant":
-            return self.env["product.product"]
-        if not component_attribute_line:
-            component_attribute_line = self.env[
-                "product.template.attribute.line"
-            ].sudo().create({
-                "product_tmpl_id": component_template.id,
-                "attribute_id": self.attribute_id.id,
-                "value_ids": [Command.set(self.product_attribute_value_id.ids)],
-            })
-        elif len(component_attribute_line) != 1:
-            return self.env["product.product"]
-        elif self.product_attribute_value_id not in component_attribute_line.value_ids:
-            component_attribute_line.sudo().write({
-                "value_ids": [Command.link(self.product_attribute_value_id.id)],
-            })
-
-        component_value = component_attribute_line.product_template_value_ids.filtered(
-            lambda value: (
-                value.product_attribute_value_id == self.product_attribute_value_id
-                and value.ptav_active
-            )
-        )
-        if len(component_value) != 1:
-            return self.env["product.product"]
-
-        combination = component_template._get_first_possible_combination()
-        combination -= combination.filtered(
-            lambda value: value.attribute_id == self.attribute_id
-        )
-        combination |= component_value
-        if self.attribute_id.create_variant == "dynamic":
-            component = component_template._create_product_variant(combination)
-        else:
-            component = component_template._get_variant_for_combination(combination)
-        return component.filtered("active")
+        return self.product_attribute_value_id._get_or_create_bom_component(bom_line)
 
     def _get_effective_component_calculation(self):
         self.ensure_one()

@@ -25,9 +25,12 @@ comercial con el producto real que se fabrica, consume y compra.
    **Dinámica**. Si el valor elegido todavía no existe en el producto `(Base)`, el módulo lo agrega
    y resuelve o crea su variante exacta al confirmar la venta; no es necesario volver a cargar
    manualmente todos los valores en cada producto Base.
-6. Configure los proveedores en la pestaña **Compras** del producto `(Base)`. Las variantes
-   exactas heredan esos proveedores. El producto terminado debe usar la ruta **Fabricar**; el
-   módulo aplica **Reabastecer bajo pedido** y **Comprar** a la demanda exacta de materia prima.
+6. Configure los proveedores en la pestaña **Compras** del producto `(Base)`. En cada tarifa
+   seleccione el **Valor del atributo** que se compra a ese proveedor. Al guardar la línea, el
+   módulo genera o localiza la variante exacta y restringe la tarifa a ella. Una tarifa sin valor
+   funciona como proveedor general de respaldo. Por ejemplo: `Farias Process → Canva` y
+   `Acriplass → Acrílico`. El producto terminado debe usar **Fabricar**; el módulo aplica
+   **Reabastecer bajo pedido** y **Comprar** a la materia prima exacta.
 
 ## Flujo resultante
 

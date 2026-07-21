@@ -150,11 +150,11 @@ class TestDimensionFlow(TransactionCase):
             "is_storable": True,
             "purchase_ok": True,
         })
-        self.env["product.supplierinfo"].create({
+        general_seller = self.env["product.supplierinfo"].create({
             "partner_id": self.vendor.id,
             "product_tmpl_id": base_template.id,
             "min_qty": 0.0,
-            "price": 250.0,
+            "price": 10.0,
         })
         finished_template = self.env["product.template"].create({
             "name": "Cuadro con impresión dinámica",
@@ -176,6 +176,17 @@ class TestDimensionFlow(TransactionCase):
                 "dimension_attribute_id": dynamic_attribute.id,
             })],
         })
+        variant_vendor = self.env["res.partner"].create({
+            "name": "Proveedor exclusivo de acrílico",
+            "supplier_rank": 1,
+        })
+        variant_seller = self.env["product.supplierinfo"].create({
+            "partner_id": variant_vendor.id,
+            "product_tmpl_id": base_template.id,
+            "dimension_attribute_value_id": dynamic_value.id,
+            "min_qty": 0.0,
+            "price": 300.0,
+        })
 
         component = finished_line.product_template_value_ids._get_or_create_bom_component(
             bom.bom_line_ids
@@ -190,7 +201,31 @@ class TestDimensionFlow(TransactionCase):
             base_template.attribute_line_ids.value_ids,
             dynamic_value,
         )
-        self.assertEqual(component._prepare_sellers(False).partner_id, self.vendor)
+        self.assertIn(self.vendor, component._prepare_sellers(False).partner_id)
+        self.assertFalse(general_seller.product_id)
+        self.assertEqual(variant_seller.product_id, component)
+        self.assertEqual(variant_seller.dimension_attribute_id, dynamic_attribute)
+
+        warehouse = self.env["stock.warehouse"].search(
+            [("company_id", "=", self.env.company.id)],
+            limit=1,
+        )
+        move = self.env["stock.move"].create({
+            "name": "Compra exacta de acrílico",
+            "product_id": component.id,
+            "product_uom_qty": 1.0,
+            "product_uom": component.uom_id.id,
+            "location_id": warehouse.lot_stock_id.id,
+            "location_dest_id": component.property_stock_production.id,
+            "picking_type_id": warehouse.manu_type_id.id,
+            "dimension_value_id": finished_line.product_template_value_ids.id,
+            "company_id": self.env.company.id,
+        })
+        procurement_values = move._prepare_procurement_values()
+        self.assertEqual(procurement_values["supplierinfo_id"], variant_seller)
+
+        variant_seller.dimension_attribute_value_id = False
+        self.assertFalse(variant_seller.product_id)
 
     def test_dimension_quantities_and_explicit_zero_price(self):
         self.assertAlmostEqual(
