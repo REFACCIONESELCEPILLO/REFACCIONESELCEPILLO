@@ -6,6 +6,49 @@ from odoo.tools import float_is_zero
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
+    def _get_editable_dimension_quotations(self):
+        """Keep dimensional quotations editable while they are quotations."""
+        return self.filtered(lambda order: (
+            order.state in ("draft", "sent")
+            and any(
+                not line.display_type and line.dimension_enabled
+                for line in order.order_line
+            )
+        ))
+
+    def _ensure_dimension_quotations_are_editable(self):
+        """Compatibility with modules that automatically lock draft quotations.
+
+        ``sale_restring`` adds ``blocked_order`` and sets it after every save.
+        Standard Odoo keeps draft/sent quotations editable, which is required to
+        reopen the product configurator and add more lines.  Do not depend on
+        that optional module; only use its field when it is available.
+        """
+        if (
+            self.env.context.get("skip_dimension_quotation_unlock")
+            or "blocked_order" not in self._fields
+        ):
+            return
+        blocked_quotations = self.sudo()._get_editable_dimension_quotations().filtered(
+            "blocked_order"
+        )
+        if blocked_quotations:
+            blocked_quotations.with_context(
+                unlock=True,
+                skip_dimension_quotation_unlock=True,
+            ).write({"blocked_order": False})
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        orders = super().create(vals_list)
+        orders._ensure_dimension_quotations_are_editable()
+        return orders
+
+    def write(self, values):
+        result = super().write(values)
+        self._ensure_dimension_quotations_are_editable()
+        return result
+
     def action_confirm(self):
         for order in self:
             order.order_line._validate_dimension_configuration()

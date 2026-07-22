@@ -73,6 +73,37 @@ class TestDimensionFlow(TransactionCase):
         self.assertEqual(self.ptav.component_sku, "MOL-NOG-001")
         self.assertAlmostEqual(self.ptav.component_cost, 125.0)
 
+    def test_dimension_quotation_remains_editable_after_save(self):
+        partner = self.env["res.partner"].create({
+            "name": "Cliente de cotización editable",
+        })
+        dimension_order = self.env["sale.order"].create({
+            "partner_id": partner.id,
+            "order_line": [Command.create({
+                "product_id": self.finished_template.product_variant_id.id,
+                "product_uom_qty": 1.0,
+            })],
+        })
+        regular_product = self.env["product.product"].create({
+            "name": "Producto sin configuración dimensional",
+        })
+        regular_order = self.env["sale.order"].create({
+            "partner_id": partner.id,
+            "order_line": [Command.create({
+                "product_id": regular_product.id,
+                "product_uom_qty": 1.0,
+            })],
+        })
+
+        self.assertIn(
+            dimension_order,
+            (dimension_order | regular_order)._get_editable_dimension_quotations(),
+        )
+        self.assertNotIn(
+            regular_order,
+            (dimension_order | regular_order)._get_editable_dimension_quotations(),
+        )
+
     def test_reference_and_cost_are_editable_from_both_interfaces(self):
         self.attribute_value.write({
             "component_internal_reference": "MOL-NOG-EDIT",
