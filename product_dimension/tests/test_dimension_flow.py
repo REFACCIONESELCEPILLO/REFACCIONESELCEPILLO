@@ -351,7 +351,7 @@ class TestDimensionFlow(TransactionCase):
             "partner_id": variant_vendor.id,
             "product_tmpl_id": base_template.id,
             "dimension_attribute_value_id": dynamic_value.id,
-            "min_qty": 0.0,
+            "min_qty": 1.0,
             "price": 300.0,
         })
 
@@ -421,7 +421,7 @@ class TestDimensionFlow(TransactionCase):
         move = self.env["stock.move"].create({
             "name": "Compra exacta de acrílico",
             "product_id": component.id,
-            "product_uom_qty": 1.0,
+            "product_uom_qty": 0.8,
             "product_uom": component.uom_id.id,
             "location_id": warehouse.lot_stock_id.id,
             "location_dest_id": component.property_stock_production.id,
@@ -431,6 +431,31 @@ class TestDimensionFlow(TransactionCase):
         })
         procurement_values = move._prepare_procurement_values()
         self.assertEqual(procurement_values["supplierinfo_id"], variant_seller)
+        self.assertLess(move.product_uom_qty, variant_seller.min_qty)
+
+        purchase_order = self.env["purchase.order"].create({
+            "partner_id": variant_vendor.id,
+            "company_id": self.env.company.id,
+            "currency_id": variant_seller.currency_id.id,
+        })
+        procurement_values.update({
+            "supplier": variant_seller,
+            "propagate_cancel": True,
+        })
+        purchase_line_values = self.env[
+            "purchase.order.line"
+        ]._prepare_purchase_order_line_from_procurement(
+            component,
+            move.product_uom_qty,
+            move.product_uom,
+            warehouse.lot_stock_id,
+            move.name,
+            "Prueba de atributo dinamico adicional",
+            self.env.company,
+            procurement_values,
+            purchase_order,
+        )
+        self.assertAlmostEqual(purchase_line_values["price_unit"], 300.0)
 
         variant_seller.dimension_attribute_value_id = False
         self.assertFalse(variant_seller.product_id)

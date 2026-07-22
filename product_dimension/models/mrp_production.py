@@ -291,15 +291,14 @@ class StockMove(models.Model):
             return values
 
         planned_date = fields.Date.to_date(values.get("date_planned"))
-        sellers = self.product_id.with_company(self.company_id)._get_filtered_sellers(
+        variant_seller = self.product_id.with_company(
+            self.company_id
+        )._get_dimension_supplierinfo(
+            self.dimension_value_id.product_attribute_value_id,
             quantity=self.product_uom_qty,
             date=planned_date,
             uom_id=self.product_uom,
         )
-        attribute_value = self.dimension_value_id.product_attribute_value_id
-        variant_sellers = sellers.filtered(
-            lambda seller: seller.dimension_attribute_value_id == attribute_value
-        )
-        if variant_sellers:
-            values["supplierinfo_id"] = variant_sellers[:1]
+        if variant_seller:
+            values["supplierinfo_id"] = variant_seller
         return values

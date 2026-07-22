@@ -131,3 +131,61 @@ class ProductSupplierInfo(models.Model):
                     value=seller.dimension_attribute_value_id.display_name,
                     attribute=seller.dimension_attribute_id.display_name,
                 ))
+
+
+class ProductProduct(models.Model):
+    _inherit = "product.product"
+
+    def _get_dimension_supplierinfo(
+        self,
+        attribute_value,
+        quantity=0.0,
+        date=None,
+        uom_id=False,
+        params=False,
+    ):
+        """Return the vendor tariff configured for an exact attribute value.
+
+        Dimensional quantities can legitimately be below one purchase unit. In
+        that case Odoo excludes a seller whose ``min_qty`` is one and its buy
+        rule falls back to a generic, potentially zero-priced tariff. The
+        selected attribute value is more specific than that fallback, so keep
+        the exact value tariff while preserving the standard company, product,
+        vendor-active and validity-date filters.
+        """
+        self.ensure_one()
+        if not attribute_value:
+            return self.env["product.supplierinfo"]
+
+        date = date or fields.Date.context_today(self)
+        exact_sellers = self._prepare_sellers(params).filtered(
+            lambda seller: (
+                seller.dimension_attribute_value_id == attribute_value
+                and (not seller.date_start or seller.date_start <= date)
+                and (not seller.date_end or seller.date_end >= date)
+            )
+        )
+        if not exact_sellers:
+            return exact_sellers
+
+        quantity_sellers = self._get_filtered_sellers(
+            quantity=quantity,
+            date=date,
+            uom_id=uom_id,
+            params=params,
+        ).filtered(
+            lambda seller: seller.dimension_attribute_value_id == attribute_value
+        )
+        if quantity_sellers:
+            return quantity_sellers[:1]
+
+        # No exact tariff reached its minimum. Use the closest exact tier
+        # instead of Odoo's unrelated generic seller fallback.
+        return exact_sellers.sorted(
+            lambda seller: (
+                seller.sequence,
+                seller.min_qty,
+                seller.price,
+                seller.id,
+            )
+        )[:1]
