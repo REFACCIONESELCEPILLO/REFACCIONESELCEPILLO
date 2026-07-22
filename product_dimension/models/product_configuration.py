@@ -331,14 +331,20 @@ class ProductAttributeValue(models.Model):
         component = component.exists()
         if not component or len(component) != 1:
             return False
+        reference = (self.component_internal_reference or "").strip()
+        reference_matches = bool(
+            reference
+            and (component.default_code or "").strip().casefold()
+            == reference.casefold()
+        )
         if not bom_line:
-            return component == self.component_product_id
+            return component == self.component_product_id and reference_matches
         if bom_line.dimension_attribute_id != self.attribute_id:
             return False
 
         base_template = bom_line.product_id.product_tmpl_id
         if component.product_tmpl_id != base_template:
-            return component == self.component_product_id
+            return component == self.component_product_id and reference_matches
         if self.attribute_id.create_variant == "no_variant":
             return False
         component_values = component.product_template_attribute_value_ids.mapped(

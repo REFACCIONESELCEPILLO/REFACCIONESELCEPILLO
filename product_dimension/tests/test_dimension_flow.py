@@ -518,6 +518,111 @@ class TestDimensionFlow(TransactionCase):
         )
         self.assertNotEqual(component, placeholder)
 
+    def test_unmapped_base_line_is_repaired_and_resolved_exactly(self):
+        attribute = self.env["product.attribute"].create({
+            "name": "Atributo adicional genérico",
+            "create_variant": "dynamic",
+            "dimension_type": "area",
+            "component_required": True,
+        })
+        attribute_value = self.env["product.attribute.value"].create({
+            "name": "Opción exacta",
+            "attribute_id": attribute.id,
+            "component_internal_reference": "GEN-EXACT-001",
+        })
+        base_template = self.env["product.template"].create({
+            "name": "Componente genérico (Base)",
+            "type": "consu",
+            "is_storable": True,
+            "purchase_ok": True,
+        })
+        base_product = base_template.product_variant_id
+        attribute_value.component_product_id = base_product
+        finished_template = self.env["product.template"].create({
+            "name": "Producto configurable genérico",
+            "dimension_enabled": True,
+        })
+        finished_line = self.env["product.template.attribute.line"].create({
+            "product_tmpl_id": finished_template.id,
+            "attribute_id": attribute.id,
+            "value_ids": [Command.set(attribute_value.ids)],
+        })
+        bom = self.env["mrp.bom"].create({
+            "product_tmpl_id": finished_template.id,
+            "product_qty": 1.0,
+            "product_uom_id": finished_template.uom_id.id,
+            "bom_line_ids": [Command.create({
+                "product_id": base_product.id,
+                "product_qty": 1.0,
+                "product_uom_id": base_template.uom_id.id,
+            })],
+        })
+        partner = self.env["res.partner"].create({
+            "name": "Cliente de atributo genérico",
+        })
+        order = self.env["sale.order"].create({"partner_id": partner.id})
+        selected_value = finished_line.product_template_value_ids
+        sale_line = self.env["sale.order.line"].create({
+            "order_id": order.id,
+            "product_id": finished_template.product_variant_id.id,
+            "product_uom_qty": 1.0,
+            "product_uom": finished_template.uom_id.id,
+            "width_cm": 100.0,
+            "height_cm": 50.0,
+            "product_template_attribute_value_ids": [
+                Command.set(selected_value.ids),
+            ],
+        })
+
+        resolved_components = sale_line._link_dimension_components_from_bom(
+            selected_value
+        )
+        component = resolved_components[selected_value.id]
+
+        self.assertEqual(bom.bom_line_ids.dimension_attribute_id, attribute)
+        self.assertTrue(component)
+        self.assertIn(
+            attribute_value,
+            component.product_template_attribute_value_ids.mapped(
+                "product_attribute_value_id"
+            ),
+        )
+        self.assertEqual(component.default_code, "GEN-EXACT-001")
+        self.assertIn("[GEN-EXACT-001]", component.display_name)
+
+    def test_component_reference_is_required_before_confirmation(self):
+        self.attribute_value.component_internal_reference = False
+        bom = self.env["mrp.bom"].create({
+            "product_tmpl_id": self.finished_template.id,
+            "product_qty": 1.0,
+            "product_uom_id": self.finished_template.uom_id.id,
+            "bom_line_ids": [Command.create({
+                "product_id": self.placeholder.id,
+                "product_qty": 1.0,
+                "product_uom_id": self.placeholder.uom_id.id,
+                "dimension_attribute_id": self.attribute.id,
+            })],
+        })
+        partner = self.env["res.partner"].create({
+            "name": "Cliente sin referencia de componente",
+        })
+        order = self.env["sale.order"].create({"partner_id": partner.id})
+        sale_line = self.env["sale.order.line"].create({
+            "order_id": order.id,
+            "product_id": self.finished_template.product_variant_id.id,
+            "product_uom_qty": 1.0,
+            "product_uom": self.finished_template.uom_id.id,
+            "width_cm": 100.0,
+            "height_cm": 50.0,
+            "product_no_variant_attribute_value_ids": [
+                Command.set(self.ptav.ids),
+            ],
+        })
+
+        with self.assertRaisesRegex(ValidationError, "referencia interna"):
+            sale_line._validate_dimension_configuration()
+        self.assertTrue(bom)
+
     def test_dynamic_bom_adds_new_selected_attribute_without_template_line(self):
         future_attribute = self.env["product.attribute"].create({
             "name": "Característica futura",
@@ -527,6 +632,7 @@ class TestDimensionFlow(TransactionCase):
         })
         future_component = self.env["product.product"].create({
             "name": "Componente futuro exacto",
+            "default_code": "FUT-EXACT-001",
             "type": "consu",
             "is_storable": True,
         })
@@ -799,10 +905,13 @@ class TestDimensionFlow(TransactionCase):
             lambda move: move.dimension_value_id == self.ptav and move.state != "cancel"
         )
         self.assertEqual(exact_move.product_id, self.component)
+        self.assertIn("[MOL-NOG-001]", exact_move.product_id.display_name)
         self.assertAlmostEqual(exact_move.product_uom_qty, 11.2)
         purchase_line = self.env["purchase.order.line"].search([
             ("product_id", "=", self.component.id),
             ("move_dest_ids", "in", exact_move.ids),
         ], limit=1)
         self.assertTrue(purchase_line)
+        self.assertEqual(purchase_line.product_id, exact_move.product_id)
+        self.assertIn("[MOL-NOG-001]", purchase_line.product_id.display_name)
         self.assertEqual(purchase_line.order_id.partner_id, self.vendor)

@@ -279,16 +279,42 @@ class SaleOrderLine(models.Model):
         )
         return configured_boms[:1] or boms[:1]
 
+    def _get_dimension_bom_line_for_value(self, bom, value):
+        """Find and, when unambiguous, repair the Base line for a value."""
+        self.ensure_one()
+        mapped_lines = bom.bom_line_ids.filtered(
+            lambda line: line.dimension_attribute_id == value.attribute_id
+        )
+        if mapped_lines:
+            return mapped_lines[:1]
+
+        component_templates = value.component_product_id.product_tmpl_id
+        component_templates |= self.env["product.supplierinfo"].sudo().search([
+            (
+                "dimension_attribute_value_id",
+                "=",
+                value.product_attribute_value_id.id,
+            ),
+        ]).product_tmpl_id
+        if not component_templates:
+            return self.env["mrp.bom.line"]
+
+        candidate_lines = bom.bom_line_ids.filtered(lambda line: (
+            not line.dimension_attribute_id
+            and line.product_id.product_tmpl_id in component_templates
+        ))
+        if len(candidate_lines) != 1:
+            return self.env["mrp.bom.line"]
+
+        candidate_lines.sudo().dimension_attribute_id = value.attribute_id
+        return candidate_lines
+
     def _link_dimension_components_from_bom(self, selected_values):
         self.ensure_one()
         bom = self._get_dimension_bom()
-        bom_lines_by_attribute = {
-            line.dimension_attribute_id.id: line
-            for line in bom.bom_line_ids.filtered("dimension_attribute_id")
-        }
         resolved_components = {}
         for value in selected_values:
-            bom_line = bom_lines_by_attribute.get(value.attribute_id.id)
+            bom_line = self._get_dimension_bom_line_for_value(bom, value)
             component = value._get_or_create_bom_component(bom_line)
             configured_component = value.component_product_id
             if (
@@ -302,6 +328,11 @@ class SaleOrderLine(models.Model):
             if component and value.component_product_id != component:
                 value.product_attribute_value_id.sudo().write({
                     "component_product_id": component.id,
+                })
+            if component:
+                value.product_attribute_value_id.sudo()._sync_component_metadata({
+                    "component_internal_reference",
+                    "component_cost",
                 })
             resolved_components[value.id] = component
         selected_values.invalidate_recordset(["component_product_id"])
@@ -465,6 +496,18 @@ class SaleOrderLine(models.Model):
                     "No se puede confirmar la cotización. Falta seleccionar un valor para: %(attributes)s",
                     attributes=", ".join(missing_attributes.mapped("display_name")),
                 ))
+            missing_references = selected_values.filtered(
+                lambda value: not (
+                    value.component_sku or ""
+                ).strip()
+            )
+            if missing_references:
+                raise ValidationError(_(
+                    "No se puede confirmar la cotización. Capture la referencia interna "
+                    "de los siguientes valores: %(values)s. La misma referencia se usará "
+                    "en fabricación y compras.",
+                    values=", ".join(missing_references.mapped("display_name")),
+                ))
             resolved_components = line._link_dimension_components_from_bom(
                 selected_values
             )
@@ -474,17 +517,15 @@ class SaleOrderLine(models.Model):
             )
             values_to_link.product_attribute_value_id._link_component_products_by_reference()
             values_to_link.invalidate_recordset(["component_product_id"])
-            bom_lines_by_attribute = {
-                bom_line.dimension_attribute_id.id: bom_line
-                for bom_line in line._get_dimension_bom().bom_line_ids.filtered(
-                    "dimension_attribute_id"
-                )
-            }
+            source_bom = line._get_dimension_bom()
             for value in values_to_link:
                 configured_component = (
                     value.product_attribute_value_id.component_product_id
                 )
-                bom_line = bom_lines_by_attribute.get(value.attribute_id.id)
+                bom_line = line._get_dimension_bom_line_for_value(
+                    source_bom,
+                    value,
+                )
                 resolved_components[value.id] = (
                     configured_component
                     if value.product_attribute_value_id._is_valid_dimension_component(
