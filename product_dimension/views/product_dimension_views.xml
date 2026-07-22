@@ -169,7 +169,7 @@
                        string="Valor del atributo"
                        optional="show"
                        context="{
-                           'tree_view_ref': 'product_dimension.product_attribute_value_purchase_select_list',
+                           'list_view_ref': 'product_dimension.product_attribute_value_purchase_select_list',
                            'search_view_ref': 'product_dimension.product_attribute_value_purchase_select_search',
                        }"
                        options="{'no_create': True, 'no_open': True}"/>
@@ -186,7 +186,7 @@
                 <field name="dimension_attribute_id" invisible="1"/>
                 <field name="dimension_attribute_value_id"
                        context="{
-                           'tree_view_ref': 'product_dimension.product_attribute_value_purchase_select_list',
+                           'list_view_ref': 'product_dimension.product_attribute_value_purchase_select_list',
                            'search_view_ref': 'product_dimension.product_attribute_value_purchase_select_search',
                        }"
                        options="{'no_create': True, 'no_open': True}"/>

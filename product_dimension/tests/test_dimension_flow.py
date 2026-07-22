@@ -79,6 +79,22 @@ class TestDimensionFlow(TransactionCase):
         match_ids = [value_id for value_id, _name in matches]
         self.assertIn(self.attribute_value.id, match_ids)
 
+    def test_purchase_attribute_selector_uses_reference_list_view(self):
+        expected_view = self.env.ref(
+            "product_dimension.product_attribute_value_purchase_select_list"
+        )
+        arch, selected_view = self.env["product.attribute.value"].with_context(
+            list_view_ref=(
+                "product_dimension.product_attribute_value_purchase_select_list"
+            ),
+        )._get_view(view_type="list")
+
+        self.assertEqual(selected_view, expected_view)
+        self.assertEqual(
+            arch.xpath("//list/field/@name"),
+            ["component_internal_reference", "name", "default_extra_price"],
+        )
+
     def test_dimension_quotation_remains_editable_after_save(self):
         partner = self.env["res.partner"].create({
             "name": "Cliente de cotización editable",
