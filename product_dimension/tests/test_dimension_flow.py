@@ -320,6 +320,47 @@ class TestDimensionFlow(TransactionCase):
         self.assertEqual(variant_seller.product_id, component)
         self.assertEqual(variant_seller.dimension_attribute_id, dynamic_attribute)
 
+        generic_component = self.env["product.product"].create({
+            "name": "Impresión (Base) genérica",
+            "type": "consu",
+            "is_storable": True,
+        })
+        dynamic_value.component_product_id = generic_component
+
+        partner = self.env["res.partner"].create({
+            "name": "Cliente con componente dinámico",
+        })
+        order = self.env["sale.order"].create({"partner_id": partner.id})
+        selected_value = finished_line.product_template_value_ids
+        sale_line = self.env["sale.order.line"].create({
+            "order_id": order.id,
+            "product_id": finished_template.product_variant_id.id,
+            "product_uom_qty": 1.0,
+            "product_uom": finished_template.uom_id.id,
+            "width_cm": 100.0,
+            "height_cm": 50.0,
+            "product_template_attribute_value_ids": [
+                Command.set(selected_value.ids),
+            ],
+        })
+        resolved_components = sale_line._link_dimension_components_from_bom(
+            selected_value
+        )
+        self.assertEqual(resolved_components[selected_value.id], component)
+        self.assertNotEqual(
+            resolved_components[selected_value.id],
+            generic_component,
+        )
+        dynamic_bom = sale_line._create_dimension_bom(
+            selected_value,
+            resolved_components,
+        )
+        self.assertEqual(dynamic_bom.bom_line_ids.product_id, component)
+        self.assertIn(
+            dynamic_value,
+            component.product_template_attribute_value_ids.product_attribute_value_id,
+        )
+
         warehouse = self.env["stock.warehouse"].search(
             [("company_id", "=", self.env.company.id)],
             limit=1,

@@ -243,17 +243,27 @@ class SaleOrderLine(models.Model):
             line.dimension_attribute_id.id: line
             for line in bom.bom_line_ids.filtered("dimension_attribute_id")
         }
+        resolved_components = {}
         for value in selected_values:
             bom_line = bom_lines_by_attribute.get(value.attribute_id.id)
             component = value._get_or_create_bom_component(bom_line)
+            component = component or value.component_product_id
             if component and value.component_product_id != component:
                 value.product_attribute_value_id.sudo().write({
                     "component_product_id": component.id,
                 })
+            resolved_components[value.id] = component
+        selected_values.invalidate_recordset(["component_product_id"])
+        return resolved_components
 
-    def _create_dimension_bom(self, selected_values):
+    def _create_dimension_bom(self, selected_values, resolved_components=None):
         """Build the exact, archived BoM that standard MRP will use for this line."""
         self.ensure_one()
+        resolved_components = resolved_components or {}
+
+        def get_component(value):
+            return resolved_components.get(value.id) or value.component_product_id
+
         source_bom = self._get_dimension_bom()
         previous_bom = self.dimension_bom_id.sudo()
         code = _(
@@ -285,7 +295,7 @@ class SaleOrderLine(models.Model):
                     bom_line.copy() for _value in attribute_values[1:]
                 )
                 for target_line, value in zip(target_lines, attribute_values):
-                    component = value.component_product_id
+                    component = get_component(value)
                     quantity = value._get_component_quantity(
                         self.m2,
                         self.ml,
@@ -310,6 +320,22 @@ class SaleOrderLine(models.Model):
                         ],
                     })
         else:
+            bom_line_commands = []
+            for value in selected_values:
+                component = get_component(value)
+                if not component:
+                    continue
+                bom_line_commands.append(Command.create({
+                    "product_id": component.id,
+                    "product_qty": value._get_component_quantity(
+                        self.m2,
+                        self.ml,
+                        1.0,
+                    ),
+                    "product_uom_id": component.uom_id.id,
+                    "dimension_attribute_id": value.attribute_id.id,
+                    "dimension_value_id": value.id,
+                }))
             dynamic_bom = self.env["mrp.bom"].sudo().create({
                 "active": False,
                 "code": code,
@@ -321,20 +347,7 @@ class SaleOrderLine(models.Model):
                 "company_id": self.order_id.company_id.id,
                 "is_dimension_dynamic": True,
                 "dimension_sale_line_id": self.id,
-                "bom_line_ids": [
-                    Command.create({
-                        "product_id": value.component_product_id.id,
-                        "product_qty": value._get_component_quantity(
-                            self.m2,
-                            self.ml,
-                            1.0,
-                        ),
-                        "product_uom_id": value.component_product_id.uom_id.id,
-                        "dimension_attribute_id": value.attribute_id.id,
-                        "dimension_value_id": value.id,
-                    })
-                    for value in selected_values.filtered("component_product_id")
-                ],
+                "bom_line_ids": bom_line_commands,
             })
 
         self.sudo().dimension_bom_id = dynamic_bom
@@ -375,15 +388,22 @@ class SaleOrderLine(models.Model):
                     "No se puede confirmar la cotización. Falta seleccionar un valor para: %(attributes)s",
                     attributes=", ".join(missing_attributes.mapped("display_name")),
                 ))
-            line._link_dimension_components_from_bom(selected_values)
+            resolved_components = line._link_dimension_components_from_bom(
+                selected_values
+            )
             values_to_link = selected_values.filtered(
                 lambda value: value.attribute_id.component_required
-                and not value.component_product_id
+                and not resolved_components.get(value.id)
             )
             values_to_link.product_attribute_value_id._link_component_products_by_reference()
+            values_to_link.invalidate_recordset(["component_product_id"])
+            for value in values_to_link:
+                resolved_components[value.id] = (
+                    value.product_attribute_value_id.component_product_id
+                )
             missing_values = selected_values.filtered(
                 lambda value: value.attribute_id.component_required
-                and not value.component_product_id
+                and not resolved_components.get(value.id)
             )
             if missing_values:
                 raise ValidationError(_(
@@ -399,8 +419,8 @@ class SaleOrderLine(models.Model):
                 ))
             company = line.order_id.company_id
             missing_sellers = selected_values.filtered(lambda value: (
-                value.component_product_id
-                and not value.component_product_id.sudo().with_company(
+                resolved_components.get(value.id)
+                and not resolved_components[value.id].sudo().with_company(
                     company
                 )._prepare_sellers(False).filtered(
                     lambda seller: not seller.company_id or seller.company_id == company
@@ -434,7 +454,7 @@ class SaleOrderLine(models.Model):
                     "solicitudes de cotización de los componentes.",
                     warehouse=warehouse.display_name,
                 ))
-            line._create_dimension_bom(selected_values)
+            line._create_dimension_bom(selected_values, resolved_components)
 
     def _prepare_procurement_values(self, group_id=False):
         values = super()._prepare_procurement_values(group_id=group_id)
