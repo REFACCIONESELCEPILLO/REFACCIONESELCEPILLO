@@ -66,11 +66,12 @@ class MrpProduction(models.Model):
                 for line in production.bom_id.bom_line_ids.filtered("dimension_attribute_id")
             }
             configuration_values = production.dimension_value_ids.filtered(
-                lambda value: value.attribute_id.component_required
-                or value.component_product_id
-                or value.skip_component
+                lambda value: (
+                    value.attribute_id.component_required or value.component_product_id
+                )
+                and not value._is_dimension_na_value()
             )
-            for value in configuration_values.filtered(lambda item: not item.skip_component):
+            for value in configuration_values:
                 bom_line = bom_lines_by_attribute.get(value.attribute_id.id)
                 component = value._get_or_create_bom_component(bom_line)
                 if component and value.component_product_id != component:
@@ -78,7 +79,7 @@ class MrpProduction(models.Model):
                         "component_product_id": component.id,
                     })
             expected_values = configuration_values.filtered(
-                lambda value: value.component_product_id and not value.skip_component
+                "component_product_id"
             )
             selected_attributes = configuration_values.attribute_id
             placeholder_moves = production.move_raw_ids.filtered(
@@ -89,7 +90,6 @@ class MrpProduction(models.Model):
                     and (
                         (
                             move.bom_line_id.dimension_attribute_id
-                            and move.bom_line_id.dimension_attribute_id in selected_attributes
                         )
                         or (
                             not move.bom_line_id.dimension_attribute_id

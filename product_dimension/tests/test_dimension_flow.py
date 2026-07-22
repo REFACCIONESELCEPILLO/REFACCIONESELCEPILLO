@@ -132,6 +132,98 @@ class TestDimensionFlow(TransactionCase):
         self.assertEqual(unresolved, value)
         self.assertFalse(value.component_product_id)
 
+    def test_na_values_are_not_described_manufactured_or_purchased(self):
+        optional_attribute = self.env["product.attribute"].create({
+            "name": "Vidrio opcional",
+            "create_variant": "no_variant",
+            "dimension_type": "area",
+            "component_required": True,
+        })
+        na_value = self.env["product.attribute.value"].create({
+            "name": "N/A Vidrio",
+            "attribute_id": optional_attribute.id,
+        })
+        # Simulate legacy data where the checkbox was not marked.
+        na_value.skip_component = False
+        optional_line = self.env["product.template.attribute.line"].create({
+            "product_tmpl_id": self.finished_template.id,
+            "attribute_id": optional_attribute.id,
+            "value_ids": [Command.set(na_value.ids)],
+        })
+        na_ptav = optional_line.product_template_value_ids
+        optional_placeholder = self.env["product.product"].create({
+            "name": "Vidrio (Base)",
+            "type": "consu",
+            "is_storable": True,
+        })
+        partner = self.env["res.partner"].create({"name": "Cliente solo moldura"})
+        order = self.env["sale.order"].create({"partner_id": partner.id})
+        sale_line = self.env["sale.order.line"].create({
+            "order_id": order.id,
+            "product_id": self.finished_template.product_variant_id.id,
+            "product_uom_qty": 1.0,
+            "product_uom": self.finished_template.uom_id.id,
+            "width_cm": 120.0,
+            "height_cm": 180.0,
+            "product_no_variant_attribute_value_ids": [
+                Command.set((self.ptav | na_ptav).ids),
+            ],
+        })
+
+        self.assertTrue(na_ptav.dimension_is_na)
+        self.assertIn("Moldura: Moldura nogal", sale_line.name)
+        self.assertNotIn("N/A", sale_line.name)
+        procurement_values = sale_line._prepare_procurement_values()
+        self.assertEqual(
+            procurement_values["dimension_value_ids"],
+            self.ptav.ids,
+        )
+
+        bom = self.env["mrp.bom"].create({
+            "product_tmpl_id": self.finished_template.id,
+            "product_qty": 1.0,
+            "product_uom_id": self.finished_template.uom_id.id,
+            "bom_line_ids": [
+                Command.create({
+                    "product_id": self.placeholder.id,
+                    "product_qty": 1.0,
+                    "product_uom_id": self.placeholder.uom_id.id,
+                    "dimension_attribute_id": self.attribute.id,
+                }),
+                Command.create({
+                    "product_id": optional_placeholder.id,
+                    "product_qty": 1.0,
+                    "product_uom_id": optional_placeholder.uom_id.id,
+                    "dimension_attribute_id": optional_attribute.id,
+                }),
+            ],
+        })
+        warehouse = self.env["stock.warehouse"].search(
+            [("company_id", "=", self.env.company.id)],
+            limit=1,
+        )
+        production = self.env["mrp.production"].create({
+            "product_id": self.finished_template.product_variant_id.id,
+            "product_qty": 1.0,
+            "product_uom_id": self.finished_template.uom_id.id,
+            "bom_id": bom.id,
+            "picking_type_id": warehouse.manu_type_id.id,
+            "location_src_id": warehouse.manu_type_id.default_location_src_id.id,
+            "location_dest_id": warehouse.manu_type_id.default_location_dest_id.id,
+            "dimension_sale_line_id": sale_line.id,
+            "dimension_width_cm": 120.0,
+            "dimension_height_cm": 180.0,
+            "dimension_m2": 2.16,
+            "dimension_ml": 6.0,
+            "dimension_value_ids": [Command.set((self.ptav | na_ptav).ids)],
+        })
+
+        active_moves = production.move_raw_ids.filtered(
+            lambda move: move.state != "cancel"
+        )
+        self.assertEqual(active_moves.product_id, self.component)
+        self.assertNotIn(optional_placeholder, active_moves.product_id)
+
     def test_dynamic_base_variant_inherits_vendor(self):
         dynamic_attribute = self.env["product.attribute"].create({
             "name": "Impresión dinámica",

@@ -57,10 +57,16 @@ class SaleOrderLine(models.Model):
 
     def _get_selected_dimension_values(self):
         self.ensure_one()
+        return self._get_dimension_configuration_values().filtered(
+            lambda value: not value._is_dimension_na_value()
+        )
+
+    def _get_dimension_configuration_values(self):
+        self.ensure_one()
         return self._get_all_selected_dimension_values().filtered(
             lambda value: value.attribute_id.component_required
             or value.component_product_id
-            or value.skip_component
+            or value._is_dimension_na_value()
         )
 
     def _get_all_selected_dimension_values(self):
@@ -69,6 +75,58 @@ class SaleOrderLine(models.Model):
             self.product_template_attribute_value_ids
             | self.product_no_variant_attribute_value_ids
         )
+
+    @api.depends(
+        "product_id",
+        "product_template_id.dimension_enabled",
+        "linked_line_id",
+        "linked_line_ids",
+        "width_cm",
+        "height_cm",
+        "product_template_attribute_value_ids",
+        "product_template_attribute_value_ids.product_attribute_value_id.name",
+        "product_template_attribute_value_ids.skip_component",
+        "product_no_variant_attribute_value_ids",
+        "product_no_variant_attribute_value_ids.product_attribute_value_id.name",
+        "product_no_variant_attribute_value_ids.skip_component",
+    )
+    def _compute_name(self):
+        super()._compute_name()
+
+    def _get_sale_order_line_multiline_description_sale(self):
+        self.ensure_one()
+        if not self.dimension_enabled:
+            return super()._get_sale_order_line_multiline_description_sale()
+
+        selected_values = self._get_all_selected_dimension_values().filtered(
+            lambda value: not value._is_dimension_na_value()
+        ).sorted()
+        configuration_parts = []
+        for attribute in selected_values.attribute_id.sorted("sequence"):
+            attribute_values = selected_values.filtered(
+                lambda value: value.attribute_id == attribute
+            )
+            configuration_parts.append(_(
+                "%(attribute)s: %(values)s",
+                attribute=attribute.name,
+                values=", ".join(attribute_values.mapped("name")),
+            ))
+
+        description = self.product_template_id.name or self.product_id.name
+        if configuration_parts:
+            description = "%s (%s)" % (
+                description,
+                ", ".join(configuration_parts),
+            )
+        if self.width_cm > 0.0 and self.height_cm > 0.0:
+            description += _(
+                "\n(%(width).2f cm x %(height).2f cm)",
+                width=self.width_cm,
+                height=self.height_cm,
+            )
+        if self.product_id.description_sale:
+            description += "\n" + self.product_id.description_sale
+        return description
 
     @api.depends(
         "product_id",
@@ -94,7 +152,9 @@ class SaleOrderLine(models.Model):
                 continue
 
             total_price = line.product_template_id.list_price
-            for value in line._get_all_selected_dimension_values():
+            for value in line._get_all_selected_dimension_values().filtered(
+                lambda item: not item._is_dimension_na_value()
+            ):
                 total_price += value._get_dimension_sale_amount(line.m2, line.ml)
             line.base_dimension_price = total_price
 
@@ -134,13 +194,7 @@ class SaleOrderLine(models.Model):
     def _onchange_dimension_description(self):
         for line in self:
             if line.product_id and line.dimension_enabled:
-                base_name = line.product_id.get_product_multiline_description_sale()
-                line.name = _(
-                    "%(product)s (%(width).2f cm x %(height).2f cm)",
-                    product=base_name,
-                    width=line.width_cm,
-                    height=line.height_cm,
-                )
+                line.name = line._get_sale_order_line_multiline_description_sale()
 
     @api.onchange(
         "width_cm",
@@ -170,7 +224,7 @@ class SaleOrderLine(models.Model):
             line.dimension_attribute_id.id: line
             for line in bom.bom_line_ids.filtered("dimension_attribute_id")
         }
-        for value in selected_values.filtered(lambda item: not item.skip_component):
+        for value in selected_values:
             bom_line = bom_lines_by_attribute.get(value.attribute_id.id)
             component = value._get_or_create_bom_component(bom_line)
             if component and value.component_product_id != component:
@@ -196,11 +250,12 @@ class SaleOrderLine(models.Model):
                     "Capture un ancho y un alto mayores que cero para %(product)s.",
                     product=line.product_id.display_name,
                 ))
+            configuration_values = line._get_dimension_configuration_values()
             selected_values = line._get_selected_dimension_values()
             required_attributes = line.product_template_id.attribute_line_ids.attribute_id.filtered(
                 "component_required"
             )
-            missing_attributes = required_attributes - selected_values.attribute_id
+            missing_attributes = required_attributes - configuration_values.attribute_id
             if missing_attributes:
                 raise ValidationError(_(
                     "No se puede confirmar la cotización. Falta seleccionar un valor para: %(attributes)s",
@@ -209,13 +264,11 @@ class SaleOrderLine(models.Model):
             line._link_dimension_components_from_bom(selected_values)
             values_to_link = selected_values.filtered(
                 lambda value: value.attribute_id.component_required
-                and not value.skip_component
                 and not value.component_product_id
             )
             values_to_link.product_attribute_value_id._link_component_products_by_reference()
             missing_values = selected_values.filtered(
                 lambda value: value.attribute_id.component_required
-                and not value.skip_component
                 and not value.component_product_id
             )
             if missing_values:
@@ -232,8 +285,7 @@ class SaleOrderLine(models.Model):
                 ))
             company = line.order_id.company_id
             missing_sellers = selected_values.filtered(lambda value: (
-                not value.skip_component
-                and value.component_product_id
+                value.component_product_id
                 and not value.component_product_id.sudo().with_company(
                     company
                 )._prepare_sellers(False).filtered(
@@ -256,7 +308,7 @@ class SaleOrderLine(models.Model):
                     product=line.product_id.display_name,
                 ))
             if (
-                selected_values.filtered(lambda value: not value.skip_component)
+                selected_values
                 and (
                     not warehouse.buy_to_resupply
                     or not warehouse.buy_pull_id
@@ -280,7 +332,7 @@ class SaleOrderLine(models.Model):
                 "dimension_height_cm": self.height_cm,
                 "dimension_m2": self.m2,
                 "dimension_ml": self.ml,
-                "dimension_value_ids": self._get_all_selected_dimension_values().ids,
+                "dimension_value_ids": self._get_selected_dimension_values().ids,
             })
             if manufacture_routes:
                 values["route_ids"] = manufacture_routes

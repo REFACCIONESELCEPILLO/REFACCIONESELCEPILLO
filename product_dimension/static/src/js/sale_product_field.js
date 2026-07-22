@@ -78,12 +78,12 @@ patch(ProductConfiguratorDialog.prototype, {
         const ptavMetadata = await this.orm.read(
             "product.template.attribute.value",
             [...valuesById.keys()],
-            ["component_sku", "skip_component", "product_attribute_value_id"]
+            ["component_sku", "dimension_is_na", "product_attribute_value_id"]
         );
         const valuesNeedingFallback = ptavMetadata.filter(
             (value) => (
                 !value.component_sku
-                && !value.skip_component
+                && !value.dimension_is_na
                 && value.product_attribute_value_id
             )
         );
@@ -111,7 +111,7 @@ patch(ProductConfiguratorDialog.prototype, {
                 || referencesByAttributeValue[attributeValueId]
                 || ""
             );
-            value.skip_component = metadata.skip_component;
+            value.skip_component = metadata.dimension_is_na;
         }
     },
 

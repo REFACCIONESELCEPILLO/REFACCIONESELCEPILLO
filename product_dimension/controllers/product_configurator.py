@@ -35,7 +35,7 @@ class DimensionSaleProductConfiguratorController(SaleProductConfiguratorControll
                     value.product_attribute_value_id.component_internal_reference
                     or False
                 ),
-                "skip_component": value.skip_component,
+                "skip_component": value._is_dimension_na_value(),
             }
             for value in product_template.attribute_line_ids.product_template_value_ids
         }
@@ -94,6 +94,7 @@ class DimensionSaleProductConfiguratorController(SaleProductConfiguratorControll
         dimensional_base = product_template.list_price + sum(
             value._get_dimension_sale_amount(area, perimeter)
             for value in combination
+            if not value._is_dimension_na_value()
         )
         information["price"] = product_template._apply_dimension_pricelist_price(
             dimensional_base,

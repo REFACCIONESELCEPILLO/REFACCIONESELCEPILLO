@@ -14,7 +14,10 @@ comercial con el producto real que se fabrica, consume y compra.
    - el cálculo de consumo;
    - el factor de consumo;
    - el modo y la tarifa de venta.
-4. Marque los valores `N/A` como **No genera componente**.
+4. Marque los valores `N/A` como **No genera componente**. El módulo también reconoce como
+   opción vacía los valores cuyo nombre comienza con `N/A`, para conservar la compatibilidad con
+   datos existentes. Estos valores no aparecen en la descripción comercial, no se envían a la
+   orden de fabricación y no solicitan proveedor.
    En una configuración nueva, esos valores aparecen primero y quedan seleccionados por defecto.
    Cada combo dispone de una búsqueda avanzada por referencia interna o nombre; la ventana permite
    seleccionar una sola opción y confirmarla sin recorrer listas extensas.

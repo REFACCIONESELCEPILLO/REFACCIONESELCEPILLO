@@ -130,6 +130,17 @@ class ProductAttributeValue(models.Model):
         help="El valor puede seleccionarse, pero no agrega materia prima a la orden de fabricación.",
     )
 
+    @api.model
+    def _is_dimension_na_name(self, name):
+        if not isinstance(name, str):
+            return False
+        normalized_name = " ".join(name.strip().casefold().split())
+        return normalized_name == "n/a" or normalized_name.startswith("n/a ")
+
+    def _is_dimension_na_value(self):
+        self.ensure_one()
+        return self.skip_component or self._is_dimension_na_name(self.name)
+
     @api.depends("component_product_id.cost_currency_id")
     @api.depends_context("company")
     def _compute_component_cost_currency_id(self):
@@ -150,6 +161,11 @@ class ProductAttributeValue(models.Model):
     @api.model
     def _add_component_defaults(self, vals, current_value=None):
         vals = dict(vals)
+        if (
+            "skip_component" not in vals
+            and self._is_dimension_na_name(vals.get("name"))
+        ):
+            vals["skip_component"] = True
         if vals.get("component_product_id"):
             component = self.env["product.product"].browse(vals["component_product_id"])
             if (
@@ -368,6 +384,24 @@ class ProductTemplateAttributeValue(models.Model):
         related="product_attribute_value_id.skip_component",
         readonly=False,
     )
+    dimension_is_na = fields.Boolean(
+        string="Es opción N/A",
+        compute="_compute_dimension_is_na",
+    )
+
+    @api.depends(
+        "product_attribute_value_id.name",
+        "product_attribute_value_id.skip_component",
+    )
+    def _compute_dimension_is_na(self):
+        for value in self:
+            value.dimension_is_na = (
+                value.product_attribute_value_id._is_dimension_na_value()
+            )
+
+    def _is_dimension_na_value(self):
+        self.ensure_one()
+        return self.product_attribute_value_id._is_dimension_na_value()
 
     @api.depends("name", "component_sku")
     def _compute_display_name(self):
