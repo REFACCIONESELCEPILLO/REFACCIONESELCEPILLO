@@ -90,6 +90,7 @@ class ProductAttribute(models.Model):
 
 class ProductAttributeValue(models.Model):
     _inherit = "product.attribute.value"
+    _rec_names_search = ["name", "component_internal_reference"]
 
     component_product_id = fields.Many2one(
         "product.product",

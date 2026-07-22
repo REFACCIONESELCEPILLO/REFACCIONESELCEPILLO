@@ -72,6 +72,12 @@ class TestDimensionFlow(TransactionCase):
         self.assertEqual(self.ptav.component_product_id, self.component)
         self.assertEqual(self.ptav.component_sku, "MOL-NOG-001")
         self.assertAlmostEqual(self.ptav.component_cost, 125.0)
+        matches = self.env["product.attribute.value"].name_search(
+            name="MOL-NOG-001",
+            args=[("attribute_id", "=", self.attribute.id)],
+        )
+        match_ids = [value_id for value_id, _name in matches]
+        self.assertIn(self.attribute_value.id, match_ids)
 
     def test_dimension_quotation_remains_editable_after_save(self):
         partner = self.env["res.partner"].create({

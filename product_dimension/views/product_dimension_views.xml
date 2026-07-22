@@ -133,6 +133,31 @@
         </field>
     </record>
 
+    <record id="product_attribute_value_purchase_select_list" model="ir.ui.view">
+        <field name="name">product.attribute.value.purchase.select.list</field>
+        <field name="model">product.attribute.value</field>
+        <field name="arch" type="xml">
+            <list string="Valores del atributo" create="false" delete="false">
+                <field name="component_internal_reference" string="Referencia interna"/>
+                <field name="name" string="Valor"/>
+                <field name="default_extra_price" string="Precio adicional"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="product_attribute_value_purchase_select_search" model="ir.ui.view">
+        <field name="name">product.attribute.value.purchase.select.search</field>
+        <field name="model">product.attribute.value</field>
+        <field name="arch" type="xml">
+            <search string="Buscar valor del atributo">
+                <field name="name"
+                       string="Referencia interna o valor"
+                       filter_domain="['|', ('component_internal_reference', 'ilike', self), ('name', 'ilike', self)]"/>
+                <field name="component_internal_reference" string="Referencia interna"/>
+            </search>
+        </field>
+    </record>
+
     <record id="product_supplierinfo_list_dimension_mocalli" model="ir.ui.view">
         <field name="name">product.supplierinfo.list.dimension.mocalli</field>
         <field name="model">product.supplierinfo</field>
@@ -143,6 +168,10 @@
                 <field name="dimension_attribute_value_id"
                        string="Valor del atributo"
                        optional="show"
+                       context="{
+                           'tree_view_ref': 'product_dimension.product_attribute_value_purchase_select_list',
+                           'search_view_ref': 'product_dimension.product_attribute_value_purchase_select_search',
+                       }"
                        options="{'no_create': True, 'no_open': True}"/>
             </xpath>
         </field>
@@ -156,6 +185,10 @@
             <xpath expr="//field[@name='product_id']" position="before">
                 <field name="dimension_attribute_id" invisible="1"/>
                 <field name="dimension_attribute_value_id"
+                       context="{
+                           'tree_view_ref': 'product_dimension.product_attribute_value_purchase_select_list',
+                           'search_view_ref': 'product_dimension.product_attribute_value_purchase_select_search',
+                       }"
                        options="{'no_create': True, 'no_open': True}"/>
             </xpath>
         </field>
