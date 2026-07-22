@@ -198,6 +198,17 @@ class TestDimensionFlow(TransactionCase):
                 }),
             ],
         })
+        dynamic_bom = sale_line._create_dimension_bom(
+            sale_line._get_selected_dimension_values()
+        )
+        self.assertTrue(dynamic_bom.is_dimension_dynamic)
+        self.assertFalse(dynamic_bom.active)
+        self.assertEqual(dynamic_bom.dimension_source_bom_id, bom)
+        self.assertEqual(dynamic_bom.bom_line_ids.product_id, self.component)
+        self.assertEqual(dynamic_bom.bom_line_ids.dimension_value_id, self.ptav)
+        self.assertNotIn(optional_placeholder, dynamic_bom.bom_line_ids.product_id)
+        procurement_values = sale_line._prepare_procurement_values()
+        self.assertEqual(procurement_values["bom_id"], dynamic_bom)
         warehouse = self.env["stock.warehouse"].search(
             [("company_id", "=", self.env.company.id)],
             limit=1,
@@ -469,9 +480,16 @@ class TestDimensionFlow(TransactionCase):
 
         order.action_confirm()
 
+        dynamic_bom = sale_line.dimension_bom_id
+        self.assertTrue(dynamic_bom.is_dimension_dynamic)
+        self.assertFalse(dynamic_bom.active)
+        self.assertEqual(dynamic_bom.dimension_source_bom_id, bom)
+        self.assertEqual(dynamic_bom.bom_line_ids.product_id, self.component)
+        self.assertEqual(dynamic_bom.bom_line_ids.dimension_value_id, self.ptav)
+        self.assertAlmostEqual(dynamic_bom.bom_line_ids.product_qty, 5.6)
         production = self.env["mrp.production"].search([
             ("dimension_sale_line_id", "=", sale_line.id),
-            ("bom_id", "=", bom.id),
+            ("bom_id", "=", dynamic_bom.id),
         ], limit=1)
         self.assertTrue(production)
         exact_move = production.move_raw_ids.filtered(

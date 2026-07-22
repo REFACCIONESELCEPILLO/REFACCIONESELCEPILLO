@@ -2,6 +2,34 @@ from odoo import api, fields, models
 from odoo.tools import float_compare, float_is_zero
 
 
+class MrpBom(models.Model):
+    _inherit = "mrp.bom"
+
+    is_dimension_dynamic = fields.Boolean(
+        string="Lista dimensional dinámica",
+        copy=False,
+        index=True,
+        help=(
+            "Indica que la lista fue generada desde una línea de venta y contiene "
+            "solo los componentes seleccionados."
+        ),
+    )
+    dimension_sale_line_id = fields.Many2one(
+        "sale.order.line",
+        string="Línea de venta dimensional",
+        copy=False,
+        index=True,
+        ondelete="set null",
+    )
+    dimension_source_bom_id = fields.Many2one(
+        "mrp.bom",
+        string="Plantilla de lista de materiales",
+        copy=False,
+        index=True,
+        ondelete="set null",
+    )
+
+
 class MrpBomLine(models.Model):
     _inherit = "mrp.bom.line"
 
@@ -13,6 +41,14 @@ class MrpBomLine(models.Model):
             "Identifica esta línea como el producto base que será sustituido por "
             "el componente exacto elegido en el configurador."
         ),
+    )
+    dimension_value_id = fields.Many2one(
+        "product.template.attribute.value",
+        string="Valor configurado",
+        copy=True,
+        index=True,
+        ondelete="set null",
+        help="Valor exacto de la cotización que originó este componente.",
     )
 
 
@@ -59,7 +95,11 @@ class MrpProduction(models.Model):
     def _sync_dimension_component_moves(self):
         StockMove = self.env["stock.move"]
         for production in self.filtered(
-            lambda mo: mo.dimension_sale_line_id and mo.state not in ("done", "cancel")
+            lambda mo: (
+                mo.dimension_sale_line_id
+                and not mo.bom_id.is_dimension_dynamic
+                and mo.state not in ("done", "cancel")
+            )
         ):
             bom_lines_by_attribute = {
                 line.dimension_attribute_id.id: line
@@ -164,6 +204,31 @@ class MrpProduction(models.Model):
 
             if new_moves and production.state != "draft":
                 new_moves._action_confirm(merge=False)
+
+    def _get_move_raw_values(
+        self,
+        product,
+        product_uom_qty,
+        product_uom,
+        operation_id=False,
+        bom_line=False,
+    ):
+        values = super()._get_move_raw_values(
+            product,
+            product_uom_qty,
+            product_uom,
+            operation_id=operation_id,
+            bom_line=bom_line,
+        )
+        if bom_line and bom_line.dimension_value_id:
+            values["dimension_value_id"] = bom_line.dimension_value_id.id
+            buy_route = self.warehouse_id.buy_pull_id.route_id
+            if buy_route:
+                values.update({
+                    "procure_method": "make_to_order",
+                    "route_ids": [(6, 0, buy_route.ids)],
+                })
+        return values
 
     def _remove_dimension_moves(self, moves):
         draft_moves = moves.filtered(lambda move: move.state == "draft")

@@ -1,5 +1,6 @@
-from odoo import _, api, fields, models
+from odoo import _, Command, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.tools import float_is_zero
 
 
 class SaleOrder(models.Model):
@@ -45,6 +46,17 @@ class SaleOrderLine(models.Model):
     dimension_enabled = fields.Boolean(
         related="product_template_id.dimension_enabled",
         string="Configuración dimensional",
+    )
+    dimension_bom_id = fields.Many2one(
+        "mrp.bom",
+        string="Lista de materiales dinámica",
+        copy=False,
+        readonly=True,
+        ondelete="set null",
+        help=(
+            "Lista de materiales exacta generada para esta configuración. "
+            "Solo contiene los componentes seleccionados en la cotización."
+        ),
     )
 
     @api.depends("width_cm", "height_cm")
@@ -211,11 +223,18 @@ class SaleOrderLine(models.Model):
         self.ensure_one()
         if not self.product_id:
             return self.env["mrp.bom"]
-        return self.env["mrp.bom"]._bom_find(
-            self.product_id,
-            company_id=self.order_id.company_id.id,
-            bom_type="normal",
-        )[self.product_id]
+        boms = self.env["mrp.bom"].sudo().search([
+            ("active", "=", True),
+            ("type", "=", "normal"),
+            ("is_dimension_dynamic", "=", False),
+            ("company_id", "in", [False, self.order_id.company_id.id]),
+            ("product_tmpl_id", "=", self.product_template_id.id),
+            ("product_id", "in", [False, self.product_id.id]),
+        ], order="sequence, product_id, id")
+        configured_boms = boms.filtered(
+            lambda bom: bom.bom_line_ids.filtered("dimension_attribute_id")
+        )
+        return configured_boms[:1] or boms[:1]
 
     def _link_dimension_components_from_bom(self, selected_values):
         self.ensure_one()
@@ -231,6 +250,101 @@ class SaleOrderLine(models.Model):
                 value.product_attribute_value_id.sudo().write({
                     "component_product_id": component.id,
                 })
+
+    def _create_dimension_bom(self, selected_values):
+        """Build the exact, archived BoM that standard MRP will use for this line."""
+        self.ensure_one()
+        source_bom = self._get_dimension_bom()
+        previous_bom = self.dimension_bom_id.sudo()
+        code = _(
+            "DIN %(order)s / línea %(line)s",
+            order=self.order_id.name or self.order_id.id,
+            line=self.id,
+        )
+        if source_bom:
+            dynamic_bom = source_bom.sudo().copy({
+                "active": False,
+                "code": code,
+                "is_dimension_dynamic": True,
+                "dimension_sale_line_id": self.id,
+                "dimension_source_bom_id": source_bom.id,
+            })
+            mapped_lines = dynamic_bom.bom_line_ids.filtered(
+                "dimension_attribute_id"
+            )
+            for bom_line in mapped_lines:
+                attribute_values = selected_values.filtered(
+                    lambda value: value.attribute_id == bom_line.dimension_attribute_id
+                )
+                if not attribute_values:
+                    bom_line.unlink()
+                    continue
+
+                target_lines = [bom_line]
+                target_lines.extend(
+                    bom_line.copy() for _value in attribute_values[1:]
+                )
+                for target_line, value in zip(target_lines, attribute_values):
+                    component = value.component_product_id
+                    quantity = value._get_component_quantity(
+                        self.m2,
+                        self.ml,
+                        dynamic_bom.product_qty,
+                    )
+                    if (
+                        not component
+                        or float_is_zero(
+                            quantity,
+                            precision_rounding=component.uom_id.rounding,
+                        )
+                    ):
+                        target_line.unlink()
+                        continue
+                    target_line.write({
+                        "product_id": component.id,
+                        "product_qty": quantity,
+                        "product_uom_id": component.uom_id.id,
+                        "dimension_value_id": value.id,
+                        "bom_product_template_attribute_value_ids": [
+                            Command.clear(),
+                        ],
+                    })
+        else:
+            dynamic_bom = self.env["mrp.bom"].sudo().create({
+                "active": False,
+                "code": code,
+                "type": "normal",
+                "product_tmpl_id": self.product_template_id.id,
+                "product_id": self.product_id.id,
+                "product_qty": 1.0,
+                "product_uom_id": self.product_uom.id,
+                "company_id": self.order_id.company_id.id,
+                "is_dimension_dynamic": True,
+                "dimension_sale_line_id": self.id,
+                "bom_line_ids": [
+                    Command.create({
+                        "product_id": value.component_product_id.id,
+                        "product_qty": value._get_component_quantity(
+                            self.m2,
+                            self.ml,
+                            1.0,
+                        ),
+                        "product_uom_id": value.component_product_id.uom_id.id,
+                        "dimension_attribute_id": value.attribute_id.id,
+                        "dimension_value_id": value.id,
+                    })
+                    for value in selected_values.filtered("component_product_id")
+                ],
+            })
+
+        self.sudo().dimension_bom_id = dynamic_bom
+        if previous_bom and previous_bom != dynamic_bom:
+            used_bom = self.env["mrp.production"].sudo().search_count([
+                ("bom_id", "=", previous_bom.id),
+            ], limit=1)
+            if not used_bom:
+                previous_bom.unlink()
+        return dynamic_bom
 
     def _get_dimension_manufacture_routes(self):
         self.ensure_one()
@@ -320,6 +434,7 @@ class SaleOrderLine(models.Model):
                     "solicitudes de cotización de los componentes.",
                     warehouse=warehouse.display_name,
                 ))
+            line._create_dimension_bom(selected_values)
 
     def _prepare_procurement_values(self, group_id=False):
         values = super()._prepare_procurement_values(group_id=group_id)
@@ -334,6 +449,8 @@ class SaleOrderLine(models.Model):
                 "dimension_ml": self.ml,
                 "dimension_value_ids": self._get_selected_dimension_values().ids,
             })
+            if self.dimension_bom_id:
+                values["bom_id"] = self.dimension_bom_id.sudo()
             if manufacture_routes:
                 values["route_ids"] = manufacture_routes
         return values

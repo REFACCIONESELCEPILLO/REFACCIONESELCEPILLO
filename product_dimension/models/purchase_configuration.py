@@ -36,6 +36,7 @@ class ProductSupplierInfo(models.Model):
                 bom_lines = BomLine.search([
                     ("product_id.product_tmpl_id", "=", seller.product_tmpl_id.id),
                     ("dimension_attribute_id", "!=", False),
+                    ("bom_id.is_dimension_dynamic", "=", False),
                 ])
                 attributes |= bom_lines.dimension_attribute_id
             seller.dimension_attribute_id = attributes if len(attributes) == 1 else False
@@ -46,6 +47,7 @@ class ProductSupplierInfo(models.Model):
             return self.env["mrp.bom.line"]
         return self.env["mrp.bom.line"].sudo().search([
             ("product_id.product_tmpl_id", "=", self.product_tmpl_id.id),
+            ("bom_id.is_dimension_dynamic", "=", False),
             (
                 "dimension_attribute_id",
                 "=",
