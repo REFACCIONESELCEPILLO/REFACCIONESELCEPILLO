@@ -4,6 +4,23 @@ from odoo import models
 class StockRule(models.Model):
     _inherit = "stock.rule"
 
+    def _get_custom_move_fields(self):
+        fields = super()._get_custom_move_fields()
+        return fields + ["dimension_sale_line_id", "dimension_bom_id"]
+
+    def _get_matching_bom(self, product_id, company_id, values):
+        sale_line = self.env["sale.order.line"].browse(
+            values.get("dimension_sale_line_id")
+        ).exists()
+        dimension_bom = self.env["mrp.bom"].browse(
+            values.get("dimension_bom_id")
+        ).exists()
+        if not dimension_bom and sale_line:
+            dimension_bom = sale_line.dimension_bom_id
+        if dimension_bom:
+            return dimension_bom
+        return super()._get_matching_bom(product_id, company_id, values)
+
     def _prepare_mo_vals(
         self,
         product_id,

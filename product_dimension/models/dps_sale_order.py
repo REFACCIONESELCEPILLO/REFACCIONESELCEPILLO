@@ -451,6 +451,7 @@ class SaleOrderLine(models.Model):
             })
             if self.dimension_bom_id:
                 values["bom_id"] = self.dimension_bom_id.sudo()
+                values["dimension_bom_id"] = self.dimension_bom_id.id
             if manufacture_routes:
                 values["route_ids"] = manufacture_routes
         return values

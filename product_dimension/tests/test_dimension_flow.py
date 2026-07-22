@@ -213,6 +213,17 @@ class TestDimensionFlow(TransactionCase):
             [("company_id", "=", self.env.company.id)],
             limit=1,
         )
+        manufacture_rule = warehouse.manufacture_pull_id
+        matching_bom = manufacture_rule._get_matching_bom(
+            self.finished_template.product_variant_id,
+            self.env.company,
+            {"dimension_sale_line_id": sale_line.id},
+        )
+        self.assertEqual(matching_bom, dynamic_bom)
+        self.assertIn(
+            "dimension_bom_id",
+            manufacture_rule._get_custom_move_fields(),
+        )
         production = self.env["mrp.production"].create({
             "product_id": self.finished_template.product_variant_id.id,
             "product_qty": 1.0,

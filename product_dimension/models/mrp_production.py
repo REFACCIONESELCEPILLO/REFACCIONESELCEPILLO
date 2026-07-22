@@ -244,6 +244,20 @@ class MrpProduction(models.Model):
 class StockMove(models.Model):
     _inherit = "stock.move"
 
+    dimension_sale_line_id = fields.Many2one(
+        "sale.order.line",
+        string="Línea de venta dimensional",
+        copy=False,
+        index=True,
+        ondelete="set null",
+    )
+    dimension_bom_id = fields.Many2one(
+        "mrp.bom",
+        string="Lista de materiales dinámica",
+        copy=False,
+        index=True,
+        ondelete="set null",
+    )
     dimension_value_id = fields.Many2one(
         "product.template.attribute.value",
         string="Valor configurado",
@@ -255,6 +269,24 @@ class StockMove(models.Model):
     def _prepare_procurement_values(self):
         values = super()._prepare_procurement_values()
         self.ensure_one()
+        sale_line = self.dimension_sale_line_id
+        dimension_bom = self.dimension_bom_id or sale_line.dimension_bom_id
+        if sale_line and dimension_bom:
+            manufacture_routes = sale_line._get_dimension_manufacture_routes()
+            values.update({
+                "dimension_sale_line_id": sale_line.id,
+                "dimension_bom_id": dimension_bom.id,
+                "bom_id": dimension_bom.sudo(),
+                "dimension_width_cm": sale_line.width_cm,
+                "dimension_height_cm": sale_line.height_cm,
+                "dimension_m2": sale_line.m2,
+                "dimension_ml": sale_line.ml,
+                "dimension_value_ids": (
+                    sale_line._get_selected_dimension_values().ids
+                ),
+            })
+            if manufacture_routes:
+                values["route_ids"] = manufacture_routes
         if not self.dimension_value_id or not self.product_id:
             return values
 
