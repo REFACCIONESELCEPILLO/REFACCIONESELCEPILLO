@@ -305,16 +305,18 @@ class ProductAttributeValue(models.Model):
         if len(component_value) != 1:
             return self.env["product.product"]
 
-        combination = component_template._get_first_possible_combination()
-        combination -= combination.filtered(
-            lambda value: value.attribute_id == self.attribute_id
+        combination = component_template._get_first_possible_combination(
+            necessary_values=component_value,
         )
-        combination |= component_value
-        if self.attribute_id.create_variant == "dynamic":
+        if component_value not in combination:
+            return self.env["product.product"]
+        if component_template.has_dynamic_attributes():
             component = component_template._create_product_variant(combination)
         else:
             component = component_template._get_variant_for_combination(combination)
         component = component.filtered("active")
+        if not self._is_valid_dimension_component(component, bom_line):
+            return self.env["product.product"]
         if component:
             component_template.seller_ids.filtered(
                 lambda seller: seller.dimension_attribute_value_id == self
@@ -322,6 +324,27 @@ class ProductAttributeValue(models.Model):
                 "product_id": component.id,
             })
         return component
+
+    def _is_valid_dimension_component(self, component, bom_line=False):
+        """Ensure a Base product is never mistaken for its selected variant."""
+        self.ensure_one()
+        component = component.exists()
+        if not component or len(component) != 1:
+            return False
+        if not bom_line:
+            return component == self.component_product_id
+        if bom_line.dimension_attribute_id != self.attribute_id:
+            return False
+
+        base_template = bom_line.product_id.product_tmpl_id
+        if component.product_tmpl_id != base_template:
+            return component == self.component_product_id
+        if self.attribute_id.create_variant == "no_variant":
+            return False
+        component_values = component.product_template_attribute_value_ids.mapped(
+            "product_attribute_value_id"
+        )
+        return self in component_values
 
     @api.constrains("component_product_id", "component_qty_factor", "skip_component")
     def _check_component_configuration(self):

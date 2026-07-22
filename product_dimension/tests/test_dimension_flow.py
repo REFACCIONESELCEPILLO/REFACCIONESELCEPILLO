@@ -435,6 +435,204 @@ class TestDimensionFlow(TransactionCase):
         variant_seller.dimension_attribute_value_id = False
         self.assertFalse(variant_seller.product_id)
 
+    def test_component_resolution_uses_complete_template_variant_mode(self):
+        selected_attribute = self.env["product.attribute"].create({
+            "name": "Característica instantánea",
+            "create_variant": "always",
+            "dimension_type": "area",
+            "component_required": True,
+        })
+        selected_value = self.env["product.attribute.value"].create({
+            "name": "Valor solicitado",
+            "attribute_id": selected_attribute.id,
+        })
+        auxiliary_attribute = self.env["product.attribute"].create({
+            "name": "Característica dinámica auxiliar",
+            "create_variant": "dynamic",
+        })
+        auxiliary_value = self.env["product.attribute.value"].create({
+            "name": "Presentación estándar",
+            "attribute_id": auxiliary_attribute.id,
+        })
+        auxiliary_alternative = self.env["product.attribute.value"].create({
+            "name": "Presentación alternativa",
+            "attribute_id": auxiliary_attribute.id,
+        })
+        base_template = self.env["product.template"].create({
+            "name": "Componente Base extensible",
+            "type": "consu",
+            "is_storable": True,
+            "purchase_ok": True,
+        })
+        placeholder = base_template.product_variant_id
+        self.env["product.template.attribute.line"].create({
+            "product_tmpl_id": base_template.id,
+            "attribute_id": selected_attribute.id,
+            "value_ids": [Command.set(selected_value.ids)],
+        })
+        self.env["product.template.attribute.line"].create({
+            "product_tmpl_id": base_template.id,
+            "attribute_id": auxiliary_attribute.id,
+            "value_ids": [
+                Command.set((auxiliary_value | auxiliary_alternative).ids),
+            ],
+        })
+        finished_template = self.env["product.template"].create({
+            "name": "Producto con características futuras",
+            "dimension_enabled": True,
+        })
+        finished_line = self.env["product.template.attribute.line"].create({
+            "product_tmpl_id": finished_template.id,
+            "attribute_id": selected_attribute.id,
+            "value_ids": [Command.set(selected_value.ids)],
+        })
+        bom = self.env["mrp.bom"].create({
+            "product_tmpl_id": finished_template.id,
+            "product_qty": 1.0,
+            "product_uom_id": finished_template.uom_id.id,
+            "bom_line_ids": [Command.create({
+                "product_id": placeholder.id,
+                "product_qty": 1.0,
+                "product_uom_id": base_template.uom_id.id,
+                "dimension_attribute_id": selected_attribute.id,
+            })],
+        })
+
+        component = (
+            finished_line.product_template_value_ids
+            ._get_or_create_bom_component(bom.bom_line_ids)
+        )
+
+        self.assertTrue(component)
+        self.assertEqual(component.product_tmpl_id, base_template)
+        component_values = component.product_template_attribute_value_ids.mapped(
+            "product_attribute_value_id"
+        )
+        self.assertIn(
+            selected_value,
+            component_values,
+        )
+        self.assertIn(
+            auxiliary_value,
+            component_values,
+        )
+        self.assertNotEqual(component, placeholder)
+
+    def test_dynamic_bom_adds_new_selected_attribute_without_template_line(self):
+        future_attribute = self.env["product.attribute"].create({
+            "name": "Característica futura",
+            "create_variant": "no_variant",
+            "dimension_type": "area",
+            "component_required": True,
+        })
+        future_component = self.env["product.product"].create({
+            "name": "Componente futuro exacto",
+            "type": "consu",
+            "is_storable": True,
+        })
+        future_value = self.env["product.attribute.value"].create({
+            "name": "Nueva opción",
+            "attribute_id": future_attribute.id,
+            "component_product_id": future_component.id,
+        })
+        future_line = self.env["product.template.attribute.line"].create({
+            "product_tmpl_id": self.finished_template.id,
+            "attribute_id": future_attribute.id,
+            "value_ids": [Command.set(future_value.ids)],
+        })
+        future_ptav = future_line.product_template_value_ids
+        bom = self.env["mrp.bom"].create({
+            "product_tmpl_id": self.finished_template.id,
+            "product_qty": 1.0,
+            "product_uom_id": self.finished_template.uom_id.id,
+            "bom_line_ids": [Command.create({
+                "product_id": self.placeholder.id,
+                "product_qty": 1.0,
+                "product_uom_id": self.placeholder.uom_id.id,
+                "dimension_attribute_id": self.attribute.id,
+            })],
+        })
+        partner = self.env["res.partner"].create({
+            "name": "Cliente con característica futura",
+        })
+        order = self.env["sale.order"].create({"partner_id": partner.id})
+        sale_line = self.env["sale.order.line"].create({
+            "order_id": order.id,
+            "product_id": self.finished_template.product_variant_id.id,
+            "product_uom_qty": 1.0,
+            "product_uom": self.finished_template.uom_id.id,
+            "width_cm": 100.0,
+            "height_cm": 50.0,
+            "product_no_variant_attribute_value_ids": [
+                Command.set((self.ptav | future_ptav).ids),
+            ],
+        })
+        selected_values = sale_line._get_selected_dimension_values()
+        resolved_components = sale_line._link_dimension_components_from_bom(
+            selected_values
+        )
+
+        dynamic_bom = sale_line._create_dimension_bom(
+            selected_values,
+            resolved_components,
+        )
+
+        self.assertEqual(
+            set(dynamic_bom.bom_line_ids.product_id.ids),
+            {self.component.id, future_component.id},
+        )
+        self.assertEqual(
+            set(dynamic_bom.bom_line_ids.dimension_value_id.ids),
+            set(selected_values.ids),
+        )
+
+    def test_placeholder_base_is_not_accepted_as_selected_component(self):
+        self.attribute_value.write({
+            "component_product_id": False,
+            "component_internal_reference": "BASE-NO-EXACTA",
+        })
+        self.placeholder.default_code = "BASE-NO-EXACTA"
+        bom = self.env["mrp.bom"].create({
+            "product_tmpl_id": self.finished_template.id,
+            "product_qty": 1.0,
+            "product_uom_id": self.finished_template.uom_id.id,
+            "bom_line_ids": [Command.create({
+                "product_id": self.placeholder.id,
+                "product_qty": 1.0,
+                "product_uom_id": self.placeholder.uom_id.id,
+                "dimension_attribute_id": self.attribute.id,
+            })],
+        })
+        partner = self.env["res.partner"].create({
+            "name": "Cliente sin componente exacto",
+        })
+        order = self.env["sale.order"].create({"partner_id": partner.id})
+        sale_line = self.env["sale.order.line"].create({
+            "order_id": order.id,
+            "product_id": self.finished_template.product_variant_id.id,
+            "product_uom_qty": 1.0,
+            "product_uom": self.finished_template.uom_id.id,
+            "width_cm": 100.0,
+            "height_cm": 50.0,
+            "product_no_variant_attribute_value_ids": [
+                Command.set(self.ptav.ids),
+            ],
+        })
+
+        resolved_components = sale_line._link_dimension_components_from_bom(
+            sale_line._get_selected_dimension_values()
+        )
+
+        self.assertFalse(resolved_components[self.ptav.id])
+        self.assertEqual(bom.bom_line_ids.product_id, self.placeholder)
+        with self.assertRaises(ValidationError):
+            sale_line._validate_dimension_configuration()
+        self.assertEqual(
+            self.attribute_value.component_product_id,
+            self.placeholder,
+            "La búsqueda por referencia puede encontrar el Base, pero no debe usarlo.",
+        )
+
     def test_dimension_quantities_and_explicit_zero_price(self):
         self.assertAlmostEqual(
             self.ptav._get_component_quantity(1.92, 5.6, 2.0),

@@ -290,7 +290,15 @@ class SaleOrderLine(models.Model):
         for value in selected_values:
             bom_line = bom_lines_by_attribute.get(value.attribute_id.id)
             component = value._get_or_create_bom_component(bom_line)
-            component = component or value.component_product_id
+            configured_component = value.component_product_id
+            if (
+                not component
+                and value.product_attribute_value_id._is_valid_dimension_component(
+                    configured_component,
+                    bom_line,
+                )
+            ):
+                component = configured_component
             if component and value.component_product_id != component:
                 value.product_attribute_value_id.sudo().write({
                     "component_product_id": component.id,
@@ -325,6 +333,7 @@ class SaleOrderLine(models.Model):
             mapped_lines = dynamic_bom.bom_line_ids.filtered(
                 "dimension_attribute_id"
             )
+            mapped_value_ids = set()
             for bom_line in mapped_lines:
                 attribute_values = selected_values.filtered(
                     lambda value: value.attribute_id == bom_line.dimension_attribute_id
@@ -338,6 +347,7 @@ class SaleOrderLine(models.Model):
                     bom_line.copy() for _value in attribute_values[1:]
                 )
                 for target_line, value in zip(target_lines, attribute_values):
+                    mapped_value_ids.add(value.id)
                     component = get_component(value)
                     quantity = value._get_component_quantity(
                         self.m2,
@@ -362,6 +372,30 @@ class SaleOrderLine(models.Model):
                             Command.clear(),
                         ],
                     })
+            for value in selected_values.filtered(
+                lambda item: item.id not in mapped_value_ids
+            ):
+                component = get_component(value)
+                if not component:
+                    continue
+                quantity = value._get_component_quantity(
+                    self.m2,
+                    self.ml,
+                    dynamic_bom.product_qty,
+                )
+                if float_is_zero(
+                    quantity,
+                    precision_rounding=component.uom_id.rounding,
+                ):
+                    continue
+                self.env["mrp.bom.line"].sudo().create({
+                    "bom_id": dynamic_bom.id,
+                    "product_id": component.id,
+                    "product_qty": quantity,
+                    "product_uom_id": component.uom_id.id,
+                    "dimension_attribute_id": value.attribute_id.id,
+                    "dimension_value_id": value.id,
+                })
         else:
             bom_line_commands = []
             for value in selected_values:
@@ -440,9 +474,24 @@ class SaleOrderLine(models.Model):
             )
             values_to_link.product_attribute_value_id._link_component_products_by_reference()
             values_to_link.invalidate_recordset(["component_product_id"])
+            bom_lines_by_attribute = {
+                bom_line.dimension_attribute_id.id: bom_line
+                for bom_line in line._get_dimension_bom().bom_line_ids.filtered(
+                    "dimension_attribute_id"
+                )
+            }
             for value in values_to_link:
-                resolved_components[value.id] = (
+                configured_component = (
                     value.product_attribute_value_id.component_product_id
+                )
+                bom_line = bom_lines_by_attribute.get(value.attribute_id.id)
+                resolved_components[value.id] = (
+                    configured_component
+                    if value.product_attribute_value_id._is_valid_dimension_component(
+                        configured_component,
+                        bom_line,
+                    )
+                    else self.env["product.product"]
                 )
             missing_values = selected_values.filtered(
                 lambda value: value.attribute_id.component_required
