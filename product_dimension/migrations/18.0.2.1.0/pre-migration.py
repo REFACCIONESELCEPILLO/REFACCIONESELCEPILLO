@@ -20,16 +20,35 @@ def migrate(cr, version):
         WITH legacy_mapping AS (
             SELECT DISTINCT ON (product_attribute_value_id)
                    product_attribute_value_id,
-                   component_product_id,
-                   COALESCE(skip_component, FALSE) AS skip_component,
-                   COALESCE(component_calculation, 'attribute') AS component_calculation,
-                   COALESCE(component_qty_factor, 1.0) AS component_qty_factor
-              FROM product_template_attribute_value
-             WHERE component_product_id IS NOT NULL
-                OR skip_component IS TRUE
+                   (to_jsonb(ptav)->>'component_product_id')::integer
+                       AS component_product_id,
+                   COALESCE(
+                       (to_jsonb(ptav)->>'skip_component')::boolean,
+                       FALSE
+                   ) AS skip_component,
+                   COALESCE(
+                       to_jsonb(ptav)->>'component_calculation',
+                       'attribute'
+                   ) AS component_calculation,
+                   COALESCE(
+                       (to_jsonb(ptav)->>'component_qty_factor')::double precision,
+                       1.0
+                   ) AS component_qty_factor
+              FROM product_template_attribute_value AS ptav
+             WHERE (to_jsonb(ptav)->>'component_product_id')::integer IS NOT NULL
+                OR COALESCE(
+                       (to_jsonb(ptav)->>'skip_component')::boolean,
+                       FALSE
+                   ) IS TRUE
              ORDER BY product_attribute_value_id,
-                      (component_product_id IS NOT NULL) DESC,
-                      skip_component DESC,
+                      (
+                          (to_jsonb(ptav)->>'component_product_id')::integer
+                          IS NOT NULL
+                      ) DESC,
+                      COALESCE(
+                          (to_jsonb(ptav)->>'skip_component')::boolean,
+                          FALSE
+                      ) DESC,
                       id
         )
         UPDATE product_attribute_value AS pav
