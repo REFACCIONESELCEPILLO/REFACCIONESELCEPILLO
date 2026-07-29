@@ -1,6 +1,15 @@
+from unittest.mock import patch
+
 from odoo import Command
+from odoo.addons.sale.controllers.product_configurator import (
+    SaleProductConfiguratorController,
+)
 from odoo.exceptions import ValidationError
 from odoo.tests import TransactionCase, tagged
+
+from ..controllers.product_configurator import (
+    DimensionSaleProductConfiguratorController,
+)
 
 
 @tagged("post_install", "-at_install")
@@ -783,6 +792,48 @@ class TestDimensionFlow(TransactionCase):
             self.ptav._get_dimension_sale_amount(1.92, 5.6),
             0.0,
             "El modo explícito debe permitir una tarifa dimensional igual a cero.",
+        )
+
+    def test_configurator_keeps_unit_extra_price(self):
+        self.ptav.write({
+            "price_extra": 742.0,
+            "pricing_mode": "attribute",
+            "dimension_price": 0.0,
+        })
+        standard_information = {
+            "price": 1242.0,
+            "attribute_lines": [{
+                "attribute_values": [{
+                    "id": self.ptav.id,
+                    "price_extra": 742.0,
+                }],
+            }],
+        }
+        controller = DimensionSaleProductConfiguratorController()
+
+        with patch.object(
+            SaleProductConfiguratorController,
+            "_get_product_information",
+            return_value=standard_information,
+        ):
+            information = controller._get_product_information(
+                self.finished_template,
+                self.ptav,
+                self.env.company.currency_id,
+                self.env["product.pricelist"],
+                None,
+                m2=3.6,
+                ml=7.6,
+            )
+
+        value_information = information["attribute_lines"][0][
+            "attribute_values"
+        ][0]
+        self.assertEqual(value_information["price_extra"], 742.0)
+        self.assertEqual(information["price"], 1242.0)
+        self.assertEqual(
+            value_information["internal_reference"],
+            "MOL-NOG-001",
         )
 
     def test_small_and_large_dimensions(self):

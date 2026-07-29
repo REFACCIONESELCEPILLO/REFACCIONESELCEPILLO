@@ -25,6 +25,8 @@ comercial con el producto real que se fabrica, consume y compra.
    seleccionar una sola opción y confirmarla sin recorrer listas extensas.
    Ambos muestran el formato `Referencia interna - Nombre - Precio`. Si la referencia coincide con
    un único producto existente, se vincula automáticamente como componente.
+   El precio mostrado en el configurador es el **Precio adicional unitario** del valor. El importe
+   dimensional se calcula después en la línea de cotización, usando el ancho y el alto capturados.
 5. En la lista de materiales, identifique cada producto `(Base)` con su
    **Atributo configurable**. El atributo debe usar creación de variantes **Instantánea** o
    **Dinámica**. Si el valor elegido todavía no existe en el producto `(Base)`, el módulo lo agrega

@@ -1,6 +1,6 @@
 {
     "name": "Configurador dimensional",
-    "version": "18.0.2.6.11",
+    "version": "18.0.2.6.12",
     "summary": "Configura productos por dimensiones y genera componentes exactos para fabricación",
     "author": "Ickab",
     "maintainer": "Ickab",
