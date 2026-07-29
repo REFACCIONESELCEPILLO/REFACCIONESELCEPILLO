@@ -1,5 +1,7 @@
 # Configurador dimensional Mocalli
 
+**Autor y mantenedor:** Ickab
+
 Este módulo conserva las variantes dinámicas del configurador de Odoo y conecta cada valor
 comercial con el producto real que se fabrica, consume y compra.
 

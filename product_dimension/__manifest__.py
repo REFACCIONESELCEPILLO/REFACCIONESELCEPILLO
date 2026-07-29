@@ -1,7 +1,9 @@
 {
     "name": "Mocalli | Configurador dimensional, MRP y compras",
-    "version": "18.0.2.6.9",
+    "version": "18.0.2.6.10",
     "summary": "Configura productos por dimensiones y genera componentes exactos para fabricación",
+    "author": "Ickab",
+    "maintainer": "Ickab",
     "category": "Manufacturing/Manufacturing",
     "license": "OPL-1",
     "depends": [
