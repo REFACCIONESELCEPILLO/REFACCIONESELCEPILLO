@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_ickab_label_template_list" model="ir.ui.view">
+        <field name="name">ickab.label.template.list</field>
+        <field name="model">ickab.label.template</field>
+        <field name="arch" type="xml">
+            <list string="Diseños de etiquetas">
+                <field name="name"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="document_mode"/>
+                <field name="model_id"/>
+                <field name="shape"/>
+                <field name="width_mm"/>
+                <field name="height_mm"/>
+                <field name="dpi"/>
+                <field name="element_count"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ickab_label_template_form" model="ir.ui.view">
+        <field name="name">ickab.label.template.form</field>
+        <field name="model">ickab.label.template</field>
+        <field name="arch" type="xml">
+            <form string="ICKAB Label Studio" class="o_ickab_label_studio_form">
+                <header>
+                    <field name="direct_print_available" invisible="1"/>
+                    <button name="action_preview" type="object" string="Previsualizar" class="btn-primary"/>
+                    <button name="action_direct_print" type="object" string="Imprimir" class="btn-success" icon="fa-print" invisible="not direct_print_available"/>
+                    <button name="action_download_zpl" type="object" string="Descargar ZPL"/>
+                    <button name="action_open_import_zpl" type="object" string="Importar ZPL" groups="ickab_label_studio.group_label_studio_manager,base.group_system"/>
+                    <field name="document_mode" widget="statusbar" statusbar_visible="studio,zpl_raw" readonly="1"/>
+                </header>
+                <sheet class="o_ickab_label_studio_sheet">
+                    <div class="oe_title"><h1><field name="name" placeholder="Nombre del diseño"/></h1></div>
+                    <group col="4">
+                        <group string="Datos">
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="model_id" options="{'no_create': True}"/>
+                            <field name="active"/>
+                            <field name="technical_key" invisible="1"/>
+                        </group>
+                        <group string="Formato físico">
+                            <field name="media_id" options="{'no_create': True}"/>
+                            <field name="shape"/>
+                            <field name="width_mm"/>
+                            <field name="height_mm"/>
+                            <field name="safe_margin_mm"/>
+                            <field name="bleed_mm"/>
+                        </group>
+                        <group string="Medio / exportación">
+                            <field name="dpi"/>
+                            <field name="media_type"/>
+                            <field name="gap_mm" invisible="media_type == 'continuous'"/>
+                            <field name="gap_offset_mm" invisible="media_type == 'continuous'"/>
+                            <field name="element_count" readonly="1"/>
+                        </group>
+                        <group string="Origen ZPL" invisible="document_mode != 'zpl_raw'">
+                            <field name="zpl_source_dpi" readonly="1"/>
+                            <field name="zpl_import_warnings" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <div class="alert alert-warning" role="alert" invisible="document_mode != 'zpl_raw'">
+                        <strong>ZPL RAW:</strong> se conserva el código original para impresión exacta. El lienzo muestra los objetos que Label Studio pudo reconocer, pero el archivo RAW es la fuente autoritativa.
+                    </div>
+                    <separator string="Diseñador"/>
+                    <field name="design_json"
+                           widget="ickab_label_designer"
+                           nolabel="1"
+                           class="w-100"
+                           readonly="document_mode == 'zpl_raw'"
+                           groups="ickab_label_studio.group_label_studio_manager,base.group_system"/>
+                    <div class="alert alert-info" role="alert" groups="ickab_label_studio.group_label_studio_user,!ickab_label_studio.group_label_studio_manager,!base.group_system">
+                        El diseño puede utilizarse para previsualizar o exportar, pero sólo un Diseñador de Label Studio puede modificarlo.
+                    </div>
+                    <notebook>
+                        <page string="ZPL original" invisible="not source_zpl">
+                            <field name="source_zpl" widget="text" readonly="1" nolabel="1"/>
+                        </page>
+                        <page string="Notas"><field name="notes" placeholder="Notas internas del diseño..."/></page>
+                        <page string="JSON técnico" groups="base.group_system"><field name="design_json" widget="text" readonly="1"/></page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_ickab_label_media_list" model="ir.ui.view">
+        <field name="name">ickab.label.media.list</field>
+        <field name="model">ickab.label.media</field>
+        <field name="arch" type="xml">
+            <list string="Formatos de etiqueta">
+                <field name="name"/><field name="code"/><field name="category"/><field name="shape"/>
+                <field name="width_mm"/><field name="height_mm"/><field name="media_type"/><field name="safe_margin_mm"/><field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ickab_label_media_form" model="ir.ui.view">
+        <field name="name">ickab.label.media.form</field>
+        <field name="model">ickab.label.media</field>
+        <field name="arch" type="xml">
+            <form string="Formato de etiqueta">
+                <sheet>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group><field name="code"/><field name="category"/><field name="shape"/><field name="active"/></group>
+                        <group><field name="width_mm"/><field name="height_mm"/><field name="safe_margin_mm"/><field name="bleed_mm"/></group>
+                        <group><field name="media_type"/><field name="gap_mm" invisible="media_type == 'continuous'"/><field name="gap_offset_mm" invisible="media_type == 'continuous'"/></group>
+                    </group>
+                    <field name="notes" placeholder="Notas del formato..."/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ickab_label_template" model="ir.actions.act_window">
+        <field name="name">ICKAB Label Studio</field>
+        <field name="res_model">ickab.label.template</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    <record id="action_ickab_label_media" model="ir.actions.act_window">
+        <field name="name">Formatos de etiqueta</field>
+        <field name="res_model">ickab.label.media</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_ickab_label_root" name="ICKAB Label Studio" sequence="70" web_icon="ickab_label_studio,static/description/icon.png" groups="ickab_label_studio.group_label_studio_manager,base.group_system"/>
+    <menuitem id="menu_ickab_label_templates" name="Diseños" parent="menu_ickab_label_root" action="action_ickab_label_template" sequence="10" groups="ickab_label_studio.group_label_studio_manager,base.group_system"/>
+    <menuitem id="menu_ickab_label_import_zpl" name="Importar ZPL" parent="menu_ickab_label_root" action="action_ickab_label_zpl_import" sequence="20" groups="ickab_label_studio.group_label_studio_manager,base.group_system"/>
+    <menuitem id="menu_ickab_label_media" name="Formatos" parent="menu_ickab_label_root" action="action_ickab_label_media" sequence="30" groups="ickab_label_studio.group_label_studio_manager,base.group_system"/>
+</odoo>

@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="ickab_label_studio.LabelDesignerField">
+        <div class="o_ickab_label_studio"
+             t-ref="root"
+             tabindex="0"
+             t-on-mousedown="focusDesigner">
+
+            <div class="o_ickab_designer_topbar">
+                <div class="o_ickab_tool_group">
+                    <button type="button" t-att-class="'btn btn-sm ' + (state.tool === 'select' ? 'btn-primary' : 'btn-outline-secondary')" t-on-click="() => this.setTool('select')">Seleccionar</button>
+                    <button type="button" t-att-class="'btn btn-sm ' + (state.tool === 'text' ? 'btn-primary' : 'btn-outline-secondary')" t-on-click="() => this.setTool('text')" t-att-disabled="readonly">Texto</button>
+                    <button type="button" t-att-class="'btn btn-sm ' + (state.tool === 'barcode' ? 'btn-primary' : 'btn-outline-secondary')" t-on-click="() => this.setTool('barcode')" t-att-disabled="readonly">Barcode</button>
+                    <button type="button" t-att-class="'btn btn-sm ' + (state.tool === 'qrcode' ? 'btn-primary' : 'btn-outline-secondary')" t-on-click="() => this.setTool('qrcode')" t-att-disabled="readonly">QR</button>
+                    <button type="button" t-att-class="'btn btn-sm ' + (state.tool === 'box' ? 'btn-primary' : 'btn-outline-secondary')" t-on-click="() => this.setTool('box')" t-att-disabled="readonly">Rectángulo</button>
+                    <button type="button" t-att-class="'btn btn-sm ' + (state.tool === 'line' ? 'btn-primary' : 'btn-outline-secondary')" t-on-click="() => this.setTool('line')" t-att-disabled="readonly">Línea</button>
+                </div>
+                <div class="o_ickab_tool_group">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" t-on-click="undo" t-att-disabled="!canUndo" title="Deshacer (Ctrl+Z)">↶</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" t-on-click="redo" t-att-disabled="!canRedo" title="Rehacer (Ctrl+Y)">↷</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" t-on-click="duplicateSelected" t-att-disabled="readonly || !selected" title="Duplicar (Ctrl+D)">Duplicar</button>
+                    <button type="button" class="btn btn-outline-danger btn-sm" t-on-click="removeSelected" t-att-disabled="readonly || !selected" title="Eliminar">Eliminar</button>
+                </div>
+                <div class="o_ickab_tool_group o_ickab_zoom_group">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" t-on-click="zoomOut">−</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" t-on-click="zoomReset"><t t-esc="state.zoom"/>%</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" t-on-click="zoomIn">+</button>
+                    <button type="button" t-att-class="'btn btn-sm ' + (state.gridVisible ? 'btn-secondary' : 'btn-outline-secondary')" t-on-click="toggleGrid">Grid</button>
+                    <button type="button" t-att-class="'btn btn-sm ' + (state.snapEnabled ? 'btn-secondary' : 'btn-outline-secondary')" t-on-click="toggleSnap">Snap</button>
+                    <select class="form-select form-select-sm o_ickab_grid_select" t-att-value="state.gridMm" t-on-change="updateGrid" title="Paso de rejilla">
+                        <option value="0.5">0.5 mm</option>
+                        <option value="1">1 mm</option>
+                        <option value="2">2 mm</option>
+                        <option value="5">5 mm</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="o_ickab_designer_body">
+                <aside class="o_ickab_palette">
+                    <div class="o_ickab_panel_title">
+                        <div>
+                            <strong>Campos del modelo</strong>
+                            <div class="small text-muted" t-if="state.currentModelLabel"><t t-esc="state.currentModelLabel"/></div>
+                            <div class="small text-muted" t-elif="modelDisplayName"><t t-esc="modelDisplayName"/></div>
+                        </div>
+                        <span class="badge text-bg-secondary" t-if="modelId"><t t-esc="state.fields.length"/></span>
+                    </div>
+                    <t t-if="!modelId">
+                        <div class="o_ickab_empty_panel">Selecciona un <strong>Modelo de datos</strong> para habilitar sus campos.</div>
+                    </t>
+                    <t t-elif="state.fieldsLoading">
+                        <div class="o_ickab_empty_panel">Cargando campos…</div>
+                    </t>
+                    <t t-elif="state.fieldsError">
+                        <div class="alert alert-danger py-2 px-2 small"><t t-esc="state.fieldsError"/></div>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" t-on-click="() => this.loadFields(modelId, state.relationPath)">Reintentar</button>
+                    </t>
+                    <t t-else="">
+                        <div class="o_ickab_breadcrumbs" t-if="state.breadcrumbs.length">
+                            <t t-foreach="state.breadcrumbs" t-as="crumb" t-key="crumb.path || '__root__'">
+                                <button type="button" class="btn btn-link btn-sm p-0" t-on-click="() => this.goBreadcrumb(crumb)"><t t-esc="crumb.label"/></button>
+                                <span t-if="!crumb_last" class="o_ickab_breadcrumb_sep">›</span>
+                            </t>
+                        </div>
+                        <div class="o_ickab_field_search">
+                            <input type="search" class="form-control form-control-sm" placeholder="Buscar en este modelo…" t-att-value="state.fieldSearch" t-on-input="setFieldSearch"/>
+                        </div>
+                        <div class="o_ickab_palette_hint">
+                            Arrastra <strong>+</strong> al lienzo o navega con <strong>→</strong> por campos relacionales.
+                            Las rutas se guardan completas.
+                        </div>
+                        <div class="o_ickab_field_list">
+                            <div class="o_ickab_field_card"
+                                 t-foreach="filteredFields"
+                                 t-as="f"
+                                 t-key="f.path"
+                                 t-att-title="`${f.label} (${f.path})`">
+                                <div class="o_ickab_field_drag"
+                                     t-att-draggable="readonly ? 'false' : 'true'"
+                                     t-on-dragstart="(ev) => this.onFieldDragStart(ev, f)">⋮⋮</div>
+                                <div class="o_ickab_field_content"
+                                     t-att-draggable="readonly ? 'false' : 'true'"
+                                     t-on-dragstart="(ev) => this.onFieldDragStart(ev, f)">
+                                    <span class="o_ickab_field_label"><t t-esc="f.label"/></span>
+                                    <span class="o_ickab_field_meta"><t t-esc="f.path"/> · <t t-esc="f.type"/><t t-if="f.is_collection"> · múltiple</t></span>
+                                </div>
+                                <div class="o_ickab_field_actions">
+                                    <button type="button" class="btn btn-light btn-sm" title="Insertar en el lienzo" t-on-click.stop="() => this.addField(f)" t-att-disabled="readonly">+</button>
+                                    <button t-if="canBindSelected" type="button" class="btn btn-light btn-sm" title="Vincular al elemento seleccionado" t-on-click.stop="() => this.bindFieldToSelected(f)" t-att-disabled="readonly">↗</button>
+                                    <button t-if="f.navigable" type="button" class="btn btn-outline-secondary btn-sm" title="Abrir modelo relacionado" t-on-click.stop="() => this.enterRelation(f)">→</button>
+                                </div>
+                            </div>
+                            <div class="text-muted small p-2" t-if="!filteredFields.length">No hay campos que coincidan con la búsqueda.</div>
+                        </div>
+                    </t>
+
+                    <div class="o_ickab_shortcuts">
+                        <strong>Atajos</strong>
+                        <span>Supr · eliminar</span>
+                        <span>Ctrl+D · duplicar</span>
+                        <span>Ctrl+Z / Ctrl+Y · deshacer/rehacer</span>
+                        <span>Flechas · mover por rejilla</span>
+                    </div>
+                </aside>
+
+                <main class="o_ickab_workspace">
+                    <div class="o_ickab_workspace_header">
+                        <div>
+                            <strong><t t-esc="formatMm(widthMm)"/> × <t t-esc="formatMm(heightMm)"/> mm</strong>
+                            <span class="text-muted"> · <t t-esc="shape"/> · <t t-esc="props.record.data.dpi || 203"/> DPI ref.</span>
+                        </div>
+                        <div class="text-muted small">El zoom sólo cambia la vista, nunca el tamaño físico.</div>
+                    </div>
+                    <div class="o_ickab_canvas_scroller">
+                        <div class="o_ickab_canvas_stage">
+                            <div class="o_ickab_label_canvas"
+                                 t-ref="canvas"
+                                 t-att-style="canvasStyle()"
+                                 t-on-mousedown="startCanvasDraw"
+                                 t-on-dragover="onCanvasDragOver"
+                                 t-on-drop="onCanvasDrop">
+                                <div class="o_ickab_safe_zone" t-att-style="safeZoneStyle()"/>
+                                <t t-foreach="sortedElements" t-as="el" t-key="el.id">
+                                    <div t-att-class="'o_ickab_label_element type-' + el.type + (state.selected === el.id ? ' is-selected' : '')"
+                                         t-att-style="elementStyle(el)"
+                                         t-on-mousedown.stop="(ev) => this.startDrag(ev, el.id)"
+                                         t-on-click.stop="() => this.select(el.id)">
+                                        <t t-if="el.type === 'text'">
+                                            <div class="o_ickab_text_content" t-att-style="textStyle(el)"><t t-esc="displayValue(el)"/></div>
+                                        </t>
+                                        <t t-elif="el.type === 'barcode'">
+                                            <img t-if="previewSrc(el)" class="o_ickab_native_code" t-att-src="previewSrc(el)" draggable="false"/>
+                                            <div t-else="" class="o_ickab_code_placeholder">BARCODE</div>
+                                        </t>
+                                        <t t-elif="el.type === 'qrcode'">
+                                            <img t-if="previewSrc(el)" class="o_ickab_native_code is-qr" t-att-src="previewSrc(el)" draggable="false"/>
+                                            <div t-else="" class="o_ickab_code_placeholder">QR</div>
+                                        </t>
+                                        <t t-elif="el.type === 'box'"><div t-att-style="boxStyle(el)"/></t>
+                                        <t t-elif="el.type === 'line'"><div t-att-style="lineStyle(el)"/></t>
+
+                                        <t t-if="state.selected === el.id &amp;&amp; !readonly">
+                                            <span class="o_ickab_resize_handle h-nw" t-on-mousedown.stop="(ev) => this.startResize(ev, el.id, 'nw')"/>
+                                            <span class="o_ickab_resize_handle h-n"  t-on-mousedown.stop="(ev) => this.startResize(ev, el.id, 'n')"/>
+                                            <span class="o_ickab_resize_handle h-ne" t-on-mousedown.stop="(ev) => this.startResize(ev, el.id, 'ne')"/>
+                                            <span class="o_ickab_resize_handle h-e"  t-on-mousedown.stop="(ev) => this.startResize(ev, el.id, 'e')"/>
+                                            <span class="o_ickab_resize_handle h-se" t-on-mousedown.stop="(ev) => this.startResize(ev, el.id, 'se')"/>
+                                            <span class="o_ickab_resize_handle h-s"  t-on-mousedown.stop="(ev) => this.startResize(ev, el.id, 's')"/>
+                                            <span class="o_ickab_resize_handle h-sw" t-on-mousedown.stop="(ev) => this.startResize(ev, el.id, 'sw')"/>
+                                            <span class="o_ickab_resize_handle h-w"  t-on-mousedown.stop="(ev) => this.startResize(ev, el.id, 'w')"/>
+                                            <span class="o_ickab_element_tag"><t t-esc="el.type"/></span>
+                                        </t>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="o_ickab_statusbar">
+                        <span>Zoom <strong><t t-esc="state.zoom"/>%</strong></span>
+                        <span>Grid <strong><t t-esc="state.gridMm"/> mm</strong></span>
+                        <span t-if="selected">X <strong><t t-esc="formatMm(selected.x_mm)"/></strong> · Y <strong><t t-esc="formatMm(selected.y_mm)"/></strong> · W <strong><t t-esc="formatMm(selected.w_mm)"/></strong> · H <strong><t t-esc="formatMm(selected.h_mm)"/></strong> mm</span>
+                        <span t-else="" class="text-muted">Selecciona un elemento para ver sus medidas.</span>
+                    </div>
+                </main>
+
+                <aside class="o_ickab_properties">
+                    <div class="o_ickab_panel_title"><strong>Propiedades</strong><span class="badge text-bg-light" t-if="selected"><t t-esc="selected.type"/></span></div>
+                    <t t-if="selected">
+                        <label class="form-label">Tipo de elemento</label>
+                        <select class="form-select form-select-sm" t-att-value="selected.type" t-on-change="(ev) => this.updateSelected('type', ev)" t-att-disabled="readonly || ['box','line'].includes(selected.type)">
+                            <option value="text">Texto</option><option value="barcode">Código de barras</option><option value="qrcode">QR</option>
+                            <option t-if="selected.type === 'box'" value="box">Rectángulo</option><option t-if="selected.type === 'line'" value="line">Línea</option>
+                        </select>
+
+                        <div class="o_ickab_prop_section">
+                            <div class="o_ickab_prop_section_title">Geometría física</div>
+                            <div class="row g-2">
+                                <div class="col-6"><label>X (mm)</label><input type="number" step="0.1" class="form-control form-control-sm" t-att-value="selected.x_mm" t-on-change="(ev) => this.updateSelected('x_mm',ev)" t-att-disabled="readonly"/></div>
+                                <div class="col-6"><label>Y (mm)</label><input type="number" step="0.1" class="form-control form-control-sm" t-att-value="selected.y_mm" t-on-change="(ev) => this.updateSelected('y_mm',ev)" t-att-disabled="readonly"/></div>
+                                <div class="col-6"><label>Ancho</label><input type="number" min="0.1" step="0.1" class="form-control form-control-sm" t-att-value="selected.w_mm" t-on-change="(ev) => this.updateSelected('w_mm',ev)" t-att-disabled="readonly"/></div>
+                                <div class="col-6"><label>Alto</label><input type="number" min="0.1" step="0.1" class="form-control form-control-sm" t-att-value="selected.h_mm" t-on-change="(ev) => this.updateSelected('h_mm',ev)" t-att-disabled="readonly"/></div>
+                            </div>
+                            <div class="o_ickab_align_buttons">
+                                <button type="button" class="btn btn-outline-secondary btn-sm" t-on-click="() => this.alignSelected('left')" t-att-disabled="readonly">←</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" t-on-click="() => this.alignSelected('hcenter')" t-att-disabled="readonly">↔</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" t-on-click="() => this.alignSelected('right')" t-att-disabled="readonly">→</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" t-on-click="() => this.alignSelected('top')" t-att-disabled="readonly">↑</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" t-on-click="() => this.alignSelected('vcenter')" t-att-disabled="readonly">↕</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" t-on-click="() => this.alignSelected('bottom')" t-att-disabled="readonly">↓</button>
+                            </div>
+                        </div>
+
+                        <t t-if="['text','barcode','qrcode'].includes(selected.type)">
+                            <div class="o_ickab_prop_section">
+                                <div class="o_ickab_prop_section_title">Contenido</div>
+                                <label class="form-label">Origen</label>
+                                <select class="form-select form-select-sm" t-att-value="selected.source" t-on-change="(ev) => this.updateSelected('source',ev)" t-att-disabled="readonly">
+                                    <option value="static">Texto fijo</option><option value="field">Campo Odoo</option>
+                                </select>
+                                <t t-if="selected.source === 'static'">
+                                    <label class="form-label mt-2">Valor</label>
+                                    <textarea class="form-control form-control-sm" rows="2" t-att-value="selected.value" t-on-change="(ev) => this.updateSelected('value',ev)" t-att-disabled="readonly"></textarea>
+                                </t>
+                                <t t-else="">
+                                    <label class="form-label mt-2">Ruta Odoo</label>
+                                    <div class="o_ickab_field_path_value"><t t-esc="selected.field_label || selected.field_path || 'Sin campo vinculado'"/></div>
+                                    <code class="o_ickab_field_path_code" t-if="selected.field_path"><t t-esc="selected.field_path"/></code>
+                                    <div class="small text-muted mt-1">Usa el botón ↗ del explorador de campos para cambiar la ruta sin perder su metadata relacional.</div>
+                                    <t t-if="selected.field_is_collection">
+                                        <label class="form-label mt-2">Tratamiento de múltiples registros</label>
+                                        <select class="form-select form-select-sm" t-att-value="selected.aggregate || 'first'" t-on-change="(ev) => this.updateSelected('aggregate',ev)" t-att-disabled="readonly">
+                                            <option value="first">Primer registro</option>
+                                            <option value="last">Último registro</option>
+                                            <option value="join">Unir valores</option>
+                                            <option value="count">Contar valores</option>
+                                        </select>
+                                        <t t-if="(selected.aggregate || 'first') === 'join'">
+                                            <label class="form-label mt-2">Separador</label>
+                                            <input class="form-control form-control-sm" maxlength="100" t-att-value="selected.separator || ', '" t-on-change="(ev) => this.updateSelected('separator',ev)" t-att-disabled="readonly"/>
+                                        </t>
+                                    </t>
+                                    <label class="form-label mt-2">Valor de muestra</label>
+                                    <input class="form-control form-control-sm" t-att-value="selected.sample" t-on-change="(ev) => this.updateSelected('sample',ev)" t-att-disabled="readonly"/>
+                                </t>
+                            </div>
+                        </t>
+
+                        <t t-if="selected.type === 'text'">
+                            <div class="o_ickab_prop_section">
+                                <div class="o_ickab_prop_section_title">Texto</div>
+                                <div class="row g-2">
+                                    <div class="col-6"><label>Fuente (mm)</label><input type="number" min="0.5" step="0.1" class="form-control form-control-sm" t-att-value="selected.font_mm" t-on-change="(ev) => this.updateSelected('font_mm',ev)" t-att-disabled="readonly"/></div>
+                                    <div class="col-6"><label>Líneas</label><input type="number" min="1" max="100" class="form-control form-control-sm" t-att-value="selected.max_lines || 1" t-on-change="(ev) => this.updateSelected('max_lines',ev)" t-att-disabled="readonly"/></div>
+                                </div>
+                                <label class="form-label mt-2">Alineación</label>
+                                <select class="form-select form-select-sm" t-att-value="selected.align" t-on-change="(ev) => this.updateSelected('align',ev)" t-att-disabled="readonly"><option value="L">Izquierda</option><option value="C">Centro</option><option value="R">Derecha</option><option value="J">Justificado</option></select>
+                            </div>
+                        </t>
+
+                        <t t-if="selected.type === 'barcode'">
+                            <div class="o_ickab_prop_section">
+                                <div class="o_ickab_prop_section_title">Código de barras</div>
+                                <label class="form-label">Simbología</label>
+                                <select class="form-select form-select-sm" t-att-value="selected.barcode_type" t-on-change="(ev) => this.updateSelected('barcode_type',ev)" t-att-disabled="readonly"><option value="code128">Code 128</option><option value="code39">Code 39</option><option value="ean13">EAN-13</option><option value="upca">UPC-A</option></select>
+                                <div class="form-check mt-2"><input class="form-check-input" type="checkbox" t-att-checked="selected.human_readable" t-on-change="(ev) => this.updateSelected('human_readable',ev)" t-att-disabled="readonly"/><label class="form-check-label">Texto legible</label></div>
+                            </div>
+                        </t>
+                        <t t-if="selected.type === 'qrcode'">
+                            <div class="o_ickab_prop_section"><div class="o_ickab_prop_section_title">QR</div><label>Magnificación ZPL</label><input type="number" min="1" max="10" class="form-control form-control-sm" t-att-value="selected.magnification || 4" t-on-change="(ev) => this.updateSelected('magnification',ev)" t-att-disabled="readonly"/></div>
+                        </t>
+                        <t t-if="['box','line'].includes(selected.type)">
+                            <div class="o_ickab_prop_section">
+                                <div class="o_ickab_prop_section_title">Trazo</div>
+                                <label>Grosor (mm)</label><input type="number" min="0.05" step="0.05" class="form-control form-control-sm" t-att-value="selected.thickness_mm || 0.25" t-on-change="(ev) => this.updateSelected('thickness_mm',ev)" t-att-disabled="readonly"/>
+                                <t t-if="selected.type === 'box'"><label class="mt-2">Redondeo ZPL (0-8)</label><input type="number" min="0" max="8" step="1" class="form-control form-control-sm" t-att-value="selected.rounding || 0" t-on-change="(ev) => this.updateSelected('rounding',ev)" t-att-disabled="readonly"/></t>
+                                <t t-if="selected.type === 'line'"><label class="mt-2">Dirección</label><select class="form-select form-select-sm" t-att-value="selected.line_direction || 'horizontal'" t-on-change="(ev) => this.updateSelected('line_direction',ev)" t-att-disabled="readonly"><option value="horizontal">Horizontal</option><option value="vertical">Vertical</option></select></t>
+                            </div>
+                        </t>
+
+                        <div class="o_ickab_prop_section">
+                            <div class="o_ickab_prop_section_title">Capas</div>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-outline-secondary btn-sm flex-fill" t-on-click="() => this.moveLayer('back')" t-att-disabled="readonly">Al fondo</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm flex-fill" t-on-click="() => this.moveLayer('front')" t-att-disabled="readonly">Al frente</button>
+                            </div>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="o_ickab_empty_properties">
+                            <div class="o_ickab_empty_icon">⌖</div>
+                            <strong>Selecciona un elemento</strong>
+                            <span>Arrástralo para moverlo o usa sus manejadores para cambiar el tamaño.</span>
+                        </div>
+                    </t>
+                </aside>
+            </div>
+        </div>
+    </t>
+</templates>

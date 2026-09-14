@@ -1,0 +1,482 @@
+/* ICKAB Label Studio 18.0.4 - plain, fully scoped CSS. */
+.o_ickab_label_studio_sheet {
+    max-width: none !important;
+    width: 100% !important;
+}
+
+.o_ickab_label_studio {
+    --ils-border: #d9dde3;
+    --ils-panel: #ffffff;
+    --ils-workspace: #eef1f5;
+    --ils-accent: #714b67;
+    --ils-accent-soft: rgba(113, 75, 103, 0.10);
+    border: 1px solid var(--ils-border);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--ils-panel);
+    width: 100%;
+    min-height: 720px;
+    outline: none;
+}
+
+.o_ickab_label_studio:focus {
+    box-shadow: 0 0 0 2px rgba(113, 75, 103, 0.08);
+}
+
+.o_ickab_label_studio .o_ickab_designer_topbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--ils-border);
+    background: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+.o_ickab_label_studio .o_ickab_tool_group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding-right: 10px;
+    border-right: 1px solid #e6e8eb;
+}
+
+.o_ickab_label_studio .o_ickab_tool_group:last-child {
+    border-right: 0;
+    margin-left: auto;
+    padding-right: 0;
+}
+
+.o_ickab_label_studio .o_ickab_grid_select {
+    width: 84px;
+}
+
+.o_ickab_label_studio .o_ickab_designer_body {
+    display: grid;
+    grid-template-columns: 285px minmax(420px, 1fr) 310px;
+    min-height: 665px;
+    background: var(--ils-workspace);
+}
+
+.o_ickab_label_studio .o_ickab_palette,
+.o_ickab_label_studio .o_ickab_properties {
+    background: var(--ils-panel);
+    min-width: 0;
+    overflow: auto;
+    max-height: 78vh;
+}
+
+.o_ickab_label_studio .o_ickab_palette {
+    border-right: 1px solid var(--ils-border);
+    padding: 14px;
+}
+
+.o_ickab_label_studio .o_ickab_properties {
+    border-left: 1px solid var(--ils-border);
+    padding: 14px;
+}
+
+.o_ickab_label_studio .o_ickab_panel_title {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.o_ickab_label_studio .o_ickab_panel_title strong {
+    font-size: 0.98rem;
+}
+
+.o_ickab_label_studio .o_ickab_empty_panel,
+.o_ickab_label_studio .o_ickab_empty_properties {
+    border: 1px dashed #cfd4da;
+    border-radius: 8px;
+    padding: 16px;
+    color: #68717d;
+    background: #fafbfc;
+}
+
+.o_ickab_label_studio .o_ickab_empty_properties {
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+}
+
+.o_ickab_label_studio .o_ickab_empty_icon {
+    font-size: 2rem;
+    color: #a4abb4;
+}
+
+.o_ickab_label_studio .o_ickab_field_search {
+    position: sticky;
+    top: 0;
+    background: #fff;
+    padding-bottom: 7px;
+    z-index: 2;
+}
+
+.o_ickab_label_studio .o_ickab_palette_hint {
+    color: #6d7580;
+    font-size: 0.78rem;
+    margin-bottom: 8px;
+}
+
+.o_ickab_label_studio .o_ickab_field_list {
+    border: 1px solid #e3e6ea;
+    border-radius: 8px;
+    max-height: 490px;
+    overflow: auto;
+    background: #fbfcfd;
+}
+
+.o_ickab_label_studio .o_ickab_field_card {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 9px;
+    border-bottom: 1px solid #eceef1;
+    background: #fff;
+    cursor: grab;
+    user-select: none;
+}
+
+.o_ickab_label_studio .o_ickab_field_card:last-child {
+    border-bottom: 0;
+}
+
+.o_ickab_label_studio .o_ickab_field_card:hover {
+    background: #f6f1f5;
+    box-shadow: inset 3px 0 0 var(--ils-accent);
+}
+
+.o_ickab_label_studio .o_ickab_field_card:active {
+    cursor: grabbing;
+}
+
+.o_ickab_label_studio .o_ickab_field_drag {
+    color: #a2a7ad;
+    font-weight: 700;
+    letter-spacing: -2px;
+    width: 14px;
+    flex: 0 0 14px;
+}
+
+.o_ickab_label_studio .o_ickab_field_content {
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.o_ickab_label_studio .o_ickab_field_label,
+.o_ickab_label_studio .o_ickab_field_meta {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.o_ickab_label_studio .o_ickab_field_label {
+    font-weight: 600;
+    color: #2c333a;
+}
+
+.o_ickab_label_studio .o_ickab_field_meta {
+    margin-top: 1px;
+    font-size: 0.74rem;
+    color: #7b828b;
+}
+
+.o_ickab_label_studio .o_ickab_shortcuts {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    border-top: 1px solid #eceef1;
+    margin-top: 14px;
+    padding-top: 12px;
+    color: #6d7580;
+    font-size: 0.75rem;
+}
+
+.o_ickab_label_studio .o_ickab_shortcuts strong {
+    color: #424950;
+    margin-bottom: 3px;
+}
+
+.o_ickab_label_studio .o_ickab_workspace {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--ils-workspace);
+}
+
+.o_ickab_label_studio .o_ickab_workspace_header,
+.o_ickab_label_studio .o_ickab_statusbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 12px;
+    background: #f9fafb;
+    border-bottom: 1px solid #dde1e6;
+}
+
+.o_ickab_label_studio .o_ickab_statusbar {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    border-top: 1px solid #dde1e6;
+    border-bottom: 0;
+    font-size: 0.77rem;
+    min-height: 35px;
+}
+
+.o_ickab_label_studio .o_ickab_statusbar span + span {
+    border-left: 1px solid #dfe3e7;
+    padding-left: 10px;
+}
+
+.o_ickab_label_studio .o_ickab_canvas_scroller {
+    flex: 1 1 auto;
+    overflow: auto;
+    min-height: 570px;
+    padding: 38px;
+}
+
+.o_ickab_label_studio .o_ickab_canvas_stage {
+    min-width: max-content;
+    min-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.o_ickab_label_studio .o_ickab_label_canvas {
+    position: relative;
+    flex: 0 0 auto;
+    background-color: #fff;
+    background-image:
+        linear-gradient(to right, rgba(95, 104, 115, 0.12) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(95, 104, 115, 0.12) 1px, transparent 1px);
+    border: 1px solid #646b73;
+    box-shadow: 0 9px 30px rgba(37, 43, 51, 0.20);
+    overflow: hidden;
+    user-select: none;
+    cursor: crosshair;
+}
+
+.o_ickab_label_studio .o_ickab_safe_zone {
+    position: absolute;
+    border: 1px dashed rgba(235, 127, 35, 0.75);
+    pointer-events: none;
+    z-index: 100000;
+}
+
+.o_ickab_label_studio .o_ickab_label_element {
+    position: absolute;
+    box-sizing: border-box;
+    overflow: visible;
+    cursor: move;
+    user-select: none;
+    min-width: 1px;
+    min-height: 1px;
+}
+
+.o_ickab_label_studio .o_ickab_label_element.is-selected {
+    outline: 1px solid var(--ils-accent);
+    box-shadow: 0 0 0 2px rgba(113, 75, 103, 0.13);
+}
+
+.o_ickab_label_studio .o_ickab_text_content {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #111;
+}
+
+.o_ickab_label_studio .o_ickab_native_code {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    pointer-events: none;
+}
+
+.o_ickab_label_studio .o_ickab_native_code.is-qr {
+    object-fit: contain;
+}
+
+.o_ickab_label_studio .o_ickab_code_placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px dashed #555;
+    font-size: 10px;
+    color: #555;
+    background: #fff;
+}
+
+.o_ickab_label_studio .o_ickab_resize_handle {
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    border: 1px solid #fff;
+    background: var(--ils-accent);
+    border-radius: 2px;
+    z-index: 100001;
+}
+
+.o_ickab_label_studio .h-nw { left: -5px; top: -5px; cursor: nwse-resize; }
+.o_ickab_label_studio .h-n { left: calc(50% - 4px); top: -5px; cursor: ns-resize; }
+.o_ickab_label_studio .h-ne { right: -5px; top: -5px; cursor: nesw-resize; }
+.o_ickab_label_studio .h-e { right: -5px; top: calc(50% - 4px); cursor: ew-resize; }
+.o_ickab_label_studio .h-se { right: -5px; bottom: -5px; cursor: nwse-resize; }
+.o_ickab_label_studio .h-s { left: calc(50% - 4px); bottom: -5px; cursor: ns-resize; }
+.o_ickab_label_studio .h-sw { left: -5px; bottom: -5px; cursor: nesw-resize; }
+.o_ickab_label_studio .h-w { left: -5px; top: calc(50% - 4px); cursor: ew-resize; }
+
+.o_ickab_label_studio .o_ickab_element_tag {
+    position: absolute;
+    left: 0;
+    top: -20px;
+    padding: 1px 5px;
+    border-radius: 4px 4px 0 0;
+    background: var(--ils-accent);
+    color: #fff;
+    font-size: 9px;
+    line-height: 16px;
+    text-transform: uppercase;
+    pointer-events: none;
+}
+
+.o_ickab_label_studio .o_ickab_prop_section {
+    border-top: 1px solid #eceef1;
+    margin-top: 14px;
+    padding-top: 12px;
+}
+
+.o_ickab_label_studio .o_ickab_prop_section_title {
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: #4b535c;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.o_ickab_label_studio .o_ickab_properties label {
+    color: #555e68;
+    font-size: 0.78rem;
+    margin-bottom: 2px;
+}
+
+.o_ickab_label_studio .o_ickab_align_buttons {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 3px;
+    margin-top: 9px;
+}
+
+@media (max-width: 1500px) {
+    .o_ickab_label_studio .o_ickab_designer_body {
+        grid-template-columns: 250px minmax(380px, 1fr) 285px;
+    }
+}
+
+@media (max-width: 1180px) {
+    .o_ickab_label_studio .o_ickab_designer_body {
+        grid-template-columns: 220px minmax(360px, 1fr);
+    }
+    .o_ickab_label_studio .o_ickab_properties {
+        grid-column: 1 / -1;
+        border-left: 0;
+        border-top: 1px solid var(--ils-border);
+        max-height: none;
+    }
+}
+
+@media (max-width: 850px) {
+    .o_ickab_label_studio .o_ickab_designer_body {
+        grid-template-columns: 1fr;
+    }
+    .o_ickab_label_studio .o_ickab_palette {
+        border-right: 0;
+        border-bottom: 1px solid var(--ils-border);
+        max-height: 320px;
+    }
+    .o_ickab_label_studio .o_ickab_canvas_scroller {
+        min-height: 430px;
+        padding: 24px;
+    }
+    .o_ickab_label_studio .o_ickab_workspace_header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+/* Relational field explorer (18.0.4). */
+.o_ickab_label_studio .o_ickab_breadcrumbs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    margin: 0 0 8px 0;
+    padding: 6px 8px;
+    border: 1px solid #e3e6ea;
+    border-radius: 7px;
+    background: #f8f9fb;
+    font-size: 0.77rem;
+}
+
+.o_ickab_label_studio .o_ickab_breadcrumbs .btn-link {
+    color: var(--ils-accent);
+    text-decoration: none;
+    font-size: 0.77rem;
+}
+
+.o_ickab_label_studio .o_ickab_breadcrumb_sep {
+    color: #9aa1aa;
+}
+
+.o_ickab_label_studio .o_ickab_field_actions {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 3px;
+}
+
+.o_ickab_label_studio .o_ickab_field_actions .btn {
+    min-width: 28px;
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+.o_ickab_label_studio .o_ickab_field_path_value {
+    padding: 7px 8px;
+    border: 1px solid #dfe3e7;
+    border-radius: 6px;
+    background: #f8f9fb;
+    font-weight: 600;
+    color: #343a40;
+    overflow-wrap: anywhere;
+}
+
+.o_ickab_label_studio .o_ickab_field_path_code {
+    display: block;
+    margin-top: 4px;
+    padding: 4px 6px;
+    border-radius: 4px;
+    background: #f1f3f5;
+    color: #555e68;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}

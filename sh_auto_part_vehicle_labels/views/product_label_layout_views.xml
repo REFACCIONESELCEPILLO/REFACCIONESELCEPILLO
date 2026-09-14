@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_label_layout_form_auto_part_zpl" model="ir.ui.view">
+        <field name="name">product.label.layout.form.auto.part.zpl</field>
+        <field name="model">product.label.layout</field>
+        <field name="inherit_id" ref="product.product_label_layout_form"/>
+        <field name="priority">50</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='print_format']" position="after">
+                <field name="label_dpi"
+                       invisible="print_format not in ['auto_part_zpl_50_30', 'auto_part_zpl_70_50']"/>
+            </xpath>
+            <xpath expr="//form/group" position="after">
+                <group col="1"
+                       string="Vista previa"
+                       invisible="print_format not in ['auto_part_zpl_50_30', 'auto_part_zpl_70_50']">
+                    <field name="label_preview_html" nolabel="1" readonly="1"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

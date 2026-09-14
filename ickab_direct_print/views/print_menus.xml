@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_ickab_direct_print_root" name="Direct Print" sequence="90" groups="ickab_direct_print.group_direct_print_user" web_icon="ickab_direct_print,static/description/icon.png"/>
+
+    <menuitem id="menu_ickab_direct_print_jobs" name="Cola de impresión" parent="menu_ickab_direct_print_root" action="action_ickab_print_job" sequence="10"/>
+
+    <menuitem id="menu_ickab_direct_print_configuration" name="Configuración" parent="menu_ickab_direct_print_root" sequence="80" groups="ickab_direct_print.group_direct_print_manager"/>
+    <menuitem id="menu_ickab_direct_print_hosts" name="Equipos / Agentes" parent="menu_ickab_direct_print_configuration" action="action_ickab_print_host" sequence="10"/>
+    <menuitem id="menu_ickab_direct_print_printers" name="Impresoras" parent="menu_ickab_direct_print_configuration" action="action_ickab_print_printer" sequence="20"/>
+    <menuitem id="menu_ickab_direct_print_papers" name="Tipos de papel" parent="menu_ickab_direct_print_configuration" action="action_ickab_print_paper" sequence="30"/>
+    <menuitem id="menu_ickab_direct_print_profiles" name="Perfiles predeterminados" parent="menu_ickab_direct_print_configuration" action="action_ickab_print_profile" sequence="40"/>
+    <menuitem id="menu_ickab_print_compatibility_profile" name="Compatibilidad de impresoras" parent="menu_ickab_direct_print_configuration" action="action_ickab_print_compatibility_profile" sequence="45" groups="ickab_direct_print.group_direct_print_manager"/>
+    <menuitem id="menu_ickab_direct_print_manual" name="Guía de instalación" parent="menu_ickab_direct_print_configuration" action="action_ickab_direct_print_manual" sequence="90"/>
+</odoo>

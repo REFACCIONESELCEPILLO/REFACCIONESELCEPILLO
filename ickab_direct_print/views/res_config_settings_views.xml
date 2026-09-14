@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_ickab_direct_print" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.ickab.direct.print</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app string="ICKAB Direct Print" name="ickab_direct_print" groups="ickab_direct_print.group_direct_print_manager">
+                    <block title="Impresión directa" name="ickab_direct_print_general">
+                        <setting string="Habilitar impresión directa" help="Activa la infraestructura de cola y agentes para esta compañía.">
+                            <field name="ickab_direct_print_enabled"/>
+                        </setting>
+                    </block>
+
+                    <block title="Etiquetas" name="ickab_direct_print_labels">
+                        <setting string="Impresora predeterminada" help="Sólo se muestran impresoras de tipo Etiquetas disponibles para la compañía.">
+                            <field name="ickab_default_label_printer_id" domain="[('company_id','=',company_id),('printer_type','=','label'),('active','=',True)]"/>
+                        </setting>
+                        <setting string="Papel de respaldo (opcional)" help="Sólo se usa cuando un reporte de etiquetas NO indica su tamaño. Si el usuario eligió 50×30, 70×50 u otro formato en el documento, esa elección tiene prioridad y este valor se ignora.">
+                            <field name="ickab_default_label_paper_id" domain="['|',('company_id','=',False),('company_id','=',company_id),('category','=','label')]"/>
+                        </setting>
+                    </block>
+
+                    <block title="Tickets / POS" name="ickab_direct_print_tickets">
+                        <setting string="Impresora predeterminada">
+                            <field name="ickab_default_ticket_printer_id" domain="[('company_id','=',company_id),('printer_type','=','ticket'),('active','=',True)]"/>
+                        </setting>
+                        <setting string="Papel predeterminado">
+                            <field name="ickab_default_ticket_paper_id" domain="['|',('company_id','=',False),('company_id','=',company_id),('category','=','ticket')]"/>
+                        </setting>
+                    </block>
+
+                    <block title="Documentos" name="ickab_direct_print_documents">
+                        <setting string="Impresora predeterminada" help="Usada como fallback para cotizaciones, pedidos, facturas y otros PDF.">
+                            <field name="ickab_default_document_printer_id" domain="[('company_id','=',company_id),('printer_type','=','document'),('active','=',True)]"/>
+                        </setting>
+                        <setting string="Papel predeterminado">
+                            <field name="ickab_default_document_paper_id" domain="['|',('company_id','=',False),('company_id','=',company_id),('category','=','document')]"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>

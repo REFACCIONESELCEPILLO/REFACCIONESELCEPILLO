@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_ickab_direct_print_manual" model="ir.actions.act_url">
+        <field name="name">Guía de instalación</field>
+        <field name="url">/ickab_direct_print/static/description/configuration_manual.html</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

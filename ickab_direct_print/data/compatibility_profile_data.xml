@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Perfil de referencia del cliente: especificación oficial Zebra. -->
+    <record id="compat_zebra_gk420d" model="ickab.print.compatibility.profile">
+        <field name="name">Zebra GK420d — ZPL 203 dpi</field>
+        <field name="manufacturer">Zebra</field>
+        <field name="model_name">GK420d</field>
+        <field name="name_pattern">GK\s*420\s*d|GK420D</field>
+        <field name="printer_type">label</field>
+        <field name="language">zpl</field>
+        <field name="dpi">203</field>
+        <field name="recommended_transport">windows_raw</field>
+        <field name="validation_status">catalog</field>
+        <field name="label_direction">1</field>
+        <field name="alternate_languages">EPL / EPL2</field>
+        <field name="source_reference">Zebra GK420d User Guide — GK Series Thermal Printers</field>
+        <field name="priority">100</field>
+        <field name="notes">La GK420d es 203 dpi y admite ZPL y EPL con detección automática. ICKAB estandariza el perfil en ZPL. Por USB en Windows usar Windows RAW; por Ethernet puede usarse TCP/IP RAW si el equipo/interfaz lo permite.</field>
+    </record>
+
+    <!-- Validado físicamente durante las pruebas ICKAB con Windows RAW + USB. -->
+    <record id="compat_4barcode_4b2054l" model="ickab.print.compatibility.profile">
+        <field name="name">4BARCODE 4B-2054L — TSPL 203 dpi</field>
+        <field name="manufacturer">4BARCODE</field>
+        <field name="model_name">4B-2054L</field>
+        <field name="name_pattern">4BARCODE.*4B[- ]?2054L|4B[- ]?2054L</field>
+        <field name="printer_type">label</field>
+        <field name="language">tspl</field>
+        <field name="dpi">203</field>
+        <field name="recommended_transport">windows_raw</field>
+        <field name="validation_status">lab</field>
+        <field name="label_direction">1</field>
+        <field name="tspl_bitmap_one_is_black" eval="False"/>
+        <field name="supports_inline_bitmap" eval="True"/>
+        <field name="tspl_scalable_font0" eval="False"/>
+        <field name="source_reference">4BARCODE 4B-2054L User Manual + validación física ICKAB</field>
+        <field name="priority">100</field>
+        <field name="notes">Validada físicamente por USB/Windows RAW con TSPL en etiqueta 50 x 30 mm. La validación de 1, 3 y 10 etiquetas confirmó avance estable sin deriva. En la unidad probada la fuente TSPL2 interna 0 no ofrece una escala física confiable para texto pequeño, por lo que ICKAB usa las fuentes residentes fijas 1..5. La unidad interpreta la polaridad BITMAP de forma invertida respecto del perfil TSPL estándar.</field>
+    </record>
+
+    <record id="compat_generic_zpl_203" model="ickab.print.compatibility.profile">
+        <field name="name">Genérica ZPL — 203 dpi</field>
+        <field name="manufacturer">Genérica / compatible</field>
+        <field name="model_name">ZPL 203 dpi</field>
+        <field name="printer_type">label</field>
+        <field name="language">zpl</field>
+        <field name="dpi">203</field>
+        <field name="validation_status">unverified</field>
+        <field name="priority">10</field>
+        <field name="notes">Usar sólo cuando el manual o una prueba RAW confirme ZPL/ZPL II. Ejecutar Enviar prueba antes de producción.</field>
+    </record>
+
+    <record id="compat_generic_tspl_203" model="ickab.print.compatibility.profile">
+        <field name="name">Genérica TSPL / TSPL2 — 203 dpi</field>
+        <field name="manufacturer">Genérica / compatible</field>
+        <field name="model_name">TSPL/TSPL2 203 dpi</field>
+        <field name="printer_type">label</field>
+        <field name="language">tspl</field>
+        <field name="dpi">203</field>
+        <field name="validation_status">unverified</field>
+        <field name="priority">10</field>
+        <field name="notes">Perfil manual para impresoras cuyo manual o prueba RAW confirme TSPL/TSPL2.</field>
+    </record>
+
+    <record id="compat_generic_epl_203" model="ickab.print.compatibility.profile">
+        <field name="name">Genérica EPL / EPL2 — 203 dpi</field>
+        <field name="manufacturer">Genérica / compatible</field>
+        <field name="model_name">EPL/EPL2 203 dpi</field>
+        <field name="printer_type">label</field>
+        <field name="language">epl</field>
+        <field name="dpi">203</field>
+        <field name="validation_status">unverified</field>
+        <field name="priority">10</field>
+        <field name="notes">Perfil manual para equipos heredados o compatibles EPL/EPL2. Para Zebra GK420d se recomienda ZPL como estándar ICKAB.</field>
+    </record>
+</odoo>

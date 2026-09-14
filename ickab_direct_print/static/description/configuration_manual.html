@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>ICKAB Direct Print - Manual de configuración</title>
+<style>
+body{font-family:Arial,Helvetica,sans-serif;max-width:980px;margin:28px auto;padding:0 18px;line-height:1.55;color:#252525}
+h1,h2,h3{color:#714B67}h1{margin-bottom:8px}.lead{font-size:18px;color:#555}.box{border:1px solid #ddd;border-radius:8px;padding:16px;margin:16px 0}.ok{background:#eef8ee;border-color:#b9ddb9}.info{background:#f3f7fb;border-color:#bfd3e6}.warn{background:#fff8e6;border-color:#eed58d}.step{display:flex;gap:14px;align-items:flex-start;margin:20px 0}.n{min-width:34px;height:34px;border-radius:50%;background:#714B67;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold}.step h3{margin:3px 0 5px}.path{font-weight:bold;color:#714B67}code{background:#f5f5f5;padding:2px 5px;border-radius:4px}table{border-collapse:collapse;width:100%;margin:12px 0}th,td{border:1px solid #ddd;padding:9px;text-align:left}th{background:#f5f5f5}.small{font-size:13px;color:#666}
+</style>
+</head>
+<body>
+<h1>ICKAB Direct Print</h1>
+<p class="lead">Guía de configuración para usuarios — instalación inicial sin conocimientos técnicos.</p>
+<div class="box ok"><strong>Objetivo:</strong> conectar una PC con Odoo para que pueda imprimir directamente en etiquetas, tickets o documentos sin descargar archivos manualmente.</div>
+
+<h2>Antes de empezar</h2>
+<p>Necesitas una PC Windows con acceso a Odoo y a las impresoras que utilizará. La impresora USB debe estar instalada en Windows; una impresora de red debe ser accesible desde esa PC.</p>
+
+<h2>Instalación en 5 pasos</h2>
+<div class="step"><div class="n">1</div><div><h3>Crear el equipo en Odoo</h3><p>Abre <span class="path">Direct Print → Configuración → Equipos / Agentes</span>, pulsa <strong>Nuevo</strong>, escribe un nombre fácil como <code>PC MOSTRADOR</code> y guarda.</p></div></div>
+<div class="step"><div class="n">2</div><div><h3>Generar el código de instalación</h3><p>Dentro del equipo pulsa <strong>Generar código de instalación</strong>. Odoo mostrará un código de 8 números válido durante 15 minutos.</p><div class="box info">Para una instalación normal <strong>no necesitas copiar UUID ni Token</strong>. Esos datos están en Información avanzada.</div></div></div>
+<div class="step"><div class="n">3</div><div><h3>Ejecutar el instalador en Windows</h3><p>Descomprime el ZIP del agente en <code>C:\ICKAB\PrintAgent</code> y haz doble clic en <strong>INSTALAR.bat</strong>. El asistente revisará requisitos y te pedirá solamente la URL de Odoo y el código de 8 números.</p></div></div>
+<div class="step"><div class="n">4</div><div><h3>Confirmar que el equipo está En línea</h3><p>Regresa a <span class="path">Direct Print → Configuración → Equipos / Agentes</span>. El estado debe cambiar a <strong>En línea</strong>. Odoo llenará automáticamente plataforma, nombre del equipo, versión del agente y última conexión.</p></div></div>
+<div class="step"><div class="n">5</div><div><h3>Revisar y configurar las impresoras</h3><p>Pulsa <strong>Impresoras</strong>. Clasifica cada impresora según su uso y define transporte, lenguaje, DPI y papel.</p></div></div>
+
+<h2>Configuración típica de impresoras</h2>
+<table><tr><th>Uso</th><th>Transporte</th><th>Lenguaje</th><th>Papel</th></tr>
+<tr><td>Zebra USB</td><td>Windows RAW</td><td>ZPL</td><td>50x30 / 70x50</td></tr>
+<tr><td>Zebra de red</td><td>TCP/IP RAW</td><td>ZPL</td><td>50x30 / 70x50</td></tr>
+<tr><td>Tickets</td><td>Windows RAW o TCP/IP RAW</td><td>ESC/POS</td><td>58 / 80 mm</td></tr>
+<tr><td>Carta/A4</td><td>Windows Spooler</td><td>PDF</td><td>Carta / A4</td></tr></table>
+
+<h2>Primera prueba</h2>
+<ol><li>Confirma equipo <strong>En línea</strong>.</li><li>Abre la impresora.</li><li>Pulsa <strong>Enviar prueba</strong>.</li><li>Abre <span class="path">Direct Print → Cola de impresión</span>.</li><li>Confirma que el trabajo termine en <strong>Impreso</strong>.</li><li>Confirma la salida física.</li></ol>
+
+<h2>Si algo no funciona</h2>
+<div class="box warn"><strong>En la PC ejecuta DIAGNOSTICO.bat.</strong> El asistente revisa conexión con Odoo, autorización, impresoras detectadas y sincronización.</div>
+<p><strong>Equipo Fuera de línea:</strong> inicia el agente y revisa conexión a Odoo.<br/>
+<strong>No aparecen impresoras:</strong> verifica que estén instaladas en Windows y ejecuta el diagnóstico.<br/>
+<strong>Código vencido:</strong> genera uno nuevo en Odoo.<br/>
+<strong>Trabajo en Error:</strong> abre el trabajo y revisa el mensaje de error.</p>
+
+<h2>Odoo.sh y on-premise</h2>
+<p>El procedimiento para el usuario es el mismo. El agente inicia la conexión hacia Odoo, por lo que Odoo.sh no necesita acceso directo a USB o a la red privada de la sucursal.</p>
+<p class="small">UUID, Token y capacidades JSON son información técnica para administradores y no forman parte de la instalación normal.</p>
+<h2>¿Qué dirección de Odoo debo usar?</h2>
+<p>Usa la misma dirección con la que entras a Odoo desde la PC donde instalarás el agente. Puede ser:</p>
+<ul>
+<li><strong>Servidor local:</strong> <code>http://192.168.56.10:1902</code></li>
+<li><strong>On-premise con dominio:</strong> <code>https://ickab.mx</code></li>
+<li><strong>Odoo.sh / nube:</strong> <code>https://miempresa.odoo.com</code></li>
+</ul>
+<p>Puedes copiar la URL completa desde el navegador; el instalador quitará automáticamente <code>/web</code>, parámetros y fragmentos.</p>
+</body></html>

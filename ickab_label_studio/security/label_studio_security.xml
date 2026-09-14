@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="group_label_studio_user" model="res.groups">
+        <field name="name">ICKAB Label Studio / Usuario</field>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="group_label_studio_manager" model="res.groups">
+        <field name="name">ICKAB Label Studio / Diseñador</field>
+        <field name="implied_ids" eval="[(4, ref('ickab_label_studio.group_label_studio_user'))]"/>
+    </record>
+
+    <record id="rule_label_template_company" model="ir.rule">
+        <field name="name">ICKAB Label Studio: compañías permitidas</field>
+        <field name="model_id" ref="model_ickab_label_template"/>
+        <field name="groups" eval="[(4, ref('ickab_label_studio.group_label_studio_user')), (4, ref('base.group_system'))]"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

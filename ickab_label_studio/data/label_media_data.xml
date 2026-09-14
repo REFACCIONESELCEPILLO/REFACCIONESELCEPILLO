@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo noupdate="1">
+    <record id="media_product_50x30" model="ickab.label.media">
+        <field name="name">Producto 50 × 30 mm</field><field name="code">product_50x30</field>
+        <field name="category">product</field><field name="shape">rectangle</field>
+        <field name="width_mm">50</field><field name="height_mm">30</field><field name="gap_mm">2</field><field name="safe_margin_mm">1.5</field>
+    </record>
+    <record id="media_product_60x40" model="ickab.label.media">
+        <field name="name">Producto 60 × 40 mm</field><field name="code">product_60x40</field>
+        <field name="category">product</field><field name="shape">rectangle</field>
+        <field name="width_mm">60</field><field name="height_mm">40</field><field name="gap_mm">2</field><field name="safe_margin_mm">1.5</field>
+    </record>
+    <record id="media_product_100x50" model="ickab.label.media">
+        <field name="name">Producto 100 × 50 mm</field><field name="code">product_100x50</field>
+        <field name="category">product</field><field name="shape">rectangle</field>
+        <field name="width_mm">100</field><field name="height_mm">50</field><field name="gap_mm">2</field><field name="safe_margin_mm">2</field>
+    </record>
+    <record id="media_shipping_100x150" model="ickab.label.media">
+        <field name="name">Paquetería 100 × 150 mm</field><field name="code">shipping_100x150</field>
+        <field name="category">shipping</field><field name="shape">rectangle</field>
+        <field name="width_mm">100</field><field name="height_mm">150</field><field name="gap_mm">3</field><field name="safe_margin_mm">3</field>
+    </record>
+    <record id="media_shipping_4x6" model="ickab.label.media">
+        <field name="name">Paquetería 4 × 6 pulgadas (101.6 × 152.4 mm)</field><field name="code">shipping_4x6</field>
+        <field name="category">shipping</field><field name="shape">rectangle</field>
+        <field name="width_mm">101.6</field><field name="height_mm">152.4</field><field name="gap_mm">3</field><field name="safe_margin_mm">3</field>
+    </record>
+    <record id="media_shipping_a6" model="ickab.label.media">
+        <field name="name">Paquetería A6 (105 × 148 mm)</field><field name="code">shipping_a6</field>
+        <field name="category">shipping</field><field name="shape">rectangle</field>
+        <field name="width_mm">105</field><field name="height_mm">148</field><field name="gap_mm">3</field><field name="safe_margin_mm">3</field>
+    </record>
+    <record id="media_circle_30" model="ickab.label.media">
+        <field name="name">Circular Ø 30 mm</field><field name="code">circle_30</field>
+        <field name="category">circular</field><field name="shape">circle</field>
+        <field name="width_mm">30</field><field name="height_mm">30</field><field name="gap_mm">2</field><field name="safe_margin_mm">2</field>
+    </record>
+    <record id="media_circle_40" model="ickab.label.media">
+        <field name="name">Circular Ø 40 mm</field><field name="code">circle_40</field>
+        <field name="category">circular</field><field name="shape">circle</field>
+        <field name="width_mm">40</field><field name="height_mm">40</field><field name="gap_mm">2</field><field name="safe_margin_mm">2.5</field>
+    </record>
+    <record id="media_circle_50" model="ickab.label.media">
+        <field name="name">Circular Ø 50 mm</field><field name="code">circle_50</field>
+        <field name="category">circular</field><field name="shape">circle</field>
+        <field name="width_mm">50</field><field name="height_mm">50</field><field name="gap_mm">2</field><field name="safe_margin_mm">3</field>
+    </record>
+    <record id="media_square_50" model="ickab.label.media">
+        <field name="name">Cuadrada 50 × 50 mm</field><field name="code">square_50</field>
+        <field name="category">general</field><field name="shape">square</field>
+        <field name="width_mm">50</field><field name="height_mm">50</field><field name="gap_mm">2</field><field name="safe_margin_mm">2</field>
+    </record>
+</odoo>
