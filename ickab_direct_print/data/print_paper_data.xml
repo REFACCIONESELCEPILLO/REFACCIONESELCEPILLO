@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="paper_label_50x30" model="ickab.print.paper">
+        <field name="name">Etiqueta 50 × 30 mm</field>
+        <field name="code">LABEL_50X30</field>
+        <field name="category">label</field>
+        <field name="width_mm">50</field>
+        <field name="height_mm">30</field>
+        <field name="orientation">landscape</field>
+        <field name="default_dpi">203</field>
+        <field name="sensor_mode">gap</field>
+        <field name="gap_mm">2.0</field>
+    </record>
+    <record id="paper_label_70x50" model="ickab.print.paper">
+        <field name="name">Etiqueta 70 × 50 mm</field>
+        <field name="code">LABEL_70X50</field>
+        <field name="category">label</field>
+        <field name="width_mm">70</field>
+        <field name="height_mm">50</field>
+        <field name="orientation">landscape</field>
+        <field name="default_dpi">203</field>
+        <field name="sensor_mode">gap</field>
+        <field name="gap_mm">2.0</field>
+    </record>
+    <record id="paper_ticket_58" model="ickab.print.paper">
+        <field name="name">Ticket 58 mm</field>
+        <field name="code">TICKET_58</field>
+        <field name="category">ticket</field>
+        <field name="width_mm">58</field>
+        <field name="height_mm">0</field>
+        <field name="default_dpi">na</field>
+    </record>
+    <record id="paper_ticket_80" model="ickab.print.paper">
+        <field name="name">Ticket 80 mm</field>
+        <field name="code">TICKET_80</field>
+        <field name="category">ticket</field>
+        <field name="width_mm">80</field>
+        <field name="height_mm">0</field>
+        <field name="default_dpi">na</field>
+    </record>
+    <record id="paper_letter" model="ickab.print.paper">
+        <field name="name">Carta</field>
+        <field name="code">LETTER</field>
+        <field name="category">document</field>
+        <field name="width_mm">215.9</field>
+        <field name="height_mm">279.4</field>
+        <field name="default_dpi">na</field>
+    </record>
+    <record id="paper_a4" model="ickab.print.paper">
+        <field name="name">A4</field>
+        <field name="code">A4</field>
+        <field name="category">document</field>
+        <field name="width_mm">210</field>
+        <field name="height_mm">297</field>
+        <field name="default_dpi">na</field>
+    </record>
+</odoo>

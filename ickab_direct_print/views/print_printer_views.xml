@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ickab_print_printer_search" model="ir.ui.view">
+        <field name="name">ickab.print.printer.search</field>
+        <field name="model">ickab.print.printer</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="host_id"/>
+                <field name="compatibility_profile_id"/>
+                <filter string="Disponibles" name="ready" domain="[('state','=','ready')]"/>
+                <filter string="Etiquetas" name="label" domain="[('printer_type','=','label')]"/>
+                <filter string="Tickets" name="ticket" domain="[('printer_type','=','ticket')]"/>
+                <filter string="Documentos" name="document" domain="[('printer_type','=','document')]"/>
+                <group expand="0" string="Agrupar por">
+                    <filter string="Host" name="group_host" context="{'group_by':'host_id'}"/>
+                    <filter string="Tipo" name="group_type" context="{'group_by':'printer_type'}"/>
+                    <filter string="Lenguaje" name="group_language" context="{'group_by':'language'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_ickab_print_printer_list" model="ir.ui.view">
+        <field name="name">ickab.print.printer.list</field>
+        <field name="model">ickab.print.printer</field>
+        <field name="arch" type="xml">
+            <list decoration-success="state == 'ready'" decoration-muted="state == 'unavailable'" decoration-danger="state == 'error'">
+                <field name="name"/>
+                <field name="host_id"/>
+                <field name="printer_type"/>
+                <field name="transport"/>
+                <field name="language"/>
+                <field name="dpi"/>
+                <field name="compatibility_profile_id" optional="hide"/>
+                <field name="default_paper_id"/>
+                <field name="state" widget="badge"/>
+                <field name="last_seen"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ickab_print_printer_form" model="ir.ui.view">
+        <field name="name">ickab.print.printer.form</field>
+        <field name="model">ickab.print.printer</field>
+        <field name="arch" type="xml">
+            <form string="Impresora">
+                <header>
+                    <button name="action_test_print" type="object" string="Prueba de comunicación" class="btn-primary" groups="ickab_direct_print.group_direct_print_manager"/>
+                    <field name="state" widget="statusbar" statusbar_visible="unavailable,ready,error"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="host_id"/>
+                            <field name="source"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="printer_type"/>
+                            <field name="transport"/>
+                            <field name="language"/>
+                            <field name="dpi" invisible="printer_type == 'document'"/>
+                            <field name="last_seen" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Compatibilidad de impresora">
+                        <group>
+                            <field name="suggested_compatibility_profile_id" readonly="1"/>
+                            <field name="compatibility_profile_id"/>
+                            <field name="compatibility_validation_status" readonly="1"/>
+                        </group>
+                        <group>
+                            <button name="action_apply_compatibility_profile"
+                                    type="object"
+                                    string="Aplicar compatibilidad"
+                                    class="btn-secondary"
+                                    groups="ickab_direct_print.group_direct_print_manager"/>
+                            <field name="compatibility_notes" readonly="1" nolabel="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Sistema / descubrimiento">
+                        <field name="system_uid" readonly="source == 'discovered'"/>
+                        <field name="system_name"/>
+                        <field name="device_uri"/>
+                        <field name="is_system_default" readonly="1"/>
+                    </group>
+                    <group string="TCP/IP RAW" invisible="transport != 'tcp_raw'">
+                        <field name="network_host" required="transport == 'tcp_raw'"/>
+                        <field name="network_port" required="transport == 'tcp_raw'"/>
+                    </group>
+                    <group string="Bluetooth" invisible="transport not in ['bluetooth_spp', 'bluetooth_ble']">
+                        <field name="bluetooth_name"/>
+                        <field name="bluetooth_address" required="transport in ['bluetooth_spp','bluetooth_ble']"/>
+                        <field name="bluetooth_spp_uuid" invisible="transport != 'bluetooth_spp'"/>
+                        <field name="ble_service_uuid" invisible="transport != 'bluetooth_ble'"/>
+                        <field name="ble_characteristic_uuid" invisible="transport != 'bluetooth_ble'"/>
+                    </group>
+                    <group string="USB OTG" invisible="transport != 'usb_otg'">
+                        <field name="usb_vendor_id"/>
+                        <field name="usb_product_id"/>
+                    </group>
+                    <group string="Papel">
+                        <field name="paper_ids" widget="many2many_tags"/>
+                        <field name="default_paper_id"/>
+                    </group>
+                    <notebook>
+                        <page string="Capacidades"><field name="capabilities_json" readonly="1" nolabel="1"/></page>
+                        <page string="Último error" invisible="not last_error"><field name="last_error" readonly="1" nolabel="1"/></page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ickab_print_printer" model="ir.actions.act_window">
+        <field name="name">Impresoras</field>
+        <field name="res_model">ickab.print.printer</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_ickab_print_printer_search"/>
+    </record>
+</odoo>

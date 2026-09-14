@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ickab_direct_print_wizard_form" model="ir.ui.view">
+        <field name="name">ickab.direct.print.wizard.form</field>
+        <field name="model">ickab.direct.print.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Impresión directa">
+                <field name="available_printer_ids" invisible="1"/>
+                <field name="paper_locked" invisible="1"/>
+                <div class="alert alert-info" role="alert" invisible="not paper_locked">
+                    <strong>Formato ya seleccionado.</strong>
+                    El tamaño se eligió en el documento anterior. Ahora selecciona la impresora que quieres usar.
+                </div>
+                <group>
+                    <field name="company_id" invisible="1"/>
+                    <field name="report_id"/>
+                    <field name="document_kind"/>
+                    <field name="paper_id" readonly="paper_locked"/>
+                    <field name="printer_id"/>
+                    <field name="copies"/>
+                </group>
+                <group string="Disponibilidad">
+                    <field name="host_state" widget="badge" readonly="1"/>
+                    <field name="printer_state" widget="badge" readonly="1"/>
+                </group>
+                <field name="res_model" invisible="1"/>
+                <field name="res_ids_json" invisible="1"/>
+                <field name="report_data_json" invisible="1"/>
+                <footer>
+                    <button name="action_print" type="object" string="Imprimir ahora" class="btn-primary"/>
+                    <button name="action_download" type="object" string="Descargar archivo" class="btn-secondary"/>
+                    <button string="Cancelar" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

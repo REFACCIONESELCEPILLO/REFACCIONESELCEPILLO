@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_ickab_label_zpl_import_wizard" model="ir.ui.view">
+        <field name="name">ickab.label.zpl.import.wizard.form</field>
+        <field name="model">ickab.label.zpl.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Importar ZPL">
+                <group>
+                    <group>
+                        <field name="target_template_id" invisible="not target_template_id" readonly="1"/>
+                        <field name="template_name"/>
+                        <field name="model_id" options="{'no_create': True}"/>
+                    </group>
+                    <group>
+                        <field name="source_dpi"/>
+                        <field name="import_mode"/>
+                    </group>
+                </group>
+                <group>
+                    <field name="zpl_file" filename="zpl_filename"/>
+                    <field name="zpl_filename" invisible="1"/>
+                </group>
+                <div class="alert alert-info" role="alert">
+                    <strong>Automático</strong> conserva el ZPL RAW si detecta comandos que no pueden convertirse de forma segura. Así no se pierde comportamiento del archivo original.
+                </div>
+                <separator string="Código ZPL"/>
+                <field name="source_zpl" widget="text" placeholder="También puedes pegar aquí: ^XA&#10;^PW812&#10;^LL1218&#10;...&#10;^XZ" nolabel="1"/>
+                <footer>
+                    <button name="action_import" type="object" string="Importar" class="btn-primary"/>
+                    <button string="Cancelar" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ickab_label_zpl_import" model="ir.actions.act_window">
+        <field name="name">Importar ZPL</field>
+        <field name="res_model">ickab.label.zpl.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

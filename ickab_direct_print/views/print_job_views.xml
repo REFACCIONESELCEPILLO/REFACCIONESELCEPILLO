@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ickab_print_job_search" model="ir.ui.view">
+        <field name="name">ickab.print.job.search</field>
+        <field name="model">ickab.print.job</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="printer_id"/>
+                <field name="user_id"/>
+                <field name="source_display_name" string="Documento de origen"/>
+                <filter string="Pendientes" name="pending" domain="[('state','in',['queued','claimed','printing'])]"/>
+                <filter string="Errores" name="errors" domain="[('state','=','error')]"/>
+                <filter string="Impresos" name="done" domain="[('state','=','done')]"/>
+                <group expand="0" string="Agrupar por">
+                    <filter string="Estado" name="group_state" context="{'group_by':'state'}"/>
+                    <filter string="Impresora" name="group_printer" context="{'group_by':'printer_id'}"/>
+                    <filter string="Usuario" name="group_user" context="{'group_by':'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_ickab_print_job_list" model="ir.ui.view">
+        <field name="name">ickab.print.job.list</field>
+        <field name="model">ickab.print.job</field>
+        <field name="arch" type="xml">
+            <list create="false" decoration-success="state == 'done'" decoration-warning="state in ('queued','claimed','printing')" decoration-danger="state == 'error'" decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="queued_at" string="En cola desde"/>
+                <field name="user_id"/>
+                <field name="printer_id"/>
+                <field name="paper_id"/>
+                <field name="payload_type" string="Formato"/>
+                <field name="copies"/>
+                <field name="source_display_name" string="Documento de origen"/>
+                <field name="attempts" string="Intentos"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ickab_print_job_form" model="ir.ui.view">
+        <field name="name">ickab.print.job.form</field>
+        <field name="model">ickab.print.job</field>
+        <field name="arch" type="xml">
+            <form string="Trabajo de impresión" create="false">
+                <header>
+                    <button name="action_refresh_status" type="object" string="Actualizar estado" class="btn-secondary"/>
+                    <button name="action_reprint" type="object" string="Reimprimir" class="btn-primary" invisible="state != 'done'"/>
+                    <button name="action_retry" type="object" string="Reintentar" class="btn-primary" invisible="state not in ('error','cancelled')" groups="ickab_direct_print.group_direct_print_manager"/>
+                    <button name="action_cancel" type="object" string="Cancelar" invisible="state not in ('queued','claimed')" groups="ickab_direct_print.group_direct_print_manager"/>
+                    <field name="state" widget="statusbar" statusbar_visible="queued,claimed,printing,done,error,cancelled"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-info" role="alert" invisible="state in ('done','error','cancelled')">
+                        El agente procesa el trabajo en segundo plano. Pulsa <strong>Actualizar estado</strong> para ver el avance más reciente.
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="user_id"/>
+                            <field name="printer_id"/>
+                            <field name="host_id"/>
+                            <field name="paper_id"/>
+                            <field name="copies"/>
+                        </group>
+                        <group>
+                            <field name="payload_type" string="Formato"/>
+                            <field name="filename" string="Archivo"/>
+                            <field name="mime_type" string="Tipo MIME"/>
+                            <field name="payload_size" string="Tamaño (bytes)"/>
+                            <field name="checksum" string="Verificación SHA-256"/>
+                            <field name="attempts" string="Intentos"/>
+                        </group>
+                    </group>
+                    <group string="Origen">
+                        <field name="source_model" string="Modelo de origen"/>
+                        <field name="source_res_id" string="ID de origen"/>
+                        <field name="source_display_name" string="Documento de origen"/>
+                        <field name="report_id" string="Reporte"/>
+                    </group>
+                    <group string="Tiempos">
+                        <field name="queued_at" string="En cola desde"/>
+                        <field name="claimed_at" string="Asignado al agente"/>
+                        <field name="printing_at" string="Inicio de impresión"/>
+                        <field name="done_at" string="Finalizado"/>
+                        <field name="agent_reference" string="Referencia del agente"/>
+                    </group>
+                    <notebook>
+                        <page string="Error" invisible="not error_message">
+                            <field name="error_message" readonly="1" nolabel="1"/>
+                        </page>
+                        <page string="Payload de lenguaje" invisible="payload_type not in ['zpl','tspl','epl','cpcl']" groups="ickab_direct_print.group_direct_print_manager">
+                            <field name="payload_text" readonly="1" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ickab_print_job" model="ir.actions.act_window">
+        <field name="name">Cola de impresión</field>
+        <field name="res_model">ickab.print.job</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_ickab_print_job_search"/>
+        <field name="context">{'search_default_pending': 1}</field>
+    </record>
+</odoo>

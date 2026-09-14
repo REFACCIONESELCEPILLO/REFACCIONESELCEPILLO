@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="act_report_xml_view_ickab_direct_print" model="ir.ui.view">
+        <field name="name">ir.actions.report.form.ickab.direct.print</field>
+        <field name="model">ir.actions.report</field>
+        <field name="inherit_id" ref="base.act_report_xml_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="ICKAB Direct Print" groups="ickab_direct_print.group_direct_print_manager">
+                    <group>
+                        <group>
+                            <field name="company_id" invisible="1"/>
+                            <field name="ickab_print_mode"/>
+                            <field name="ickab_document_kind" invisible="ickab_print_mode == 'standard'"/>
+                            <field name="ickab_text_language" invisible="ickab_print_mode == 'standard' or report_type != 'qweb-text'"/>
+                            <field name="ickab_fallback_download" invisible="ickab_print_mode != 'direct'"/>
+                        </group>
+                        <group invisible="ickab_print_mode == 'standard'">
+                            <field name="ickab_printer_id"/>
+                            <field name="ickab_paper_id"/>
+                            <field name="ickab_copies"/>
+                        </group>
+                    </group>
+                    <div class="text-muted">
+                        <p><strong>Descarga estándar:</strong> Odoo conserva su comportamiento normal.</p>
+                        <p><strong>Preguntar:</strong> al imprimir se abre un selector de impresora, papel y copias.</p>
+                        <p><strong>Directo:</strong> crea el trabajo de impresión sin descargar el archivo.</p>
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

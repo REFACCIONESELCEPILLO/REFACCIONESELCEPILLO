@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_auto_part_label_zpl" model="ir.actions.report">
+        <field name="name">Etiquetas de autopartes</field>
+        <field name="model">product.product</field>
+        <field name="report_type">qweb-text</field>
+        <field name="report_name">sh_auto_part_vehicle_labels.report_auto_part_label_zpl</field>
+        <field name="report_file">sh_auto_part_vehicle_labels.report_auto_part_label_zpl</field>
+        <field name="binding_model_id" eval="False"/>
+        <field name="binding_type">report</field>
+        <field name="ickab_print_mode">ask</field>
+        <field name="ickab_document_kind">label</field>
+        <field name="ickab_text_language">auto</field>
+        <field name="ickab_copies">1</field>
+        <field name="ickab_fallback_download">True</field>
+    </record>
+</odoo>

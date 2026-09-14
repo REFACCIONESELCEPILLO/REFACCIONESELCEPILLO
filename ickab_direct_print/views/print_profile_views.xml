@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ickab_print_profile_list" model="ir.ui.view">
+        <field name="name">ickab.print.profile.list</field>
+        <field name="model">ickab.print.profile</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="priority" widget="handle"/>
+                <field name="name"/>
+                <field name="document_kind"/>
+                <field name="user_id"/>
+                <field name="report_id"/>
+                <field name="printer_id"/>
+                <field name="paper_id"/>
+                <field name="copies"/>
+                <field name="direct_print"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ickab_print_profile_form" model="ir.ui.view">
+        <field name="name">ickab.print.profile.form</field>
+        <field name="model">ickab.print.profile</field>
+        <field name="arch" type="xml">
+            <form string="Perfil de impresión">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="priority"/>
+                            <field name="document_kind"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="printer_id"/>
+                            <field name="paper_id"/>
+                            <field name="copies"/>
+                            <field name="direct_print"/>
+                            <field name="fallback_download"/>
+                        </group>
+                    </group>
+                    <group string="Criterios opcionales">
+                        <field name="user_id"/>
+                        <field name="report_id"/>
+                        <field name="model_name" placeholder="sale.order"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ickab_print_profile" model="ir.actions.act_window">
+        <field name="name">Perfiles predeterminados</field>
+        <field name="res_model">ickab.print.profile</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

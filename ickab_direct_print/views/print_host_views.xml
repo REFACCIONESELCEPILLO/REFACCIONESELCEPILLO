@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ickab_print_host_list" model="ir.ui.view">
+        <field name="name">ickab.print.host.list</field>
+        <field name="model">ickab.print.host</field>
+        <field name="arch" type="xml">
+            <list decoration-success="state == 'online'" decoration-muted="state == 'offline'" decoration-danger="state == 'error'">
+                <field name="name"/>
+                <field name="platform_type"/>
+                <field name="hostname"/>
+                <field name="agent_version"/>
+                <field name="printer_count"/>
+                <field name="state" widget="badge"/>
+                <field name="last_seen"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ickab_print_host_form" model="ir.ui.view">
+        <field name="name">ickab.print.host.form</field>
+        <field name="model">ickab.print.host</field>
+        <field name="arch" type="xml">
+            <form string="Equipo de impresión">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="offline,online,error"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_printers" type="object" class="oe_stat_button" icon="fa-print">
+                            <field name="printer_count" widget="statinfo" string="Impresoras"/>
+                        </button>
+                    </div>
+
+                    <div class="alert alert-info" role="alert" invisible="state == 'online'">
+                        <strong>Este equipo todavía no está conectado.</strong><br/>
+                        1. Guarda este registro.<br/>
+                        2. Pulsa <strong>Generar código de instalación</strong>.<br/>
+                        3. En la PC que controlará las impresoras, ejecuta <strong>INSTALAR.bat</strong> del ICKAB Print Agent.<br/>
+                        4. Captura la URL de Odoo y el código mostrado aquí. El instalador hará el resto.
+                    </div>
+                    <div class="alert alert-success" role="alert" invisible="state != 'online'">
+                        <strong>Agente conectado correctamente.</strong> Las impresoras detectadas aparecerán en el botón <strong>Impresoras</strong>.
+                    </div>
+
+                    <group string="Equipo de impresión">
+                        <group>
+                            <field name="name" placeholder="Ej. PC MOSTRADOR"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="platform_type"/>
+                            <field name="hostname"/>
+                            <field name="agent_version"/>
+                            <field name="last_seen"/>
+                        </group>
+                    </group>
+
+                    <group string="Instalación guiada" invisible="state == 'online'">
+                        <group>
+                            <button name="action_generate_pairing_code" type="object" string="Generar código de instalación" class="btn-primary"/>
+                            <field name="pairing_code" readonly="1" placeholder="Pulsa el botón para generar un código"/>
+                            <field name="pairing_expires_at" readonly="1"/>
+                        </group>
+                        <group>
+                            <div class="text-muted">En la PC: abre el ZIP del agente, descomprímelo y haz doble clic en <strong>INSTALAR.bat</strong>. Solo te pedirá la dirección de Odoo (local, dominio on-premise u Odoo.sh) y este código.</div>
+                        </group>
+                    </group>
+
+                    <group string="Datos detectados por el agente" invisible="state != 'online'">
+                        <group>
+                            <field name="platform"/>
+                            <field name="ip_address"/>
+                        </group>
+                        <group>
+                            <field name="supports_usb"/>
+                            <field name="supports_tcp"/>
+                            <field name="supports_bluetooth_spp"/>
+                            <field name="supports_bluetooth_ble"/>
+                            <field name="supports_android_print"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Información avanzada" groups="ickab_direct_print.group_direct_print_manager">
+                            <group>
+                                <group>
+                                    <field name="uuid"/>
+                                    <field name="api_token"/>
+                                </group>
+                                <group>
+                                    <button name="action_regenerate_token" type="object" string="Regenerar token técnico" class="btn-secondary"/>
+                                    <div class="text-muted">Solo usa estos datos para diagnóstico o configuración manual. Para instalaciones normales usa el Código de instalación.</div>
+                                </group>
+                            </group>
+                            <field name="capabilities_json" nolabel="1" readonly="1"/>
+                        </page>
+                        <page string="Notas">
+                            <field name="notes" nolabel="1" placeholder="Notas sobre ubicación, responsable o impresoras conectadas..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ickab_print_host" model="ir.actions.act_window">
+        <field name="name">Equipos / Agentes</field>
+        <field name="res_model">ickab.print.host</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registra la PC, servidor o tablet que tendrá acceso a las impresoras.</p>
+            <p>Para Windows, crea un registro, guárdalo y usa el botón <strong>Generar código de instalación</strong>. Después ejecuta el instalador del ICKAB Print Agent en esa PC.</p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_auto_part_label_zpl">
+        <t t-out="zpl_content"/>
+    </template>
+</odoo>

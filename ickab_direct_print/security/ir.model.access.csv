@@ -1,0 +1,14 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_print_host_user,print.host.user,model_ickab_print_host,ickab_direct_print.group_direct_print_user,1,0,0,0
+access_print_printer_user,print.printer.user,model_ickab_print_printer,ickab_direct_print.group_direct_print_user,1,0,0,0
+access_print_paper_user,print.paper.user,model_ickab_print_paper,ickab_direct_print.group_direct_print_user,1,0,0,0
+access_print_profile_user,print.profile.user,model_ickab_print_profile,ickab_direct_print.group_direct_print_user,1,0,0,0
+access_print_job_user,print.job.user,model_ickab_print_job,ickab_direct_print.group_direct_print_user,1,0,1,0
+access_print_host_manager,print.host.manager,model_ickab_print_host,ickab_direct_print.group_direct_print_manager,1,1,1,1
+access_print_printer_manager,print.printer.manager,model_ickab_print_printer,ickab_direct_print.group_direct_print_manager,1,1,1,1
+access_print_paper_manager,print.paper.manager,model_ickab_print_paper,ickab_direct_print.group_direct_print_manager,1,1,1,1
+access_print_profile_manager,print.profile.manager,model_ickab_print_profile,ickab_direct_print.group_direct_print_manager,1,1,1,1
+access_print_job_manager,print.job.manager,model_ickab_print_job,ickab_direct_print.group_direct_print_manager,1,1,1,1
+access_direct_print_wizard_user,direct.print.wizard.user,model_ickab_direct_print_wizard,ickab_direct_print.group_direct_print_user,1,1,1,1
+access_print_compatibility_profile_user,print.compatibility.profile.user,model_ickab_print_compatibility_profile,ickab_direct_print.group_direct_print_user,1,0,0,0
+access_print_compatibility_profile_manager,print.compatibility.profile.manager,model_ickab_print_compatibility_profile,ickab_direct_print.group_direct_print_manager,1,1,1,1

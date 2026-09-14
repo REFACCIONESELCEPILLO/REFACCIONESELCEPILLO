@@ -1,0 +1,14 @@
+.o_ickab_label_studio { border: 1px solid var(--border-color, #d8dadd); border-radius: 8px; overflow: hidden; background: #f7f7f7; }
+.o_ickab_label_toolbar { display:flex; gap:.4rem; padding:.65rem; background:#fff; border-bottom:1px solid #ddd; flex-wrap:wrap; }
+.o_ickab_label_workspace { display:grid; grid-template-columns:minmax(0,1fr) 300px; min-height:540px; }
+.o_ickab_label_canvas_wrap { padding:24px; display:flex; align-items:center; justify-content:center; overflow:auto; }
+.o_ickab_label_canvas { position:relative; width:min(100%,800px); background:white; border:1px solid #777; box-shadow:0 4px 18px rgba(0,0,0,.12); overflow:hidden; }
+.o_ickab_label_element { position:absolute; cursor:move; overflow:hidden; user-select:none; outline:1px dashed transparent; }
+.o_ickab_label_element.is-selected { outline:2px solid #714B67; background:rgba(113,75,103,.06); }
+.o_ickab_label_element span { display:block; width:100%; }
+.o_ickab_label_properties { padding:16px; background:#fff; border-left:1px solid #ddd; overflow:auto; }
+.o_ickab_fake_barcode { height:70%; width:100%; background:repeating-linear-gradient(90deg,#111 0,#111 2px,#fff 2px,#fff 4px); }
+.o_ickab_fake_qr { width:100%; height:100%; background:repeating-conic-gradient(#111 0 25%,#fff 0 50%) 0/10px 10px; }
+.o_ickab_fake_box { width:100%; height:100%; border:2px solid #111; }
+.o_ickab_fake_line { width:100%; margin-top:48%; border-top:2px solid #111; }
+@media (max-width: 1100px) { .o_ickab_label_workspace { grid-template-columns:1fr; } .o_ickab_label_properties { border-left:0; border-top:1px solid #ddd; } }

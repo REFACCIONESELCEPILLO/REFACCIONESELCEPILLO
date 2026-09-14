@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ickab_label_template_user,ickab.label.template user,model_ickab_label_template,ickab_label_studio.group_label_studio_user,1,0,0,0
+access_ickab_label_template_manager,ickab.label.template manager,model_ickab_label_template,ickab_label_studio.group_label_studio_manager,1,1,1,1
+access_ickab_label_template_system,ickab.label.template system,model_ickab_label_template,base.group_system,1,1,1,1
+access_ickab_label_media_user,ickab.label.media user,model_ickab_label_media,ickab_label_studio.group_label_studio_user,1,0,0,0
+access_ickab_label_media_manager,ickab.label.media manager,model_ickab_label_media,ickab_label_studio.group_label_studio_manager,1,1,1,1
+access_ickab_label_media_system,ickab.label.media system,model_ickab_label_media,base.group_system,1,1,1,1
+access_ickab_label_zpl_import_manager,ickab.label.zpl.import.wizard manager,model_ickab_label_zpl_import_wizard,ickab_label_studio.group_label_studio_manager,1,1,1,1
+access_ickab_label_zpl_import_system,ickab.label.zpl.import.wizard system,model_ickab_label_zpl_import_wizard,base.group_system,1,1,1,1
