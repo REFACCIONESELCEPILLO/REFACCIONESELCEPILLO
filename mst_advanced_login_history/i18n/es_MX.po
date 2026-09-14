@@ -1,0 +1,1018 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* mst_advanced_login_history
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-13 00:00+0000\n"
+"PO-Revision-Date: 2026-09-13 00:00+0000\n"
+"Last-Translator: ICKAB\n"
+"Language-Team: Español (México)\n"
+"Language: es_MX\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: mst_advanced_login_history
+#. odoo-python
+#: code:addons/mst_advanced_login_history/models/login_failed_history.py:0
+#, python-format
+msgid "%s - Failed Login"
+msgstr "%s - Inicio de sesión fallido"
+
+#. module: mst_advanced_login_history
+#. odoo-python
+#: code:addons/mst_advanced_login_history/models/login_failed_history.py:0
+#, python-format
+msgid "%s - Failed Login - %s"
+msgstr "%s - Inicio de sesión fallido - %s"
+
+#. module: mst_advanced_login_history
+#. odoo-python
+#: code:addons/mst_advanced_login_history/models/activity_log_config.py:0
+#, python-format
+msgid "%s Logs"
+msgstr "Registros de %s"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log__action_type
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_user_activity_log_search
+msgid "Action"
+msgstr "Acción"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_activity_log_model_config__active
+#: model:ir.model.fields.selection,name:mst_advanced_login_history.selection__login_history__status__active
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_activity_log_model_config_search
+msgid "Active"
+msgstr "Activo"
+
+#. module: mst_advanced_login_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_history_search
+msgid "Active Sessions"
+msgstr "Sesiones activas"
+
+#. module: mst_advanced_login_history
+#. odoo-python
+#: code:addons/mst_advanced_login_history/controllers/dashboard.py:0
+#, python-format
+msgid "Active Users"
+msgstr "Usuarios activos"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log_line__activity_log_id
+msgid "Activity Log"
+msgstr "Registro de actividad"
+
+#. module: mst_advanced_login_history
+#: model:ir.model,name:mst_advanced_login_history.model_mst_activity_log_model_config
+msgid "Activity Log Model Configuration"
+msgstr "Configuración de modelos para el registro de actividad"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_res_users__activity_log_ids
+msgid "Activity Logs"
+msgstr "Registros de actividad"
+
+#. module: mst_advanced_login_history
+#: model:ir.ui.menu,name:mst_advanced_login_history.menu_mst_user_activity_log
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_user_activity_log_list
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_user_activity_log_form
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_user_activity_log_search
+#: model:ir.actions.act_window,name:mst_advanced_login_history.action_mst_user_activity_log
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_users_form_activity_audit_inherit
+msgid "Advanced Logs"
+msgstr "Registros avanzados"
+
+#. module: mst_advanced_login_history
+#. odoo-python
+#: code:addons/mst_advanced_login_history/models/res_users.py:0
+#, python-format
+msgid "All active sessions for this user have been killed."
+msgstr "Se cerraron todas las sesiones activas de este usuario."
+
+#. module: mst_advanced_login_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_activity_log_model_config_search
+msgid "Archived"
+msgstr "Archivado"
+
+#. module: mst_advanced_login_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_failed_history_search
+msgid "Attempt Date"
+msgstr "Fecha del intento"
+
+#. module: mst_advanced_login_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_failed_history_form
+msgid "Attempt Details"
+msgstr "Detalles del intento"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_failed_history__attempt_time
+msgid "Attempt Time"
+msgstr "Fecha y hora del intento"
+
+#. module: mst_advanced_login_history
+#: model:ir.ui.menu,name:mst_advanced_login_history.menu_login_history_root
+msgid "Audit History"
+msgstr "Historial de auditoría"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_failed_history__browser
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_history__browser
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log__browser
+msgid "Browser"
+msgstr "Navegador"
+
+#. module: mst_advanced_login_history
+#. odoo-javascript
+#: code:addons/mst_advanced_login_history/static/src/xml/login_history_dashboard.xml:0
+#, python-format
+msgid "Browser / Device"
+msgstr "Navegador / Dispositivo"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields.selection,name:mst_advanced_login_history.selection__login_failed_history__location_source__browser
+#: model:ir.model.fields.selection,name:mst_advanced_login_history.selection__login_history__location_source__browser
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_history_search
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_failed_history_search
+msgid "Browser Location"
+msgstr "Ubicación del navegador"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log__line_ids
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_user_activity_log_form
+msgid "Changes"
+msgstr "Cambios"
+
+#. module: mst_advanced_login_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_user_activity_log_form
+msgid "Changes Views"
+msgstr "Cambios en vistas"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_failed_history__city
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_history__city
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_history_search
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_failed_history_search
+msgid "City"
+msgstr "Ciudad"
+
+#. module: mst_advanced_login_history
+#: model:ir.ui.menu,name:mst_advanced_login_history.menu_mst_activity_log_config_root
+msgid "Configuration"
+msgstr "Configuración"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_activity_log_model_config__name
+msgid "Configuration Name"
+msgstr "Nombre de la configuración"
+
+#. module: mst_advanced_login_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_user_activity_log_search
+msgid "Configured Model Logs"
+msgstr "Registros de modelos configurados"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_failed_history__country
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_history__country
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_history_search
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_failed_history_search
+msgid "Country"
+msgstr "País"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields.selection,name:mst_advanced_login_history.selection__mst_user_activity_log__action_type__create
+msgid "Create"
+msgstr "Crear"
+
+#. module: mst_advanced_login_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_user_activity_log_search
+msgid "Created"
+msgstr "Creado"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_activity_log_model_config__create_uid
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_failed_history__create_uid
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_history__create_uid
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log__create_uid
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log_line__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_activity_log_model_config__create_date
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_failed_history__create_date
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_history__create_date
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log__create_date
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log_line__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: mst_advanced_login_history
+#: model:ir.ui.menu,name:mst_advanced_login_history.menu_advanced_login_history_dashboard
+msgid "Dashboard"
+msgstr "Tablero"
+
+#. module: mst_advanced_login_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_user_activity_log_search
+msgid "Date"
+msgstr "Fecha"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields.selection,name:mst_advanced_login_history.selection__mst_user_activity_log__action_type__delete
+msgid "Delete"
+msgstr "Eliminar"
+
+#. module: mst_advanced_login_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_user_activity_log_search
+msgid "Deleted"
+msgstr "Eliminado"
+
+#. module: mst_advanced_login_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_history_form
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_failed_history_form
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_user_activity_log_form
+msgid "Device Details"
+msgstr "Detalles del dispositivo"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_activity_log_model_config__display_name
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_failed_history__display_name
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_history__display_name
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log__display_name
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log_line__display_name
+msgid "Display Name"
+msgstr "Nombre en pantalla"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_history__duration
+msgid "Duration (Hours)"
+msgstr "Duración (horas)"
+
+#. module: mst_advanced_login_history
+#. odoo-python
+#: code:addons/mst_advanced_login_history/controllers/dashboard.py:0
+#, python-format
+msgid "Failed Attempts"
+msgstr "Intentos fallidos"
+
+#. module: mst_advanced_login_history
+#. odoo-python
+#: code:addons/mst_advanced_login_history/controllers/dashboard.py:0
+#, python-format
+msgid "Failed Login"
+msgstr "Inicio de sesión fallido"
+
+#. module: mst_advanced_login_history
+#: model:ir.model,name:mst_advanced_login_history.model_login_failed_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_failed_history_list
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_failed_history_form
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_failed_history_search
+#: model:ir.actions.act_window,name:mst_advanced_login_history.action_login_failed_history
+msgid "Failed Login History"
+msgstr "Historial de inicios de sesión fallidos"
+
+#. module: mst_advanced_login_history
+#: model:ir.ui.menu,name:mst_advanced_login_history.menu_login_failed_history
+msgid "Failed Login Logs"
+msgstr "Registros de inicios de sesión fallidos"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log_line__field_label
+msgid "Field Label"
+msgstr "Etiqueta del campo"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log_line__field_name
+msgid "Field Name"
+msgstr "Nombre del campo"
+
+#. module: mst_advanced_login_history
+#. odoo-javascript
+#: code:addons/mst_advanced_login_history/static/src/xml/login_history_dashboard.xml:0
+#, python-format
+msgid "First Seen"
+msgstr "Primera detección"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_failed_history__full_location
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_history__full_location
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_history_form
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_failed_history_form
+msgid "Full Location"
+msgstr "Ubicación completa"
+
+#. module: mst_advanced_login_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_history_form
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_failed_history_form
+msgid "Geo Location"
+msgstr "Ubicación geográfica"
+
+#. module: mst_advanced_login_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_activity_log_model_config_search
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_history_search
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_failed_history_search
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_user_activity_log_search
+msgid "Group By"
+msgstr "Agrupar por"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log__has_changes
+msgid "Has Changes"
+msgstr "Tiene cambios"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log__has_view_changes
+msgid "Has View Changes"
+msgstr "Tiene cambios en vistas"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_activity_log_model_config__id
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_failed_history__id
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_history__id
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log__id
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log_line__id
+msgid "ID"
+msgstr "ID"
+
+#. module: mst_advanced_login_history
+#. odoo-javascript
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_failed_history__ip_address
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_history__ip_address
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log__ip_address
+#: code:addons/mst_advanced_login_history/static/src/xml/login_history_dashboard.xml:0
+#, python-format
+msgid "IP Address"
+msgstr "Dirección IP"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields.selection,name:mst_advanced_login_history.selection__login_failed_history__location_source__ip
+#: model:ir.model.fields.selection,name:mst_advanced_login_history.selection__login_history__location_source__ip
+msgid "IP Geo Location"
+msgstr "Ubicación geográfica por IP"
+
+#. module: mst_advanced_login_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_history_search
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_failed_history_search
+msgid "IP Location"
+msgstr "Ubicación por IP"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,help:mst_advanced_login_history.field_mst_activity_log_model_config__include_related_line_models
+msgid ""
+"If enabled, selecting Sale Order will also include Sale Order Lines, "
+"Purchase Order will include Purchase Order Lines, and Invoice will include "
+"Journal Items."
+msgstr ""
+"Si se habilita, al seleccionar una orden de venta también se incluirán sus "
+"líneas; al seleccionar una orden de compra, se incluirán sus líneas; y al "
+"seleccionar una factura, se incluirán los apuntes contables."
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_activity_log_model_config__include_related_line_models
+msgid "Include Related Line Models"
+msgstr "Incluir modelos de líneas relacionadas"
+
+#. module: mst_advanced_login_history
+#. odoo-python
+#: code:addons/mst_advanced_login_history/models/login_failed_history.py:0
+#: code:addons/mst_advanced_login_history/models/res_users.py:0
+#, python-format
+msgid "Invalid login credentials"
+msgstr "Credenciales de inicio de sesión incorrectas"
+
+#. module: mst_advanced_login_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_users_form_activity_audit_inherit
+msgid "Kill All Sessions"
+msgstr "Cerrar todas las sesiones"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_activity_log_model_config__write_uid
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_failed_history__write_uid
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_history__write_uid
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log__write_uid
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log_line__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_activity_log_model_config__write_date
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_failed_history__write_date
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_history__write_date
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log__write_date
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log_line__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"
+
+#. module: mst_advanced_login_history
+#. odoo-javascript
+#: code:addons/mst_advanced_login_history/static/src/xml/login_history_dashboard.xml:0
+#, python-format
+msgid "Latest security events"
+msgstr "Eventos de seguridad más recientes"
+
+#. module: mst_advanced_login_history
+#. odoo-javascript
+#: code:addons/mst_advanced_login_history/static/src/xml/login_history_dashboard.xml:0
+#, python-format
+msgid "Latest tracked location"
+msgstr "Última ubicación registrada"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_failed_history__latitude
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_history__latitude
+msgid "Latitude"
+msgstr "Latitud"
+
+#. module: mst_advanced_login_history
+#. odoo-javascript
+#: code:addons/mst_advanced_login_history/static/src/xml/login_history_dashboard.xml:0
+#, python-format
+msgid "Loading dashboard..."
+msgstr "Cargando tablero..."
+
+#. module: mst_advanced_login_history
+#. odoo-javascript
+#: code:addons/mst_advanced_login_history/static/src/xml/login_history_dashboard.xml:0
+#, python-format
+msgid "Location"
+msgstr "Ubicación"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_failed_history__location_source
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_history__location_source
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_history_search
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_failed_history_search
+msgid "Location Source"
+msgstr "Origen de la ubicación"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log__login
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_failed_history_search
+msgid "Login"
+msgstr "Inicio de sesión"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_failed_history__login
+msgid "Login / Email"
+msgstr "Usuario / Correo electrónico"
+
+#. module: mst_advanced_login_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_history_search
+msgid "Login Date"
+msgstr "Fecha de inicio de sesión"
+
+#. module: mst_advanced_login_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_history_form
+msgid "Login Details"
+msgstr "Detalles del inicio de sesión"
+
+#. module: mst_advanced_login_history
+#. odoo-javascript
+#: model:ir.model,name:mst_advanced_login_history.model_login_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_history_list
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_history_form
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_history_search
+#: model:ir.actions.act_window,name:mst_advanced_login_history.action_login_history
+#: code:addons/mst_advanced_login_history/static/src/xml/login_history_dashboard.xml:0
+#: code:addons/mst_advanced_login_history/static/src/js/login_history_dashboard.js:0
+#, python-format
+msgid "Login History"
+msgstr "Historial de inicios de sesión"
+
+#. module: mst_advanced_login_history
+#: model:ir.actions.client,name:mst_advanced_login_history.action_advanced_login_history_dashboard
+msgid "Login History Dashboard"
+msgstr "Tablero del historial de inicios de sesión"
+
+#. module: mst_advanced_login_history
+#. odoo-javascript
+#: code:addons/mst_advanced_login_history/static/src/xml/login_history_dashboard.xml:0
+#, python-format
+msgid "Login Location"
+msgstr "Ubicación del inicio de sesión"
+
+#. module: mst_advanced_login_history
+#: model:ir.ui.menu,name:mst_advanced_login_history.menu_login_history
+msgid "Login Logs"
+msgstr "Registros de inicios de sesión"
+
+#. module: mst_advanced_login_history
+#. odoo-javascript
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_history__login_time
+#: code:addons/mst_advanced_login_history/static/src/xml/login_history_dashboard.xml:0
+#, python-format
+msgid "Login Time"
+msgstr "Fecha y hora de inicio de sesión"
+
+#. module: mst_advanced_login_history
+#. odoo-python
+#: model:ir.model.fields.selection,name:mst_advanced_login_history.selection__login_history__status__logout
+#: code:addons/mst_advanced_login_history/controllers/dashboard.py:0
+#, python-format
+msgid "Logout"
+msgstr "Cierre de sesión"
+
+#. module: mst_advanced_login_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_history_search
+msgid "Logout Sessions"
+msgstr "Sesiones cerradas"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_history__logout_time
+msgid "Logout Time"
+msgstr "Fecha y hora de cierre de sesión"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_failed_history__longitude
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_history__longitude
+msgid "Longitude"
+msgstr "Longitud"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_failed_history__map_url
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_history__map_url
+msgid "Map URL"
+msgstr "URL del mapa"
+
+#. module: mst_advanced_login_history
+#. odoo-python
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log__model_name
+#: code:addons/mst_advanced_login_history/models/activity_log_config.py:0
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_user_activity_log_search
+#, python-format
+msgid "Model"
+msgstr "Modelo"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log__model_config_id
+msgid "Model Configuration"
+msgstr "Configuración del modelo"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_activity_log_model_config__model_count
+msgid "Model Count"
+msgstr "Número de modelos"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log__model_description
+msgid "Model Description"
+msgstr "Descripción del modelo"
+
+#. module: mst_advanced_login_history
+#. odoo-python
+#: code:addons/mst_advanced_login_history/models/activity_log_config.py:0
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_activity_log_model_config_list
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_activity_log_model_config_form
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_activity_log_model_config_search
+#: model:ir.actions.act_window,name:mst_advanced_login_history.action_mst_activity_log_model_config
+#: model:ir.ui.menu,name:mst_advanced_login_history.menu_mst_activity_log_model_config
+#, python-format
+msgid "Model Log Configuration"
+msgstr "Configuración de registros por modelo"
+
+#. module: mst_advanced_login_history
+#: model:ir.ui.menu,name:mst_advanced_login_history.menu_mst_configured_model_activity_log
+#: model:ir.actions.act_window,name:mst_advanced_login_history.action_mst_configured_model_activity_log
+msgid "Model Logs"
+msgstr "Registros por modelo"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_activity_log_model_config__model_names
+msgid "Model Names"
+msgstr "Nombres de los modelos"
+
+#. module: mst_advanced_login_history
+#. odoo-python
+#: code:addons/mst_advanced_login_history/models/user_activity_audit.py:0
+#, python-format
+msgid "Model Not Found"
+msgstr "Modelo no encontrado"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_activity_log_model_config__model_ids
+msgid "Models"
+msgstr "Modelos"
+
+#. module: mst_advanced_login_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_user_activity_log_search
+msgid "Modified"
+msgstr "Modificado"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields.selection,name:mst_advanced_login_history.selection__mst_user_activity_log__action_type__modify
+msgid "Modify"
+msgstr "Modificar"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log__module_name
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_user_activity_log_search
+msgid "Module"
+msgstr "Módulo"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_activity_log_model_config__module_names
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_activity_log_model_config_form
+msgid "Modules"
+msgstr "Módulos"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log_line__new_value
+msgid "New Value"
+msgstr "Valor nuevo"
+
+#. module: mst_advanced_login_history
+#. odoo-javascript
+#: code:addons/mst_advanced_login_history/static/src/xml/login_history_dashboard.xml:0
+#, python-format
+msgid "No location available"
+msgstr "No hay una ubicación disponible"
+
+#. module: mst_advanced_login_history
+#. odoo-javascript
+#: code:addons/mst_advanced_login_history/static/src/xml/login_history_dashboard.xml:0
+#, python-format
+msgid "No login history found."
+msgstr "No se encontró historial de inicios de sesión."
+
+#. module: mst_advanced_login_history
+#. odoo-javascript
+#: code:addons/mst_advanced_login_history/static/src/xml/login_history_dashboard.xml:0
+#, python-format
+msgid "No recent activity found."
+msgstr "No se encontró actividad reciente."
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_activity_log_model_config__notes
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_activity_log_model_config_form
+msgid "Notes"
+msgstr "Notas"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log_line__old_value
+msgid "Old Value"
+msgstr "Valor anterior"
+
+#. module: mst_advanced_login_history
+#. odoo-python
+#: code:addons/mst_advanced_login_history/controllers/dashboard.py:0
+#, python-format
+msgid "Only administrators can view login dashboard."
+msgstr "Solo los administradores pueden ver el tablero de inicios de sesión."
+
+#. module: mst_advanced_login_history
+#. odoo-javascript
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_history_form
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_failed_history_form
+#: code:addons/mst_advanced_login_history/static/src/xml/login_history_dashboard.xml:0
+#, python-format
+msgid "Open Map"
+msgstr "Abrir mapa"
+
+#. module: mst_advanced_login_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_user_activity_log_form
+msgid "Open Record"
+msgstr "Abrir registro"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_failed_history__operating_system
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_history__operating_system
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log__operating_system
+msgid "Operating System"
+msgstr "Sistema operativo"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log__performed_date
+msgid "Performed Date"
+msgstr "Fecha de la acción"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_failed_history__reason
+msgid "Reason"
+msgstr "Motivo"
+
+#. module: mst_advanced_login_history
+#. odoo-javascript
+#: code:addons/mst_advanced_login_history/static/src/xml/login_history_dashboard.xml:0
+#, python-format
+msgid "Recent Activity"
+msgstr "Actividad reciente"
+
+#. module: mst_advanced_login_history
+#. odoo-javascript
+#: code:addons/mst_advanced_login_history/static/src/xml/login_history_dashboard.xml:0
+#, python-format
+msgid "Recent Login Activities"
+msgstr "Actividad reciente de inicios de sesión"
+
+#. module: mst_advanced_login_history
+#. odoo-python
+#: code:addons/mst_advanced_login_history/models/user_activity_audit.py:0
+#, python-format
+msgid "Record Deleted"
+msgstr "Registro eliminado"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log__record_id
+msgid "Record ID"
+msgstr "ID del registro"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log__name
+msgid "Record Name"
+msgstr "Nombre del registro"
+
+#. module: mst_advanced_login_history
+#. odoo-python
+#: code:addons/mst_advanced_login_history/models/user_activity_audit.py:0
+#, python-format
+msgid "Record Not Found"
+msgstr "Registro no encontrado"
+
+#. module: mst_advanced_login_history
+#. odoo-javascript
+#: code:addons/mst_advanced_login_history/static/src/xml/login_history_dashboard.xml:0
+#, python-format
+msgid "Refresh"
+msgstr "Actualizar"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_failed_history__region
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_history__region
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_history_search
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_failed_history_search
+msgid "Region"
+msgstr "Región"
+
+#. module: mst_advanced_login_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_user_activity_log_form
+msgid "Request Details"
+msgstr "Detalles de la solicitud"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log__request_method
+msgid "Request Method"
+msgstr "Método de la solicitud"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log__request_url
+msgid "Request URL"
+msgstr "URL de la solicitud"
+
+#. module: mst_advanced_login_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_activity_log_model_config_form
+msgid "Select Models"
+msgstr "Seleccionar modelos"
+
+#. module: mst_advanced_login_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_activity_log_model_config_form
+msgid "Selected Model Names"
+msgstr "Nombres de los modelos seleccionados"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_activity_log_model_config__sequence
+msgid "Sequence"
+msgstr "Secuencia"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log__session_id
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_user_activity_log_search
+msgid "Session"
+msgstr "Sesión"
+
+#. module: mst_advanced_login_history
+#. odoo-javascript
+#: code:addons/mst_advanced_login_history/static/src/xml/login_history_dashboard.xml:0
+#, python-format
+msgid "Session Duration"
+msgstr "Duración de la sesión"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_history__session_id
+msgid "Session ID"
+msgstr "ID de sesión"
+
+#. module: mst_advanced_login_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_users_form_activity_audit_inherit
+msgid "Sessions"
+msgstr "Sesiones"
+
+#. module: mst_advanced_login_history
+#. odoo-python
+#: code:addons/mst_advanced_login_history/models/res_users.py:0
+#, python-format
+msgid "Sessions Killed"
+msgstr "Sesiones cerradas"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log__model_log_enabled
+msgid "Show in Model Logs"
+msgstr "Mostrar en registros por modelo"
+
+#. module: mst_advanced_login_history
+#. odoo-javascript
+#: code:addons/mst_advanced_login_history/static/src/xml/login_history_dashboard.xml:0
+#, python-format
+msgid "Smart tracking. Better security. Full visibility."
+msgstr "Seguimiento inteligente. Mayor seguridad. Visibilidad completa."
+
+#. module: mst_advanced_login_history
+#. odoo-javascript
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_history__status
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_history_search
+#: code:addons/mst_advanced_login_history/static/src/xml/login_history_dashboard.xml:0
+#, python-format
+msgid "Status"
+msgstr "Estado"
+
+#. module: mst_advanced_login_history
+#. odoo-python
+#: code:addons/mst_advanced_login_history/controllers/dashboard.py:0
+#, python-format
+msgid "Successful"
+msgstr "Exitosos"
+
+#. module: mst_advanced_login_history
+#. odoo-python
+#: code:addons/mst_advanced_login_history/controllers/dashboard.py:0
+#, python-format
+msgid "Successful Login"
+msgstr "Inicio de sesión exitoso"
+
+#. module: mst_advanced_login_history
+#. odoo-javascript
+#: code:addons/mst_advanced_login_history/static/src/xml/login_history_dashboard.xml:0
+#, python-format
+msgid "Successful login, logout and failed attempts"
+msgstr "Inicios de sesión exitosos, cierres de sesión e intentos fallidos"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_activity_log_model_config__technical_model_names
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_activity_log_model_config_form
+msgid "Technical Models"
+msgstr "Nombres técnicos de los modelos"
+
+#. module: mst_advanced_login_history
+#. odoo-python
+#: code:addons/mst_advanced_login_history/models/user_activity_audit.py:0
+#, python-format
+msgid "The original record is no longer available."
+msgstr "El registro original ya no está disponible."
+
+#. module: mst_advanced_login_history
+#. odoo-python
+#: code:addons/mst_advanced_login_history/models/user_activity_audit.py:0
+#, python-format
+msgid "The related model is not available in this database."
+msgstr "El modelo relacionado no está disponible en esta base de datos."
+
+#. module: mst_advanced_login_history
+#. odoo-python
+#: code:addons/mst_advanced_login_history/models/activity_log_config.py:0
+#, python-format
+msgid ""
+"These models are already configured in another active configuration: %s"
+msgstr "Estos modelos ya están incluidos en otra configuración activa: %s"
+
+#. module: mst_advanced_login_history
+#. odoo-python
+#: code:addons/mst_advanced_login_history/models/user_activity_audit.py:0
+#, python-format
+msgid "This record was deleted, so it cannot be opened."
+msgstr "Este registro fue eliminado y no se puede abrir."
+
+#. module: mst_advanced_login_history
+#. odoo-python
+#: code:addons/mst_advanced_login_history/controllers/dashboard.py:0
+#, python-format
+msgid "Total Logins"
+msgstr "Total de inicios de sesión"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_activity_log_model_config__track_create
+msgid "Track Create"
+msgstr "Registrar creaciones"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_activity_log_model_config__track_delete
+msgid "Track Delete"
+msgstr "Registrar eliminaciones"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_activity_log_model_config__track_modify
+msgid "Track Modify"
+msgstr "Registrar modificaciones"
+
+#. module: mst_advanced_login_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_activity_log_model_config_form
+msgid "Tracking Options"
+msgstr "Opciones de seguimiento"
+
+#. module: mst_advanced_login_history
+#. odoo-python
+#: code:addons/mst_advanced_login_history/models/login_failed_history.py:0
+#, python-format
+msgid "Unknown Login"
+msgstr "Usuario de acceso desconocido"
+
+#. module: mst_advanced_login_history
+#. odoo-python
+#: code:addons/mst_advanced_login_history/controllers/dashboard.py:0
+#: code:addons/mst_advanced_login_history/models/login_history.py:0
+#, python-format
+msgid "Unknown User"
+msgstr "Usuario desconocido"
+
+#. module: mst_advanced_login_history
+#. odoo-javascript
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_history__user_id
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log__user_id
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_history_search
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_user_activity_log_search
+#: code:addons/mst_advanced_login_history/static/src/xml/login_history_dashboard.xml:0
+#, python-format
+msgid "User"
+msgstr "Usuario"
+
+#. module: mst_advanced_login_history
+#: model:ir.model,name:mst_advanced_login_history.model_mst_user_activity_log
+msgid "User Activity Log"
+msgstr "Registro de actividad del usuario"
+
+#. module: mst_advanced_login_history
+#: model:ir.model,name:mst_advanced_login_history.model_mst_user_activity_log_line
+msgid "User Activity Log Line"
+msgstr "Línea del registro de actividad del usuario"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_failed_history__user_agent
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_login_history__user_agent
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_history_form
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_login_failed_history_form
+msgid "User Agent"
+msgstr "Agente de usuario"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_res_users__login_history_ids
+msgid "User Sessions"
+msgstr "Sesiones del usuario"
+
+#. module: mst_advanced_login_history
+#: model:ir.model.fields,field_description:mst_advanced_login_history.field_mst_user_activity_log_line__is_view_field
+msgid "View Change"
+msgstr "Cambio en vista"
+
+#. module: mst_advanced_login_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_user_activity_log_search
+msgid "View Changes"
+msgstr "Cambios en vistas"
+
+#. module: mst_advanced_login_history
+#: model_terms:ir.ui.view,arch_db:mst_advanced_login_history.view_mst_activity_log_model_config_form
+msgid "View Logs"
+msgstr "Ver registros"
+
+#. module: mst_advanced_login_history
+#: model:ir.module.module,shortdesc:base.module_mst_advanced_login_history
+msgid "ICKAB Advanced Audit & Login History"
+msgstr "ICKAB Auditoría Avanzada e Historial de Accesos"
+
+#. module: mst_advanced_login_history
+#: model:ir.module.module,summary:base.module_mst_advanced_login_history
+msgid ""
+"Odoo 18 login history, session monitoring and configurable user activity "
+"audit"
+msgstr ""
+"Historial de accesos de Odoo 18, monitoreo de sesiones y auditoría "
+"configurable de actividad de usuarios"
+
+#. module: mst_advanced_login_history
+#: model:ir.ui.menu,name:mst_advanced_login_history.menu_login_history_root
+msgid "ICKAB Audit History"
+msgstr "Auditoría ICKAB"
+
+#. module: mst_advanced_login_history
+#: model:res.groups,name:mst_advanced_login_history.group_ickab_audit_manager
+msgid "Full Access to ICKAB Audit History"
+msgstr "Acceso completo a ICKAB Audit History"
+
+#. module: mst_advanced_login_history
+#: model:ir.module.category,description:mst_advanced_login_history.module_category_ickab_audit_history
+msgid "Access to ICKAB Advanced Audit & Login History."
+msgstr "Acceso a ICKAB Auditoría Avanzada e Historial de Accesos."
+
+#. module: mst_advanced_login_history
+#. odoo-python
+#: code:addons/mst_advanced_login_history/controllers/dashboard.py:0
+#, python-format
+msgid "You do not have permission to view ICKAB Audit History."
+msgstr "No tiene permiso para ver ICKAB Audit History."
+
+#. module: mst_advanced_login_history
+#. odoo-python
+#: code:addons/mst_advanced_login_history/models/res_users.py:0
+#, python-format
+msgid "You do not have permission to manage audit sessions."
+msgstr "No tiene permiso para administrar las sesiones de auditoría."

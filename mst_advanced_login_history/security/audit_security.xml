@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="module_category_ickab_audit_history" model="ir.module.category">
+        <field name="name">ICKAB Audit History</field>
+        <field name="description">Access to ICKAB Advanced Audit &amp; Login History.</field>
+        <field name="sequence">35</field>
+    </record>
+
+    <record id="group_ickab_audit_manager" model="res.groups">
+        <field name="name">Full Access to ICKAB Audit History</field>
+        <field name="category_id" ref="module_category_ickab_audit_history"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">Users in this group can view the ICKAB Audit History application, review audit/login logs and configure audited models.</field>
+    </record>
+</odoo>
