@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_login_history_user,access.login.history.user,model_login_history,base.group_user,0,0,0,0
+access_login_history_admin,access.login.history.ickab.manager,model_login_history,mst_advanced_login_history.group_ickab_audit_manager,1,0,0,0
+access_login_failed_history_user,access.login.failed.history.user,model_login_failed_history,base.group_user,0,0,0,0
+access_login_failed_history_admin,access.login.failed.history.ickab.manager,model_login_failed_history,mst_advanced_login_history.group_ickab_audit_manager,1,0,0,0
+access_mst_user_activity_log_admin,mst.user.activity.log.ickab.manager,model_mst_user_activity_log,mst_advanced_login_history.group_ickab_audit_manager,1,0,0,0
+access_mst_user_activity_log_line_admin,mst.user.activity.log.line.ickab.manager,model_mst_user_activity_log_line,mst_advanced_login_history.group_ickab_audit_manager,1,0,0,0
+access_mst_activity_log_model_config_admin,mst.activity.log.model.config.ickab.manager,model_mst_activity_log_model_config,mst_advanced_login_history.group_ickab_audit_manager,1,1,1,1
