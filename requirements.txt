@@ -1,0 +1,2 @@
+# Dependencias Python adicionales para Odoo.sh
+python-barcode[images]==0.16.1

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="product_barcode_missing_image_generator_view" model="ir.ui.view">
+        <field name="name">product.barcode.missing.image.generator.view</field>
+        <field name="model">barcode.missing.image.generator.rl</field>
+        <field name="arch" type="xml">
+            <form string="Barcode Missing Image Generator">
+                <div class="alert alert-danger" role="alert" style="margin-bottom: 12px;">
+                    <i class="fa fa-exclamation-triangle" style="margin-right:6px;"/>
+                    <b>Recommended:</b> Use <b>Code 128</b> if you don’t know the exact length/format of your barcode number.
+                    Fixed-length formats (EAN-13 / EAN-8 / UPC-A / ISBN / ISSN) require strict digit counts and check digits.
+                    Incompatible inputs will create wrong barcode image.
+                </div>
+                <group>
+                    <field name="barcode_type" required="1"/>
+                </group>
+                <footer>
+                    <button name="action_update_barcode_images" type="object" string="Update Images" class="btn-primary"
+                            close="true"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_product_missing_image_generator_wizard" model="ir.actions.server">
+        <field name="name">Barcode Missing Image Generator</field>
+        <field name="model_id" ref="product.model_product_template"/>
+        <field name="binding_model_id" ref="product.model_product_template"/>
+        <field name="binding_view_types">form,list</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_product_template_missing_image_generator_wizard()</field>
+        <field name="groups_id" eval="[(4, ref('barcode_generator_rl.group_barcode_generator_user'))]"/>
+    </record>
+
+    <record id="action_product_product_missing_image_generator_wizard" model="ir.actions.server">
+        <field name="name">Barcode Missing Image Generator</field>
+        <field name="model_id" ref="product.model_product_product"/>
+        <field name="binding_model_id" ref="product.model_product_product"/>
+        <field name="binding_view_types">form,list</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_product_variant_missing_image_generator_wizard()</field>
+        <field name="groups_id" eval="[(4, ref('barcode_generator_rl.group_barcode_generator_user'))]"/>
+    </record>
+</odoo>

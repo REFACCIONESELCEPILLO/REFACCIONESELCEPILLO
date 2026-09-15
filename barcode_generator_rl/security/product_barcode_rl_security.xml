@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="group_barcode_generator_user" model="res.groups">
+        <field name="name">Product Barcode Generator User</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
+
+    <!-- System administrators can configure/test the generator immediately.
+         Other users may be granted Product Barcode Generator User explicitly. -->
+    <record id="base.group_system" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('barcode_generator_rl.group_barcode_generator_user'))]"/>
+    </record>
+    <record id="barcode_bulk_generator_company_rule" model="ir.rule">
+        <field name="name">Generación de códigos de barras por empresa</field>
+        <field name="model_id" ref="model_barcode_bulk_generator_rl"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

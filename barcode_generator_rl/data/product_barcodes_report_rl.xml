@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="report_product_barcode_label_rl">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2 style="text-align: center;">
+                        <b>Product Barcode Report</b>
+                    </h2>
+                    <table class="table table-sm table-borderless" style="width:100%; font-size:12px;">
+                        <tbody>
+                            <!-- First filter only products that have barcode_image -->
+                            <t t-set="products_with_barcode" t-value="[p for p in docs if p.barcode_image]"/>
+                            <!-- Then chunk them into rows of 3 -->
+                            <t t-set="rows"
+                               t-value="[products_with_barcode[i:i+3] for i in range(0, len(products_with_barcode), 3)]"/>
+
+                            <t t-foreach="rows" t-as="row">
+                                <tr>
+                                    <t t-foreach="row" t-as="product">
+                                        <td style="text-align: center; width: 33%; padding: 10px;">
+                                            <div style="margin-bottom: 5px; font-size: 14px; font-weight: bold;">
+                                                <t t-esc="product.name"/>
+                                            </div>
+                                            <img t-att-src="image_data_uri(product.barcode_image)"
+                                                 style="width: 100%; max-width: 200px; height: auto;"/>
+                                        </td>
+                                    </t>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_product_template_barcode_label_rl">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2 style="text-align: center;">
+                        <b>Product Barcode Report</b>
+                    </h2>
+                    <table class="table table-sm table-borderless" style="width:100%; font-size:12px;">
+                        <tbody>
+                            <t t-set="all_variants" t-value="[]"/>
+                            <t t-foreach="docs" t-as="template">
+                                <t t-set="all_variants"
+                                   t-value="all_variants + [v for v in template.product_variant_ids if v.barcode]"/>
+                            </t>
+
+                            <t t-set="rows" t-value="[all_variants[i:i+3] for i in range(0, len(all_variants), 3)]"/>
+                            <t t-foreach="rows" t-as="row">
+                                <tr>
+                                    <t t-foreach="row" t-as="variant">
+                                        <td style="text-align: center; width: 33%; padding: 10px;">
+                                            <div style="margin-bottom: 5px; font-size: 14px; font-weight: bold;">
+                                                <t t-esc="variant.display_name"/>
+                                            </div>
+                                            <t t-if="variant.barcode_image">
+                                                <img t-att-src="image_data_uri(variant.barcode_image)"
+                                                     style="width: 100%; max-width: 200px; height: auto;"/>
+                                            </t>
+                                        </td>
+                                    </t>
+                                </tr>
+                            </t>
+
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+
+
+    <record id="action_report_product_variant_barcode_label" model="ir.actions.report">
+        <field name="name">Product Barcode Label</field>
+        <field name="model">product.product</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">barcode_generator_rl.report_product_barcode_label_rl</field>
+        <field name="report_file">barcode_generator_rl.report_product_barcode_label_rl</field>
+        <field name="binding_model_id" ref="product.model_product_product"/>
+        <field name="binding_type">report</field>
+        <field name="groups_id" eval="[(4, ref('barcode_generator_rl.group_barcode_generator_user'))]"/>
+    </record>
+
+    <record id="action_report_product_barcode_label" model="ir.actions.report">
+        <field name="name">Product Barcode Label</field>
+        <field name="model">product.template</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">barcode_generator_rl.report_product_template_barcode_label_rl</field>
+        <field name="report_file">barcode_generator_rl.report_product_template_barcode_label_rl</field>
+        <field name="binding_model_id" ref="product.model_product_template"/>
+        <field name="binding_type">report</field>
+        <field name="groups_id" eval="[(4, ref('barcode_generator_rl.group_barcode_generator_user'))]"/>
+    </record>
+</odoo>

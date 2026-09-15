@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_product_barcode_generator_rl,product.barcode.generator.rl,model_product_barcode_generator_rl,barcode_generator_rl.group_barcode_generator_user,1,1,1,1
+access_barcode_missing_image_generator_rl,barcode.missing.image.generator.rl,model_barcode_missing_image_generator_rl,barcode_generator_rl.group_barcode_generator_user,1,1,1,1
+access_barcode_generator_config_user_read,barcode.generator.config.rl user read,model_barcode_generator_config_rl,barcode_generator_rl.group_barcode_generator_user,1,0,0,0
+access_barcode_generator_config_system,barcode.generator.config.rl,model_barcode_generator_config_rl,base.group_system,1,1,1,1
+access_barcode_bulk_generator_system,barcode.bulk.generator.rl,model_barcode_bulk_generator_rl,base.group_system,1,1,1,1
+access_barcode_generated_history_system,barcode.generated.history.rl,model_barcode_generated_history_rl,base.group_system,1,0,0,0

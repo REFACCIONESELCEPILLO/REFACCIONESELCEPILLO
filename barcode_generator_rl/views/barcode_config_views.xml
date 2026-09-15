@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="barcode_generator_config_rl_list_view" model="ir.ui.view">
+        <field name="name">barcode.generator.config.rl.list</field>
+        <field name="model">barcode.generator.config.rl</field>
+        <field name="arch" type="xml">
+            <list string="Configuración Código de barras">
+                <field name="name"/>
+                <field name="version"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="usage"/>
+                <field name="default_barcode_type"/>
+                <field name="company_prefix"/>
+                <field name="category_levels"/>
+                <field name="sequence_digits"/>
+                <field name="capacity_display"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="barcode_generator_config_rl_form_view" model="ir.ui.view">
+        <field name="name">barcode.generator.config.rl.form</field>
+        <field name="model">barcode.generator.config.rl</field>
+        <field name="arch" type="xml">
+            <form string="Configuración Código de barras">
+                <header>
+                    <button name="action_validate_config" type="object" string="Validar configuración" class="btn-primary" icon="fa-check"/>
+                    <button name="action_open_bulk_wizard" type="object" string="Generar código de barras por lotes" class="btn-secondary" icon="fa-barcode"/>
+                    <button name="action_assign_missing_category_codes" type="object" string="Asignar códigos a categorías" class="btn-secondary" icon="fa-sitemap"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box"/>
+                    <widget name="web_ribbon" title="Archivada" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Identificación">
+                            <field name="version"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active"/>
+                            <field name="usage"/>
+                            <field name="default_barcode_type"/>
+                        </group>
+                        <group string="Capacidad">
+                            <field name="sequence_digits" readonly="1"/>
+                            <field name="capacity_display" readonly="1"/>
+                            <field name="auto_generate_on_create"/>
+                            <field name="generate_image"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Estructura" name="structure">
+                            <group>
+                                <group>
+                                    <field name="company_prefix"/>
+                                    <field name="category_levels"/>
+                                    <field name="missing_level_code"/>
+                                    <field name="code_length" invisible="default_barcode_type in ['ean13', 'upca', 'ean8']"/>
+                                </group>
+                                <group string="Regla resultante">
+                                    <div class="alert alert-info" role="alert" colspan="2">
+                                        <p><b>Estructura:</b> [Prefijo empresa] + [categorías configuradas] + [consecutivo].</p>
+                                        <p>Cada nivel de categoría ocupa 2 dígitos. Si un nivel no existe se utiliza <b>00</b>.</p>
+                                        <p>Si la categoría sí existe pero no tiene Código Barcode, el producto no se genera y se reporta.</p>
+                                    </div>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Previsualización" name="preview">
+                            <group>
+                                <field name="preview_category_id" invisible="category_levels == '0'"/>
+                                <field name="preview_code" readonly="1"/>
+                                <field name="preview_message" readonly="1"/>
+                                <field name="preview_image" widget="image" readonly="1" options="{'size': [520, 180]}"/>
+                            </group>
+                        </page>
+                        <page string="Manual / Instrucciones" name="manual">
+                            <field name="manual_html" nolabel="1" readonly="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="barcode_generator_config_rl_action" model="ir.actions.act_window">
+        <field name="name">Configuración Código de barras</field>
+        <field name="res_model">barcode.generator.config.rl</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_barcode_generator_config_rl"
+              name="Configuración Código de barras"
+              parent="base.menu_custom"
+              action="barcode_generator_config_rl_action"
+              sequence="70"
+              groups="base.group_system"/>
+</odoo>
