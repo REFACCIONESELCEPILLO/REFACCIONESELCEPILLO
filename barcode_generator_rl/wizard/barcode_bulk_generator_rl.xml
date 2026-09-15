@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="barcode_bulk_generator_rl_form_view" model="ir.ui.view">
+        <field name="name">barcode.bulk.generator.rl.form</field>
+        <field name="model">barcode.bulk.generator.rl</field>
+        <field name="arch" type="xml">
+            <form string="Generar códigos de barras faltantes">
+                <sheet>
+                    <group invisible="state != 'draft'">
+                        <group string="Configuración">
+                            <field name="config_id"/>
+                            <field name="barcode_type"/>
+                            <field name="include_archived"/>
+                            <field name="generate_images"/>
+                            <field name="batch_size"/>
+                        </group>
+                        <group string="Diagnóstico antes de generar">
+                            <field name="total_products" readonly="1"/>
+                            <field name="with_barcode" readonly="1"/>
+                            <field name="without_barcode" readonly="1"/>
+                        </group>
+                        <div class="alert alert-info" role="alert" colspan="2">
+                            Sólo se procesan productos/variantes sin barcode. Los códigos existentes se conservan sin modificación.
+                            La generación se ejecuta automáticamente en segundo plano. Puede cerrar esta ventana y consultar el avance desde Ejecuciones de códigos de barras.
+                        </div>
+                    </group>
+                    <div class="border rounded p-3 mb-3" invisible="state == 'draft'">
+                        <h3>Avance de la generación</h3>
+                        <field name="progress" widget="barcode_background_progress" class="w-100 mb-3" nolabel="1"/>
+                        <group>
+                            <field name="state"/>
+                            <field name="total_to_process"/>
+                            <field name="pending_count"/>
+                        </group>
+                        <div class="alert alert-info mb-0" role="status" invisible="state not in ['queued', 'running']">
+                            La generación continúa en segundo plano aunque cierre esta ventana. El avance se actualiza al guardar cada lote.
+                        </div>
+                    </div>
+                    <group invisible="state == 'draft'">
+                        <field name="failure_message" invisible="state != 'failed'"/>
+                        <field name="generated_count" readonly="1"/>
+                        <field name="skipped_count" string="Sin código de barras" readonly="1"/>
+                        <field name="error_count" readonly="1"/>
+                        <field name="result_html" nolabel="1" readonly="1" colspan="2"/>
+                    </group>
+                    <field name="generation_done" invisible="1"/>
+                    <field name="has_more" invisible="1"/>
+                </sheet>
+                <footer>
+                    <button name="action_generate_missing" type="object" string="Iniciar generación" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_generate_missing" type="object" string="Reintentar" class="btn-primary" invisible="state != 'failed'"/>
+                    <button string="Cerrar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="barcode_bulk_generator_rl_action" model="ir.actions.act_window">
+        <field name="name">Generar código de barras por lotes</field>
+        <field name="res_model">barcode.bulk.generator.rl</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_barcode_bulk_generator_rl"
+              name="Generar código de barras por lotes"
+              parent="base.menu_custom"
+              action="barcode_bulk_generator_rl_action"
+              sequence="72"
+              groups="base.group_system"/>
+
+
+    <record id="barcode_bulk_generator_rl_list_view" model="ir.ui.view">
+        <field name="name">barcode.bulk.generator.rl.list</field>
+        <field name="model">barcode.bulk.generator.rl</field>
+        <field name="arch" type="xml">
+            <list string="Ejecuciones de códigos de barras" create="false" edit="false" decoration-danger="state == 'failed'" decoration-success="state == 'done'">
+                <field name="create_date"/>
+                <field name="config_id"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="state"/>
+                <field name="progress" widget="progressbar"/>
+                <field name="generated_count"/>
+                <field name="error_count"/>
+                <field name="pending_count"/>
+            </list>
+        </field>
+    </record>
+    <record id="barcode_bulk_generator_rl_history_action" model="ir.actions.act_window">
+        <field name="name">Ejecuciones de códigos de barras</field>
+        <field name="res_model">barcode.bulk.generator.rl</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    <menuitem id="menu_barcode_bulk_generator_rl_history"
+              name="Ejecuciones de códigos de barras"
+              parent="base.menu_custom"
+              action="barcode_bulk_generator_rl_history_action"
+              sequence="73" groups="base.group_system"/>
+
+</odoo>

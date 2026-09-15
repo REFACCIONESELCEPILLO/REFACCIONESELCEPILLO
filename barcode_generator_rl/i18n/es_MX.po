@@ -1,0 +1,209 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* barcode_generator_rl
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-14 00:00+0000\n"
+"PO-Revision-Date: 2026-09-14 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: Spanish (Mexico)\n"
+"Language: es_MX\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: barcode_generator_rl
+#: model_terms:ir.ui.view,arch_db:barcode_generator_rl.product_barcode_missing_image_generator_view
+msgid ""
+"<i class=\"fa fa-exclamation-triangle\" style=\"margin-right:6px;\"/>\n"
+"                    <b>Recommended:</b> Use <b>Code 128</b> if you don’t know the exact length/format of your barcode number.\n"
+"                    Fixed-length formats (EAN-13 / EAN-8 / UPC-A / ISBN / ISSN) require strict digit counts and check digits.\n"
+"                    Incompatible inputs will create wrong barcode image."
+msgstr ""
+"<i class=\"fa fa-exclamation-triangle\" style=\"margin-right:6px;\"/>\n"
+"                    <b>Recomendación:</b> Use <b>Code 128</b> si desconoce la longitud o el formato exactos del número de su código de barras.\n"
+"                    Los formatos de longitud fija (EAN-13 / EAN-8 / UPC-A / ISBN / ISSN) requieren una cantidad exacta de dígitos y dígitos de control válidos.\n"
+"                    Los valores incompatibles generarán una imagen de código de barras incorrecta."
+
+#. module: barcode_generator_rl
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_generator_config_rl__active
+msgid "Active"
+msgstr "Activo"
+
+#. module: barcode_generator_rl
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_generated_history_rl__barcode
+msgid "Barcode"
+msgstr "Código de barras"
+
+#. module: barcode_generator_rl
+#: model:ir.sequence,name:barcode_generator_rl.sequence_internal_product_barcode
+msgid "Barcode Generator RL - Global Product Sequence"
+msgstr "Generador de códigos de barras RL - Secuencia global de productos"
+
+#. module: barcode_generator_rl
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_product_product__barcode_image
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_product_template__barcode_image
+msgid "Barcode Image"
+msgstr "Imagen del código de barras"
+
+#. module: barcode_generator_rl
+#: model:ir.model,name:barcode_generator_rl.model_barcode_missing_image_generator_rl
+#: model:ir.actions.server,name:barcode_generator_rl.action_product_missing_image_generator_wizard
+#: model:ir.actions.server,name:barcode_generator_rl.action_product_product_missing_image_generator_wizard
+#: model_terms:ir.ui.view,arch_db:barcode_generator_rl.product_barcode_missing_image_generator_view
+msgid "Barcode Missing Image Generator"
+msgstr "Generador de imágenes faltantes de códigos de barras"
+
+#. module: barcode_generator_rl
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_generated_history_rl__barcode_type
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_missing_image_generator_rl__barcode_type
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_product_barcode_generator_rl__barcode_type
+msgid "Barcode Type"
+msgstr "Tipo de código de barras"
+
+#. module: barcode_generator_rl
+#: model_terms:ir.ui.view,arch_db:barcode_generator_rl.product_barcode_missing_image_generator_view
+#: model_terms:ir.ui.view,arch_db:barcode_generator_rl.product_barcode_wizard_rl_form_view
+msgid "Cancel"
+msgstr "Cancelar"
+
+#. module: barcode_generator_rl
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_generated_history_rl__company_id
+msgid "Company"
+msgstr "Empresa"
+
+#. module: barcode_generator_rl
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_generated_history_rl__config_id
+msgid "Config"
+msgstr "Configuración"
+
+#. module: barcode_generator_rl
+#: code:addons/barcode_generator_rl/models/product_product.py:0
+#: code:addons/barcode_generator_rl/models/product_template.py:0
+#, python-format
+msgid "Configure Missing Barcode Image Generator"
+msgstr "Configurar el generador de imágenes faltantes de códigos de barras"
+
+#. module: barcode_generator_rl
+#: code:addons/barcode_generator_rl/models/product_product.py:0
+#: code:addons/barcode_generator_rl/models/product_template.py:0
+#, python-format
+msgid "Configure Product Barcode Generator"
+msgstr "Configurar el generador de códigos de barras de productos"
+
+#. module: barcode_generator_rl
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_product_product__create_missing_image
+msgid "Create Barcode image if missing"
+msgstr "Crear imagen del código de barras si falta"
+
+#. module: barcode_generator_rl
+#: model:ir.model.fields,help:barcode_generator_rl.field_product_product__create_missing_image
+msgid "Create image if barcode number exists and image does not exist."
+msgstr ""
+"Crear la imagen si existe el número del código de barras y falta su imagen."
+
+#. module: barcode_generator_rl
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_generator_config_rl__create_uid
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_generated_history_rl__create_uid
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_bulk_generator_rl__create_uid
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_missing_image_generator_rl__create_uid
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_product_barcode_generator_rl__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: barcode_generator_rl
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_generator_config_rl__create_date
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_generated_history_rl__create_date
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_bulk_generator_rl__create_date
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_missing_image_generator_rl__create_date
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_product_barcode_generator_rl__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: barcode_generator_rl
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_generator_config_rl__display_name
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_generated_history_rl__display_name
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_bulk_generator_rl__display_name
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_missing_image_generator_rl__display_name
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_product_barcode_generator_rl__display_name
+msgid "Display Name"
+msgstr "Nombre mostrado"
+
+#. module: barcode_generator_rl
+#: model_terms:ir.ui.view,arch_db:barcode_generator_rl.product_barcode_wizard_rl_form_view
+msgid "Generate Barcode"
+msgstr "Generar código de barras"
+
+#. module: barcode_generator_rl
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_generated_history_rl__generated_at
+msgid "Generated At"
+msgstr "Fecha de generación"
+
+#. module: barcode_generator_rl
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_bulk_generator_rl__generation_done
+msgid "Generation Done"
+msgstr "Generación finalizada"
+
+#. module: barcode_generator_rl
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_generator_config_rl__id
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_generated_history_rl__id
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_bulk_generator_rl__id
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_missing_image_generator_rl__id
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_product_barcode_generator_rl__id
+msgid "ID"
+msgstr "ID"
+
+#. module: barcode_generator_rl
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_generator_config_rl__write_uid
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_generated_history_rl__write_uid
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_bulk_generator_rl__write_uid
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_missing_image_generator_rl__write_uid
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_product_barcode_generator_rl__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: barcode_generator_rl
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_generator_config_rl__write_date
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_generated_history_rl__write_date
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_bulk_generator_rl__write_date
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_missing_image_generator_rl__write_date
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_product_barcode_generator_rl__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"
+
+#. module: barcode_generator_rl
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_generated_history_rl__product_id
+msgid "Product"
+msgstr "Producto"
+
+#. module: barcode_generator_rl
+#: model:ir.model,name:barcode_generator_rl.model_product_barcode_generator_rl
+#: model:ir.actions.server,name:barcode_generator_rl.action_product_barcode_wizard
+#: model:ir.actions.server,name:barcode_generator_rl.action_product_variant_barcode_wizard
+#: model_terms:ir.ui.view,arch_db:barcode_generator_rl.product_barcode_wizard_rl_form_view
+msgid "Product Barcode Generator"
+msgstr "Generador de códigos de barras de productos"
+
+#. module: barcode_generator_rl
+#: model:res.groups,name:barcode_generator_rl.group_barcode_generator_user
+msgid "Product Barcode Generator User"
+msgstr "Usuario del generador de códigos de barras de productos"
+
+#. module: barcode_generator_rl
+#: model:ir.actions.report,name:barcode_generator_rl.action_report_product_variant_barcode_label
+#: model:ir.actions.report,name:barcode_generator_rl.action_report_product_barcode_label
+msgid "Product Barcode Label"
+msgstr "Etiqueta de código de barras del producto"
+
+#. module: barcode_generator_rl
+#: model:ir.model.fields,field_description:barcode_generator_rl.field_barcode_generated_history_rl__sequence_value
+msgid "Sequence Value"
+msgstr "Valor del consecutivo"
+
+#. module: barcode_generator_rl
+#: model_terms:ir.ui.view,arch_db:barcode_generator_rl.product_barcode_missing_image_generator_view
+msgid "Update Images"
+msgstr "Actualizar imágenes"

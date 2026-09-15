@@ -1,0 +1,2 @@
+# Product Barcode Generator RL / ICKAB
+python-barcode[images]==0.16.1
