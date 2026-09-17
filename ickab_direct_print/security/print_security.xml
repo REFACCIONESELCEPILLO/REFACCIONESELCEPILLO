@@ -56,4 +56,40 @@
         <field name="domain_force">[('company_id', 'in', company_ids)]</field>
         <field name="groups" eval="[(4, ref('ickab_direct_print.group_direct_print_user'))]"/>
     </record>
+
+    <record id="rule_print_branch_company" model="ir.rule">
+        <field name="name">Direct Print Branches por compañía</field>
+        <field name="model_id" ref="model_ickab_print_branch"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('ickab_direct_print.group_direct_print_user'))]"/>
+    </record>
+
+    <record id="rule_print_assignment_company" model="ir.rule">
+        <field name="name">Direct Print Assignments por compañía</field>
+        <field name="model_id" ref="model_ickab_print_assignment"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('ickab_direct_print.group_direct_print_user'))]"/>
+    </record>
+
+    <record id="rule_print_user_branch_company" model="ir.rule">
+        <field name="name">Direct Print User Branches por compañía</field>
+        <field name="model_id" ref="model_ickab_print_user_branch"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('ickab_direct_print.group_direct_print_user'))]"/>
+    </record>
+
+    <record id="rule_print_host_branch_company" model="ir.rule">
+        <field name="name">Direct Print Host Branches por compañía</field>
+        <field name="model_id" ref="model_ickab_print_host_branch"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('ickab_direct_print.group_direct_print_user'))]"/>
+    </record>
+
+    <record id="rule_print_job_context_company" model="ir.rule">
+        <field name="name">Direct Print Job Context por compañía</field>
+        <field name="model_id" ref="model_ickab_print_job_context"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('ickab_direct_print.group_direct_print_user'))]"/>
+    </record>
+
 </odoo>

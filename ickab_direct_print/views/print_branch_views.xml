@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ickab_print_branch_list" model="ir.ui.view">
+        <field name="name">ickab.print.branch.list</field>
+        <field name="model">ickab.print.branch</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="default_document_printer_id" optional="show"/>
+                <field name="default_label_printer_id" optional="show"/>
+                <field name="default_ticket_printer_id" optional="hide"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ickab_print_branch_form" model="ir.ui.view">
+        <field name="name">ickab.print.branch.form</field>
+        <field name="model">ickab.print.branch</field>
+        <field name="arch" type="xml">
+            <form string="Sucursal de impresión">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Predeterminadas">
+                            <group>
+                                <group string="Documentos">
+                                    <field name="default_document_printer_id"/>
+                                    <field name="default_document_paper_id"/>
+                                </group>
+                                <group string="Etiquetas">
+                                    <field name="default_label_printer_id"/>
+                                    <field name="default_label_paper_id"/>
+                                </group>
+                                <group string="Tickets / POS">
+                                    <field name="default_ticket_printer_id"/>
+                                    <field name="default_ticket_paper_id"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Equipos / Agentes">
+                            <field name="host_link_ids" context="{'default_branch_id': id}">
+                                <list editable="bottom">
+                                    <field name="host_id"/>
+                                    <field name="hostname" readonly="1" optional="show"/>
+                                    <field name="platform_type" readonly="1" optional="show"/>
+                                    <field name="printer_count" readonly="1" optional="show"/>
+                                    <field name="state" widget="badge" readonly="1"/>
+                                    <field name="last_seen" readonly="1" optional="show"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Usuarios">
+                            <field name="user_line_ids" context="{'default_branch_id': id}">
+                                <list editable="bottom">
+                                    <field name="user_id"/>
+                                    <field name="user_company_ids" column_invisible="True"/>
+                                    <field name="is_default"/>
+                                    <field name="active"/>
+                                    <field name="notes" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Asignaciones">
+                            <field name="assignment_ids">
+                                <list editable="bottom">
+                                    <field name="user_id"/>
+                                    <field name="document_kind"/>
+                                    <field name="printer_id"/>
+                                    <field name="paper_id" optional="hide"/>
+                                    <field name="copies"/>
+                                    <field name="is_default"/>
+                                    <field name="active"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notas">
+                            <field name="notes" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ickab_print_branch" model="ir.actions.act_window">
+        <field name="name">Sucursales</field>
+        <field name="res_model">ickab.print.branch</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

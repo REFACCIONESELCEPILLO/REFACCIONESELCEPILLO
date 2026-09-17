@@ -7,6 +7,7 @@
             <search>
                 <field name="name"/>
                 <field name="host_id"/>
+                <field name="branch_id"/>
                 <field name="compatibility_profile_id"/>
                 <filter string="Disponibles" name="ready" domain="[('state','=','ready')]"/>
                 <filter string="Etiquetas" name="label" domain="[('printer_type','=','label')]"/>
@@ -27,6 +28,7 @@
         <field name="arch" type="xml">
             <list decoration-success="state == 'ready'" decoration-muted="state == 'unavailable'" decoration-danger="state == 'error'">
                 <field name="name"/>
+                <field name="branch_id"/>
                 <field name="host_id"/>
                 <field name="printer_type"/>
                 <field name="transport"/>
@@ -55,6 +57,7 @@
                             <field name="name"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                             <field name="host_id"/>
+                            <field name="branch_id" readonly="1"/>
                             <field name="source"/>
                             <field name="active"/>
                         </group>

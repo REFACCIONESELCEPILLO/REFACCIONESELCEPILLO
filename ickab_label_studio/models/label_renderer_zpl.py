@@ -1,4 +1,5 @@
 # Copyright 2026 ICKAB. All rights reserved.
+import base64
 import re
 
 from odoo import _, models
@@ -128,6 +129,24 @@ class IckabLabelRendererZpl(models.AbstractModel):
                 else:
                     line_y = y + max(0, (h - thickness) // 2)
                     lines.append(f"^FO{x},{line_y}^GB{w},{thickness},{thickness},B,0^FS")
+            elif etype == "image":
+                encoded = element.get("image_bitmap_b64") or ""
+                if not encoded:
+                    continue
+                try:
+                    bitmap = base64.b64decode(encoded)
+                except Exception as exc:
+                    raise UserError(_("La imagen de la etiqueta no contiene un bitmap válido.")) from exc
+                bytes_per_row = int(element.get("image_bytes_per_row") or ((w + 7) // 8))
+                if bytes_per_row <= 0 or not bitmap:
+                    continue
+                total_bytes = len(bitmap)
+                graphic_hex = bitmap.hex().upper()
+                lines.extend([
+                    f"^FO{x},{y}",
+                    f"^GFA,{total_bytes},{total_bytes},{bytes_per_row},{graphic_hex}",
+                    "^FS",
+                ])
 
         lines.append(f"^PQ{copies},0,1,N")
         lines.append("^XZ")

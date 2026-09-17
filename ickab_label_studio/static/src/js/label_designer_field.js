@@ -13,7 +13,7 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
 
-const TYPES = ["text", "barcode", "qrcode", "box", "line"];
+const TYPES = ["text", "barcode", "qrcode", "box", "line", "image"];
 const PX_PER_MM = 96 / 25.4;
 const MAX_HISTORY = 60;
 
@@ -166,6 +166,14 @@ export class IckabLabelDesignerField extends Component {
         return "";
     }
 
+    get companyId() {
+        const value = this.props.record?.data?.company_id;
+        if (!value) return false;
+        if (Array.isArray(value)) return Number(value[0]) || false;
+        if (typeof value === "object") return Number(value.id || value.resId || value.res_id || value[0]) || false;
+        return Number(value) || false;
+    }
+
     async loadFields(modelId = this.modelId, relationPath = this.state.relationPath || "") {
         modelId = Number(modelId) || false;
         relationPath = modelId ? String(relationPath || "") : "";
@@ -218,13 +226,16 @@ export class IckabLabelDesignerField extends Component {
         this.loadFields(this.modelId, crumb?.path || "");
     }
 
-    get canBindSelected() {
-        return Boolean(this.selected && ["text", "barcode", "qrcode"].includes(this.selected.type));
+    canBindField(field) {
+        const el = this.selected;
+        if (!el || !field?.path) return false;
+        if (el.type === "image") return Boolean(field.is_image && !field.is_collection);
+        return ["text", "barcode", "qrcode"].includes(el.type) && !field.is_image;
     }
 
     bindFieldToSelected(field) {
         const el = this.selected;
-        if (this.readonly || !el || !["text", "barcode", "qrcode"].includes(el.type) || !field?.path) return;
+        if (this.readonly || !this.canBindField(field)) return;
         this.checkpoint();
         el.source = "field";
         el.value = "";
@@ -233,8 +244,13 @@ export class IckabLabelDesignerField extends Component {
         el.field_label = field.label || field.name || field.path;
         el.field_type = field.type || "";
         el.field_is_collection = Boolean(field.is_collection);
-        el.aggregate = field.is_collection ? (el.aggregate || "first") : "";
-        el.separator = field.is_collection ? (el.separator ?? ", ") : "";
+        if (el.type === "image") {
+            el.aggregate = "";
+            el.separator = "";
+        } else {
+            el.aggregate = field.is_collection ? (el.aggregate || "first") : "";
+            el.separator = field.is_collection ? (el.separator ?? ", ") : "";
+        }
         this.persist();
     }
 
@@ -372,6 +388,10 @@ export class IckabLabelDesignerField extends Component {
             thickness_mm: 0.25,
             line_direction: "horizontal",
             rounding: 0,
+            fit: "contain",
+            threshold: 128,
+            dither: "none",
+            invert: false,
         };
         if (type === "barcode") {
             base.value = "1234567890";
@@ -388,6 +408,12 @@ export class IckabLabelDesignerField extends Component {
             base.value = "";
             base.w_mm = 30;
             base.h_mm = 0.5;
+        } else if (type === "image") {
+            base.source = "company_logo";
+            base.value = "";
+            base.sample = "Logo de empresa";
+            base.w_mm = 24;
+            base.h_mm = 14;
         }
         this.clampElement(base);
         return base;
@@ -412,8 +438,13 @@ export class IckabLabelDesignerField extends Component {
     addFieldAt(field, xMm, yMm) {
         if (this.readonly || !field?.path) return;
         this.checkpoint();
-        const element = this.makeElement("text", xMm, yMm);
-        element.id = this.newElementId("field");
+        const isImage = Boolean(field.is_image);
+        if (isImage && field.is_collection) {
+            this.notification.add("Una imagen no puede provenir de una relación múltiple.", { type: "warning" });
+            return;
+        }
+        const element = this.makeElement(isImage ? "image" : "text", xMm, yMm);
+        element.id = this.newElementId(isImage ? "image_field" : "field");
         element.source = "field";
         element.value = "";
         element.sample = field.label || field.name || field.path;
@@ -421,10 +452,12 @@ export class IckabLabelDesignerField extends Component {
         element.field_label = field.label || field.name || field.path;
         element.field_type = field.type || "";
         element.field_is_collection = Boolean(field.is_collection);
-        element.aggregate = field.is_collection ? "first" : "";
-        element.separator = field.is_collection ? ", " : "";
+        element.aggregate = isImage ? "" : (field.is_collection ? "first" : "");
+        element.separator = isImage ? "" : (field.is_collection ? ", " : "");
         element.w_mm = Math.min(45, Math.max(15, this.widthMm - element.x_mm));
-        element.h_mm = Math.min(7, Math.max(2, this.heightMm - element.y_mm));
+        element.h_mm = isImage
+            ? Math.min(30, Math.max(10, this.heightMm - element.y_mm))
+            : Math.min(7, Math.max(2, this.heightMm - element.y_mm));
         this.clampElement(element);
         this.state.design.elements.push(element);
         this.state.selected = element.id;
@@ -440,6 +473,7 @@ export class IckabLabelDesignerField extends Component {
         const payload = JSON.stringify({
             name: field.name, path: field.path, label: field.label, type: field.type,
             relation: field.relation || "", is_collection: Boolean(field.is_collection),
+            is_image: Boolean(field.is_image),
         });
         ev.dataTransfer.setData("application/x-ickab-label-field", payload);
         ev.dataTransfer.setData("text/plain", payload);
@@ -500,7 +534,7 @@ export class IckabLabelDesignerField extends Component {
         let value = ev.target.type === "checkbox" ? ev.target.checked : ev.target.value;
         const numeric = [
             "x_mm", "y_mm", "w_mm", "h_mm", "font_mm", "max_lines",
-            "magnification", "thickness_mm", "rounding", "z",
+            "magnification", "thickness_mm", "rounding", "threshold", "z",
         ];
         if (numeric.includes(key)) value = Number(value || 0);
         el[key] = value;
@@ -512,6 +546,12 @@ export class IckabLabelDesignerField extends Component {
                 el.magnification ||= 4;
                 const size = Math.min(Math.max(el.w_mm, el.h_mm, 12), this.widthMm - el.x_mm, this.heightMm - el.y_mm);
                 el.w_mm = el.h_mm = size;
+            } else if (value === "image") {
+                el.source ||= "company_logo";
+                el.fit ||= "contain";
+                el.threshold ??= 128;
+                el.dither ||= "none";
+                el.invert ??= false;
             }
         }
         this.clampElement(el);
@@ -798,6 +838,25 @@ export class IckabLabelDesignerField extends Component {
         });
         if (el.type === "barcode" && el.human_readable) params.set("humanreadable", "1");
         return `/report/barcode/?${params.toString()}`;
+    }
+
+    imagePreviewSrc(el) {
+        if (!el || el.type !== "image") return "";
+        if ((el.source || "company_logo") === "company_logo" && this.companyId) {
+            return `/web/image/res.company/${this.companyId}/logo`;
+        }
+        return "";
+    }
+
+    imagePlaceholder(el) {
+        if (!el || el.type !== "image") return "IMAGEN";
+        if ((el.source || "company_logo") === "company_logo") return "LOGO EMPRESA";
+        return el.field_label || el.field_path || "IMAGEN ODOO";
+    }
+
+    imageStyle(el) {
+        const fit = { contain: "contain", cover: "cover", stretch: "fill" }[el?.fit || "contain"] || "contain";
+        return `object-fit:${fit};`;
     }
 
     lineStyle(el) {

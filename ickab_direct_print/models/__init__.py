@@ -6,5 +6,8 @@ from . import print_profile
 from . import print_job
 from . import res_company
 from . import res_config_settings
-
 from . import ir_actions_report
+from . import print_branch
+from . import print_user_branch
+from . import print_assignment
+from . import res_users

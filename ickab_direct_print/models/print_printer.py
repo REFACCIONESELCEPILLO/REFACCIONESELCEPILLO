@@ -17,6 +17,11 @@ class IckabPrintPrinter(models.Model):
         "ickab.print.host", required=True, ondelete="cascade",
         domain="[('company_id', '=', company_id)]", index=True,
     )
+    branch_id = fields.Many2one(
+        "ickab.print.branch", string="Sucursal",
+        compute="_compute_branch_id", search="_search_branch_id", readonly=True,
+        help="Sucursal del equipo/agente al que pertenece esta impresora.",
+    )
     active = fields.Boolean(default=True)
     source = fields.Selection(
         [("discovered", "Detectada por agente"), ("manual", "Configuración manual")],
@@ -91,6 +96,16 @@ class IckabPrintPrinter(models.Model):
         ("host_system_uid_unique", "unique(host_id, system_uid)", "El identificador de impresora debe ser único dentro del host."),
     ]
 
+    @api.depends("host_id", "host_id.branch_id")
+    def _compute_branch_id(self):
+        for printer in self:
+            printer.branch_id = printer.host_id.branch_id if printer.host_id else False
+
+    @api.model
+    def _search_branch_id(self, operator, value):
+        hosts = self.env["ickab.print.host"].search([("branch_id", operator, value)])
+        return [("host_id", "in", hosts.ids)]
+
     @api.depends("name", "system_name")
     def _compute_suggested_compatibility_profile_id(self):
         profiles = self.env["ickab.print.compatibility.profile"].search([("active", "=", True)])
@@ -100,6 +115,13 @@ class IckabPrintPrinter(models.Model):
                 (profile for profile in profiles if profile.matches_printer_name(value)),
                 False,
             )
+
+
+    @api.constrains("company_id", "host_id")
+    def _check_host_company(self):
+        for printer in self:
+            if printer.host_id and printer.host_id.company_id != printer.company_id:
+                raise ValidationError(_("La impresora y el equipo/agente deben pertenecer a la misma compañía."))
 
     @api.constrains("transport", "network_host", "network_port", "bluetooth_address")
     def _check_transport_configuration(self):

@@ -6,6 +6,7 @@
         <field name="arch" type="xml">
             <list decoration-success="state == 'online'" decoration-muted="state == 'offline'" decoration-danger="state == 'error'">
                 <field name="name"/>
+                <field name="branch_id"/>
                 <field name="platform_type"/>
                 <field name="hostname"/>
                 <field name="agent_version"/>
@@ -46,6 +47,7 @@
                         <group>
                             <field name="name" placeholder="Ej. PC MOSTRADOR"/>
                             <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="branch_id"/>
                             <field name="active"/>
                         </group>
                         <group>

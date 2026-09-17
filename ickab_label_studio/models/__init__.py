@@ -1,4 +1,5 @@
 from . import label_media
+from . import image_processor
 from . import label_template
 from . import label_renderer_zpl
 from . import zpl_parser

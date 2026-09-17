@@ -1,4 +1,7 @@
+import base64
 import json
+
+from PIL import Image
 
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import tagged
@@ -276,6 +279,133 @@ class TestIckabLabelStudio(TransactionCase):
         design_count = {"version": 2, "elements": [{**base, "aggregate": "count"}]}
         template_count = self._template(design_count, name="Count")
         self.assertGreaterEqual(int(template_count.resolve_elements(self.product)[0]["value_resolved"]), 1)
+
+
+    def test_image_field_catalog_and_zpl_bitmap(self):
+        image_b64 = (
+            "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAMklEQVR4nG3LQQoAQAgC"
+            "QPX/f3YPQVhtF4UxArCNc7JN8gP1cU0V19RtmXKVNiBtQ9sDmwcYDTEMfWwAAAAASUVORK5CYII="
+        )
+        self.product.image_1920 = image_b64.encode("ascii")
+        catalog = self.env["ickab.label.template"].get_field_catalog(self.model.id, "")
+        image_field = next(field for field in catalog["fields"] if field["name"] == "image_1920")
+        self.assertTrue(image_field["is_image"])
+
+        design = {"version": 2, "elements": [{
+            "id": "photo", "type": "image", "x_mm": 2, "y_mm": 2,
+            "w_mm": 20, "h_mm": 15, "source": "field",
+            "field_path": "image_1920", "fit": "contain",
+            "threshold": 128, "dither": "none", "invert": False,
+        }]}
+        template = self._template(design, name="Imagen producto")
+        element = template.resolve_elements(self.product)[0]
+        self.assertTrue(element["preview_src"].startswith("data:image/png;base64,"))
+        self.assertTrue(element["image_bitmap_b64"])
+        self.assertGreater(element["image_bytes_per_row"], 0)
+        zpl = template.generate_zpl(self.product)
+        self.assertIn("^GFA,", zpl)
+
+    def test_company_logo_image_is_valid_without_business_record(self):
+        design = {"version": 2, "elements": [{
+            "id": "logo", "type": "image", "x_mm": 1, "y_mm": 1,
+            "w_mm": 20, "h_mm": 10, "source": "company_logo",
+            "fit": "contain", "threshold": 128, "dither": "none",
+        }]}
+        template = self._template(design, name="Logo empresa")
+        parsed = template._parse_design(strict=True, validate_fields=True)
+        self.assertEqual(parsed["elements"][0]["type"], "image")
+
+    def test_image_binary_size_placeholder_is_not_treated_as_base64(self):
+        template = self._template(name="Normalización imagen")
+        self.assertEqual(template._normalize_image_b64("24.6 KB"), "")
+        self.assertEqual(template._normalize_image_b64(b"24.6 KB"), "")
+
+    def test_image_render_forces_real_binary_when_bin_size_context_is_present(self):
+        image_b64 = (
+            "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAMklEQVR4nG3LQQoAQAgC"
+            "QPX/f3YPQVhtF4UxArCNc7JN8gP1cU0V19RtmXKVNiBtQ9sDmwcYDTEMfWwAAAAASUVORK5CYII="
+        )
+        self.product.image_1920 = image_b64.encode("ascii")
+        design = {"version": 2, "elements": [{
+            "id": "photo-bin-size", "type": "image", "x_mm": 2, "y_mm": 2,
+            "w_mm": 20, "h_mm": 15, "source": "field",
+            "field_path": "image_1920", "fit": "contain",
+            "threshold": 128, "dither": "none", "invert": False,
+        }]}
+        template = self._template(design, name="Imagen con bin_size")
+        product = self.product.with_context(bin_size=True)
+        element = template.with_context(bin_size=True).resolve_elements(product)[0]
+        self.assertTrue(element["preview_src"].startswith("data:image/png;base64,"))
+        self.assertTrue(element["image_bitmap_b64"])
+
+    def test_image_processor_recovers_double_base64(self):
+        image_b64 = (
+            "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAMklEQVR4nG3LQQoAQAgC"
+            "QPX/f3YPQVhtF4UxArCNc7JN8gP1cU0V19RtmXKVNiBtQ9sDmwcYDTEMfWwAAAAASUVORK5CYII="
+        )
+        double_b64 = base64.b64encode(image_b64.encode("ascii")).decode("ascii")
+        payload = self.env["ickab.label.image.processor"].prepare_bitmap(
+            double_b64,
+            80,
+            40,
+            options={"fit": "contain", "threshold": 128, "dither": "none"},
+            image_label="image_1920",
+        )
+        self.assertEqual(payload["image_format"], "PNG")
+        self.assertEqual(payload["image_bytes_per_row"], 10)
+        self.assertEqual(len(base64.b64decode(payload["image_bitmap_b64"])), 400)
+
+    def test_webp_processor_is_isolated_from_odoo_pillow_registry(self):
+        # Tiny static WebP fixture.  Odoo 18 intentionally locks Pillow after
+        # preinit(), so WebP is normally absent from Image.OPEN inside workers.
+        webp_b64 = (
+            "UklGRkQAAABXRUJQVlA4IDgAAADQAgCdASoRAAsAPm0skkWkIqGYBABABsSgB2AA"
+            "EDYAAP7rZF//+sr/9ZX/6yv98j/90GWcM5gAAA=="
+        )
+        before_initialized = Image._initialized
+        before_webp_open = "WEBP" in Image.OPEN
+        before_webp_id = "WEBP" in Image.ID
+
+        payload = self.env["ickab.label.image.processor"].prepare_bitmap(
+            webp_b64,
+            80,
+            40,
+            options={"fit": "contain", "threshold": 128, "dither": "none"},
+            image_label="image_1920",
+        )
+
+        self.assertEqual(payload["image_format"], "WEBP")
+        self.assertTrue(payload["image_preview_src"].startswith("data:image/png;base64,"))
+        self.assertTrue(payload["image_bitmap_b64"])
+        self.assertEqual(Image._initialized, before_initialized)
+        self.assertEqual("WEBP" in Image.OPEN, before_webp_open)
+        self.assertEqual("WEBP" in Image.ID, before_webp_id)
+
+    def test_invalid_base64_image_reports_source_without_translation_crash(self):
+        invalid = base64.b64encode(b"THIS IS VALID BASE64 BUT NOT AN IMAGE").decode("ascii")
+        with self.assertRaises(UserError) as caught:
+            self.env["ickab.label.image.processor"].prepare_bitmap(
+                invalid,
+                80,
+                40,
+                options={"fit": "contain"},
+                image_label="image_1920",
+            )
+        message = str(caught.exception)
+        self.assertIn("image_1920", message)
+        self.assertNotIn("get_text_alias", message)
+
+    def test_company_logo_is_actually_rasterized(self):
+        design = {"version": 2, "elements": [{
+            "id": "logo-render", "type": "image", "x_mm": 1, "y_mm": 1,
+            "w_mm": 20, "h_mm": 10, "source": "company_logo",
+            "fit": "contain", "threshold": 128, "dither": "none",
+        }]}
+        template = self._template(design, name="Logo empresa raster")
+        element = template.resolve_elements()[0]
+        self.assertTrue(element["image_bitmap_b64"])
+        self.assertTrue(element["preview_src"].startswith("data:image/png;base64,"))
+        self.assertTrue(element["image_source_label"].startswith("res."))
 
     def test_multiline_text_is_preserved_in_zpl(self):
         design = {"version": 2, "elements": [{

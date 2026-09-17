@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ickab_print_user_branch_search" model="ir.ui.view">
+        <field name="name">ickab.print.user.branch.search</field>
+        <field name="model">ickab.print.user.branch</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="user_id"/>
+                <field name="branch_id"/>
+                <field name="company_id"/>
+                <filter string="Predeterminadas" name="default" domain="[('is_default','=',True)]"/>
+                <filter string="Activas" name="active" domain="[('active','=',True)]"/>
+                <group expand="0" string="Agrupar por">
+                    <filter string="Sucursal" name="group_branch" context="{'group_by':'branch_id'}"/>
+                    <filter string="Usuario" name="group_user" context="{'group_by':'user_id'}"/>
+                    <filter string="Compañía" name="group_company" context="{'group_by':'company_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_ickab_print_user_branch_list" model="ir.ui.view">
+        <field name="name">ickab.print.user.branch.list</field>
+        <field name="model">ickab.print.user.branch</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="user_id"/>
+                <field name="user_company_ids" column_invisible="True"/>
+                <field name="branch_id"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="is_default"/>
+                <field name="active"/>
+                <field name="notes" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ickab_print_user_branch_form" model="ir.ui.view">
+        <field name="name">ickab.print.user.branch.form</field>
+        <field name="model">ickab.print.user.branch</field>
+        <field name="arch" type="xml">
+            <form string="Sucursal habilitada para usuario">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="user_id"/>
+                            <field name="user_company_ids" invisible="1"/>
+                            <field name="branch_id"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="is_default"/>
+                            <field name="active"/>
+                            <field name="notes"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ickab_print_user_branch" model="ir.actions.act_window">
+        <field name="name">Sucursales por usuario</field>
+        <field name="res_model">ickab.print.user.branch</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_ickab_print_user_branch_search"/>
+    </record>
+</odoo>
