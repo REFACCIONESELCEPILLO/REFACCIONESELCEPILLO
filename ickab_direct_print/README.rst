@@ -1,38 +1,38 @@
-ICKAB Direct Print 18.0.4.0.0
+ICKAB Direct Print 18.0.2.0.2
 ==============================
 
 Motor de impresión directa para Odoo 18 mediante agentes locales.
 
-Esta versión consolida el núcleo estable con compatibilidad multi-impresora y
-separa explícitamente tres conceptos: transporte, lenguaje y perfil físico de
-impresora. No contiene lógica de escalamiento ZPL experimental.
+Arquitectura
+------------
 
-Cambios estructurales 4.0
--------------------------
+ICKAB Direct Print mantiene en Odoo la configuración de impresión, sucursales,
+hosts/agentes, impresoras, papeles, perfiles de compatibilidad y cola de trabajos.
+El agente local consulta Odoo mediante HTTPS y entrega el payload al dispositivo;
+el servidor Odoo no necesita acceso directo a la red privada del cliente.
 
-* ``Prueba de comunicación`` valida transporte + lenguaje; ya no se presenta como
-  prueba del diseño de una etiqueta de producto.
-* El preámbulo físico TSPL (``SIZE``, ``GAP/BLINE``, ``DIRECTION``, ``REFERENCE``
-  y ``CODEPAGE``) vive en Direct Print y es reutilizado por los generadores de
-  etiquetas. La prueba técnica y la etiqueta real dejan de configurar el medio
-  por caminos diferentes.
-* El papel modela el sensor (GAP, BLINE o continuo), distancia y offset.
-* El perfil de compatibilidad modela dirección, origen, polaridad BITMAP,
-  soporte de BITMAP en línea y estrategia de fuentes TSPL definida por perfil.
-* ``Descargar archivo`` genera exactamente el payload de la impresora seleccionada;
-  una impresora TSPL descarga TSPL y una ZPL descarga ZPL.
-* Conserva cola/API, reimpresión binaria segura y validación estricta del lenguaje.
-
-Perfiles iniciales
-------------------
-
-* Zebra GK420d — ZPL — 203 dpi.
-* 4BARCODE 4B-2054L — TSPL/TSPL2 — 203 dpi, validada físicamente por USB/Windows RAW; usa fuentes residentes fijas 1..5 por consistencia física.
-* Perfiles genéricos ZPL, TSPL y EPL de 203 dpi.
-
-Compatibilidad futura
+Capacidades incluidas
 ---------------------
 
-Una impresora nueva que utilice un lenguaje/transporte ya soportado requiere un
-nuevo perfil, no un módulo nuevo. Sólo se desarrolla código cuando aparece un
-lenguaje, transporte o capacidad de render no soportada.
+* Impresión por sucursal y compañía.
+* Asignaciones de impresora por usuario, sucursal y tipo de documento.
+* Hosts/agentes locales con código temporal de instalación.
+* Cola de trabajos y reimpresión.
+* Tipos de salida ZPL/ZPL II, TSPL/TSPL2, EPL/EPL2, ESC/POS, CPCL, PDF,
+  imagen y RAW.
+* Transportes Windows RAW, TCP/IP RAW, Windows Spooler, CUPS, Bluetooth,
+  Android Print Service y USB OTG según capacidades del agente.
+* Perfiles de compatibilidad desacoplados de la lógica del diseño.
+* Configuración física de papel para GAP, BLINE y medio continuo.
+* Perfiles iniciales para Zebra GK420d, 4BARCODE 4B-2054L y equipos genéricos
+  ZPL/TSPL/EPL de 203 dpi.
+
+Versión 18.0.2.0.2
+------------------
+
+* Corrige la colisión de etiquetas de los campos ``printer_ids`` y
+  ``printer_count`` del modelo ``ickab.print.host``.
+* ``printer_count`` usa ahora la etiqueta visible ``Número de impresoras``.
+* Limpia artefactos de migración pertenecientes a versiones futuras que no
+  corresponden a la serie 18.0.2.x de este paquete.
+* No requiere intervención manual en consola para esta corrección.

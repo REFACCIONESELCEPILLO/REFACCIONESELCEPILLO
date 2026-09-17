@@ -5,6 +5,7 @@
         <field name="model">ickab.direct.print.wizard</field>
         <field name="arch" type="xml">
             <form string="Impresión directa">
+                <field name="available_branch_ids" invisible="1"/>
                 <field name="available_printer_ids" invisible="1"/>
                 <field name="paper_locked" invisible="1"/>
                 <div class="alert alert-info" role="alert" invisible="not paper_locked">
@@ -14,12 +15,14 @@
                 <group>
                     <field name="company_id" invisible="1"/>
                     <field name="report_id"/>
+                    <field name="branch_id" options="{'no_create': True}"/>
                     <field name="document_kind"/>
                     <field name="paper_id" readonly="paper_locked"/>
                     <field name="printer_id"/>
                     <field name="copies"/>
                 </group>
                 <group string="Disponibilidad">
+                    <field name="host_id" readonly="1"/>
                     <field name="host_state" widget="badge" readonly="1"/>
                     <field name="printer_state" widget="badge" readonly="1"/>
                 </group>

@@ -9,8 +9,11 @@ from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
 
 
-ALLOWED_ELEMENT_TYPES = {"text", "barcode", "qrcode", "box", "line"}
+ALLOWED_ELEMENT_TYPES = {"text", "barcode", "qrcode", "box", "line", "image"}
 ALLOWED_SOURCES = {"static", "field"}
+ALLOWED_IMAGE_SOURCES = {"company_logo", "field"}
+ALLOWED_IMAGE_FITS = {"contain", "cover", "stretch"}
+ALLOWED_IMAGE_DITHERS = {"none", "floyd_steinberg"}
 ALLOWED_ALIGNMENTS = {"L", "C", "R", "J"}
 ALLOWED_BARCODES = {"code128", "code39", "ean13", "upca"}
 ALLOWED_LINE_DIRECTIONS = {"horizontal", "vertical"}
@@ -320,6 +323,8 @@ class IckabLabelTemplate(models.Model):
                     raise ValidationError(_("El elemento '%s' requiere un campo Odoo.", element_id))
                 if validate_fields:
                     path_info = self._field_path_info(path)
+                    if path_info["terminal_type"] == "binary":
+                        raise ValidationError(_("El campo '%s' es una imagen y debe insertarse como elemento Imagen.", path))
                     if path_info["collection"]:
                         aggregate = str(element.get("aggregate") or "").strip().lower()
                         if aggregate not in ALLOWED_AGGREGATES:
@@ -337,6 +342,30 @@ class IckabLabelTemplate(models.Model):
                 literal = str(element.get("value") or "")
                 if len(literal) > MAX_LITERAL_CHARS:
                     raise ValidationError(_("El texto fijo de '%s' excede el límite permitido.", element_id))
+
+        if etype == "image":
+            source = str(element.get("source") or "company_logo")
+            if source not in ALLOWED_IMAGE_SOURCES:
+                raise ValidationError(_("Origen de imagen no soportado en '%s'.", element_id))
+            if source == "field":
+                path = str(element.get("field_path") or "").strip()
+                if not path:
+                    raise ValidationError(_("La imagen '%s' requiere un campo de imagen Odoo.", element_id))
+                if validate_fields:
+                    path_info = self._field_path_info(path)
+                    if path_info["collection"]:
+                        raise ValidationError(_("La imagen '%s' no puede usar una relación múltiple.", element_id))
+                    if path_info["terminal_type"] != "binary" or not path_info.get("terminal_is_image"):
+                        raise ValidationError(_("El campo de la imagen '%s' debe ser un campo Image/Binary de imagen.", element_id))
+            fit = str(element.get("fit") or "contain")
+            if fit not in ALLOWED_IMAGE_FITS:
+                raise ValidationError(_("Ajuste de imagen no soportado en '%s'.", element_id))
+            threshold = int(self._number(element.get("threshold", 128), _("umbral de imagen")))
+            if not 0 <= threshold <= 255:
+                raise ValidationError(_("El umbral de la imagen '%s' debe estar entre 0 y 255.", element_id))
+            dither = str(element.get("dither") or "none")
+            if dither not in ALLOWED_IMAGE_DITHERS:
+                raise ValidationError(_("Dithering no soportado en la imagen '%s'.", element_id))
 
         if etype == "text":
             font_mm = self._number(element.get("font_mm", 3), _("tamaño de fuente"))
@@ -384,6 +413,18 @@ class IckabLabelTemplate(models.Model):
         except (KeyError, AccessError):
             return False
 
+    @staticmethod
+    def _is_image_field(field, name=""):
+        """Return True for Odoo Image fields and conventional image/logo binaries."""
+        name = str(name or getattr(field, "name", "") or "").lower()
+        return bool(
+            isinstance(field, fields.Image)
+            or name.startswith("image_")
+            or name.endswith("_image")
+            or name in {"image", "logo", "logo_web"}
+            or name.endswith("_logo")
+        )
+
     def _field_path_info(self, path):
         """Validate a field path and describe its relational semantics.
 
@@ -414,9 +455,15 @@ class IckabLabelTemplate(models.Model):
             visible_defs = model.fields_get(allfields=[part], attributes=["string", "type", "relation"])
             definition = visible_defs.get(part)
             field = model._fields.get(part)
-            if not field or not definition or field.type == "binary":
+            if not field or not definition:
                 raise ValidationError(_(
                     "El campo '%(field)s' no está disponible en %(model)s.",
+                    field=part, model=model_name,
+                ))
+            terminal = index == len(parts) - 1
+            if field.type == "binary" and (not terminal or not self._is_image_field(field, part)):
+                raise ValidationError(_(
+                    "El campo '%(field)s' no está disponible como imagen en %(model)s.",
                     field=part, model=model_name,
                 ))
             is_collection = field.type in {"one2many", "many2many"}
@@ -429,6 +476,7 @@ class IckabLabelTemplate(models.Model):
                 "model": model_name,
                 "relation": relation or "",
                 "collection": is_collection,
+                "is_image": bool(field.type == "binary" and self._is_image_field(field, part)),
             })
             if index < len(parts) - 1:
                 if field.type not in {"many2one", "one2many", "many2many"} or not relation:
@@ -445,6 +493,7 @@ class IckabLabelTemplate(models.Model):
             "collection": collection,
             "terminal_type": chain[-1]["type"],
             "terminal_model": chain[-1]["model"],
+            "terminal_is_image": bool(chain[-1].get("is_image")),
         }
 
     def _validate_field_path(self, path):
@@ -524,7 +573,11 @@ class IckabLabelTemplate(models.Model):
         result = []
         for name, definition in field_defs.items():
             field_type = definition.get("type") or ""
-            if field_type == "binary" or name.startswith("_"):
+            field = model._fields.get(name)
+            if name.startswith("_"):
+                continue
+            is_image = bool(field_type == "binary" and field and self._is_image_field(field, name))
+            if field_type == "binary" and not is_image:
                 continue
             relation = definition.get("relation") or ""
             is_relational = field_type in {"many2one", "one2many", "many2many"}
@@ -546,6 +599,7 @@ class IckabLabelTemplate(models.Model):
                     and len(full_path.split(".")) < MAX_FIELD_DEPTH
                 ),
                 "is_collection": is_collection,
+                "is_image": is_image,
             })
         result.sort(key=lambda item: (item["label"].casefold(), item["name"]))
         return {
@@ -680,6 +734,169 @@ class IckabLabelTemplate(models.Model):
             raise UserError(_("El separador de una colección no puede exceder 100 caracteres."))
         return separator.join(str(value) for value in values if value not in (False, None, ""))
 
+    def _image_processor(self):
+        """Return the single printer-neutral image service."""
+        return self.env["ickab.label.image.processor"]
+
+    def _normalize_image_b64(self, value, image_label="imagen"):
+        """Backward-compatible wrapper around the canonical image pipeline."""
+        return self._image_processor().normalize_base64(value, image_label=image_label)
+
+    def _read_binary_field_value(self, record, field_name):
+        """Read a Binary/Image field with ``bin_size`` disabled.
+
+        Report and web-client contexts can contain ``bin_size=True``.  Reading
+        through ``read()`` with an explicit context keeps the ORM responsible for
+        attachment-backed fields and avoids depending on a possibly pre-fetched
+        human-readable size value.
+        """
+        if not record or not field_name:
+            return False
+        record.ensure_one()
+        record.check_access("read")
+        visible = record.fields_get(allfields=[field_name], attributes=["type"])
+        if field_name not in visible:
+            raise AccessError(_(
+                "No tiene permiso para leer el campo de imagen '%(field)s'.",
+                field=field_name,
+            ))
+        field = record._fields.get(field_name)
+        if not field or field.type != "binary":
+            raise UserError(_("El campo '%s' no es binario.", field_name))
+        binary_record = record.with_context(
+            bin_size=False,
+            prefetch_fields=False,
+            **{f"bin_size_{field_name}": False},
+        )
+        values = binary_record.read([field_name], load=False)
+        return values[0].get(field_name) if values else False
+
+    def _resolve_binary_image_value(self, record, path):
+        """Resolve a non-collection image path and return the original ORM value."""
+        if not record or not path:
+            return False
+        self._ensure_record_model(record)
+        info = self._field_path_info(path)
+        if info["collection"]:
+            raise UserError(_("La ruta de imagen '%s' contiene una relación múltiple.", path))
+        if info["terminal_type"] != "binary" or not info.get("terminal_is_image"):
+            raise UserError(_("La ruta '%s' no termina en un campo de imagen.", path))
+
+        owner = record
+        parts = str(path).split(".")
+        for index, part in enumerate(parts):
+            if not owner or not hasattr(owner, "_fields") or part not in owner._fields:
+                return False
+            owner.ensure_one()
+            owner.check_access("read")
+            visible = owner.fields_get(allfields=[part], attributes=["type", "relation"])
+            if part not in visible:
+                raise AccessError(_(
+                    "No tiene permiso para leer el campo '%(field)s' de la ruta '%(path)s'.",
+                    field=part,
+                    path=path,
+                ))
+            field = owner._fields[part]
+            if index == len(parts) - 1:
+                return self._read_binary_field_value(owner, part)
+            if field.type != "many2one":
+                return False
+            related = owner[part]
+            if not related:
+                return False
+            related.ensure_one()
+            related.check_access("read")
+            owner = related
+        return False
+
+    def _resolve_binary_image_path(self, record, path):
+        """Compatibility helper returning canonical Base64 for an image path."""
+        value = self._resolve_binary_image_value(record, path)
+        if not value:
+            return ""
+        return self._normalize_image_b64(value, image_label=path or "imagen")
+
+    def _image_company(self, record=None):
+        self.ensure_one()
+        company = False
+        if record and "company_id" in record._fields:
+            try:
+                candidate = record.company_id
+                if candidate and len(candidate) == 1:
+                    company = candidate
+            except AccessError:
+                company = False
+        company = company or self.company_id or self.env.company
+        company.ensure_one()
+        company.check_access("read")
+        return company
+
+    def _company_logo_value(self, record=None):
+        """Return the company logo as an ORM Binary value.
+
+        Odoo 18 defines ``res.company.logo`` as the company partner's
+        ``image_1920``.  We use that canonical field first and keep controlled
+        fallbacks for installations that customize company images.
+        """
+        company = self._image_company(record=record)
+        candidates = [(company, "logo")]
+        partner = company.partner_id if "partner_id" in company._fields else False
+        if partner:
+            partner.ensure_one()
+            partner.check_access("read")
+            candidates.extend((partner, field_name) for field_name in (
+                "image_1920", "image_1024", "image_512", "image_256", "image_128"
+            ))
+        candidates.append((company, "logo_web"))
+
+        for owner, field_name in candidates:
+            field = owner._fields.get(field_name) if owner else False
+            if not field or field.type != "binary":
+                continue
+            visible = owner.fields_get(allfields=[field_name], attributes=["type"])
+            if field_name not in visible:
+                continue
+            value = self._read_binary_field_value(owner, field_name)
+            if value:
+                return value, f"{owner._name}.{field_name}"
+        return False, "res.company.logo"
+
+    def _company_logo_b64(self, record=None):
+        value, label = self._company_logo_value(record=record)
+        return self._normalize_image_b64(value, image_label=label) if value else ""
+
+    def _image_source_value(self, element, record=None):
+        image_source = str(element.get("source") or "company_logo")
+        if image_source == "company_logo":
+            return self._company_logo_value(record=record)
+        if image_source == "field":
+            path = str(element.get("field_path") or "").strip()
+            if not record:
+                return False, path or "campo de imagen"
+            return self._resolve_binary_image_value(record, path), path or "campo de imagen"
+        raise UserError(_(
+            "Origen de imagen no soportado: %s",
+            image_source,
+        ))
+
+    def _image_source_b64(self, element, record=None):
+        """Compatibility helper used by older extensions/tests."""
+        value, label = self._image_source_value(element, record=record)
+        return self._normalize_image_b64(value, image_label=label) if value else ""
+
+    def _prepare_image_bitmap(self, image_value, width_dot, height_dot, element, image_label=None):
+        """Delegate all image decoding/rasterization to the canonical service."""
+        if not image_value:
+            return {}
+        label = image_label or element.get("field_path") or element.get("id") or "imagen"
+        return self._image_processor().prepare_bitmap(
+            image_value,
+            width_dot,
+            height_dot,
+            options=element,
+            image_label=label,
+        )
+
     def _element_value(self, element, record=None):
         source = element.get("source", "static")
         if source == "field":
@@ -764,7 +981,7 @@ class IckabLabelTemplate(models.Model):
             y_mm = float(element.get("y_mm", 0))
             w_mm = float(element.get("w_mm", 1))
             h_mm = float(element.get("h_mm", 1))
-            value = self._element_value(element, record=record)
+            value = "" if element["type"] == "image" else self._element_value(element, record=record)
             if len(value) > MAX_RENDERED_CHARS:
                 raise UserError(_(
                     "El valor resuelto del elemento '%(element)s' excede el límite de %(limit)s caracteres.",
@@ -775,7 +992,20 @@ class IckabLabelTemplate(models.Model):
             w_dot = max(1, round(w_mm * target_dpi / 25.4))
             h_dot = max(1, round(h_mm * target_dpi / 25.4))
             preview_src = False
-            if element["type"] in {"barcode", "qrcode"} and value:
+            image_payload = {}
+            if element["type"] == "image":
+                image_value, image_label = self._image_source_value(element, record=record)
+                if image_value:
+                    image_payload = self._prepare_image_bitmap(
+                        image_value,
+                        w_dot,
+                        h_dot,
+                        element,
+                        image_label=image_label,
+                    )
+                    image_payload["image_source_label"] = image_label
+                    preview_src = image_payload.get("image_preview_src") or False
+            elif element["type"] in {"barcode", "qrcode"} and value:
                 preview_value = value
                 if element["type"] == "barcode":
                     kind = element.get("barcode_type", "code128")
@@ -803,6 +1033,7 @@ class IckabLabelTemplate(models.Model):
                 "preview_text_style": preview_styles["text"],
                 "preview_box_style": preview_styles["box"],
                 "preview_line_style": preview_styles["line"],
+                **image_payload,
                 "x_dot": x_dot,
                 "y_dot": y_dot,
                 "w_dot": w_dot,
@@ -874,7 +1105,10 @@ class IckabLabelTemplate(models.Model):
                     "value": el.get("value_resolved", ""),
                     **{key: el[key] for key in (
                         "font_mm", "align", "max_lines", "barcode_type", "human_readable",
-                        "magnification", "thickness_mm", "line_direction", "rounding"
+                        "magnification", "thickness_mm", "line_direction", "rounding",
+                        "source", "field_path", "fit", "threshold", "dither", "invert",
+                        "image_bitmap_b64", "image_bytes_per_row", "image_width_dot", "image_height_dot",
+                        "image_format", "image_source_bytes", "image_source_label"
                     ) if key in el},
                 }
                 for el in self.resolve_elements(record=record)

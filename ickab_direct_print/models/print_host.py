@@ -48,6 +48,15 @@ class IckabPrintHost(models.Model):
         default=lambda self: self.env.company,
         index=True,
     )
+    branch_id = fields.Many2one(
+        "ickab.print.branch",
+        string="Sucursal",
+        compute="_compute_branch_id",
+        inverse="_inverse_branch_id",
+        search="_search_branch_id",
+        domain="[('company_id', '=', company_id), ('active', '=', True)]",
+        help="Sucursal física donde está instalado este equipo/agente. La relación se guarda en una tabla ICKAB independiente.",
+    )
     active = fields.Boolean(string="Activo", default=True)
     state = fields.Selection(
         [
@@ -81,7 +90,7 @@ class IckabPrintHost(models.Model):
     ip_address = fields.Char(string="IP informativa", readonly=True)
     notes = fields.Text(string="Notas")
     printer_ids = fields.One2many("ickab.print.printer", "host_id", string="Impresoras")
-    printer_count = fields.Integer(string="Impresoras", compute="_compute_printer_count")
+    printer_count = fields.Integer(string="Número de impresoras", compute="_compute_printer_count")
 
     _sql_constraints = [
         ("uuid_unique", "unique(uuid)", "El UUID del host debe ser único."),
@@ -92,6 +101,53 @@ class IckabPrintHost(models.Model):
     def _compute_printer_count(self):
         for host in self:
             host.printer_count = len(host.printer_ids)
+
+    def _compute_branch_id(self):
+        links = self.env["ickab.print.host.branch"].search([("host_id", "in", self.ids)]) if self.ids else self.env["ickab.print.host.branch"]
+        by_host = {link.host_id.id: link.branch_id for link in links}
+        for host in self:
+            host.branch_id = by_host.get(host.id, False)
+
+    def _inverse_branch_id(self):
+        Link = self.env["ickab.print.host.branch"]
+        for host in self:
+            if not host.id:
+                continue
+            link = Link.search([("host_id", "=", host.id)], limit=1)
+            branch = host.branch_id
+            if branch:
+                vals = {"host_id": host.id, "branch_id": branch.id}
+                if link:
+                    if link.branch_id != branch:
+                        link.write({"branch_id": branch.id})
+                else:
+                    Link.create(vals)
+            elif link:
+                link.unlink()
+            host.invalidate_recordset(["branch_id"])
+
+    @api.model
+    def _search_branch_id(self, operator, value):
+        Link = self.env["ickab.print.host.branch"]
+        all_linked = Link.search([]).mapped("host_id").ids
+
+        if operator in ("=", "in"):
+            if operator == "=" and value is False:
+                return [("id", "not in", all_linked)]
+            if operator == "in" and not value:
+                return [("id", "=", 0)]
+            links = Link.search([("branch_id", operator, value)])
+            return [("id", "in", links.mapped("host_id").ids)]
+
+        if operator in ("!=", "not in"):
+            if operator == "!=" and value is False:
+                return [("id", "in", all_linked)]
+            positive = "=" if operator == "!=" else "in"
+            links = Link.search([("branch_id", positive, value)])
+            return [("id", "not in", links.mapped("host_id").ids)]
+
+        # Many2one branch filtering only needs equality style operators in Direct Print.
+        return [("id", "=", 0)]
 
     def action_generate_pairing_code(self):
         self.ensure_one()

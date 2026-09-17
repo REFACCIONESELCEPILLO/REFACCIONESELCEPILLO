@@ -26,6 +26,7 @@
             <form string="ICKAB Label Studio" class="o_ickab_label_studio_form">
                 <header>
                     <field name="direct_print_available" invisible="1"/>
+                    <field name="company_id" invisible="1"/>
                     <button name="action_preview" type="object" string="Previsualizar" class="btn-primary"/>
                     <button name="action_direct_print" type="object" string="Imprimir" class="btn-success" icon="fa-print" invisible="not direct_print_available"/>
                     <button name="action_download_zpl" type="object" string="Descargar ZPL"/>

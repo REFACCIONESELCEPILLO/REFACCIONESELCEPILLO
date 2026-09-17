@@ -14,6 +14,7 @@
                     <button type="button" t-att-class="'btn btn-sm ' + (state.tool === 'qrcode' ? 'btn-primary' : 'btn-outline-secondary')" t-on-click="() => this.setTool('qrcode')" t-att-disabled="readonly">QR</button>
                     <button type="button" t-att-class="'btn btn-sm ' + (state.tool === 'box' ? 'btn-primary' : 'btn-outline-secondary')" t-on-click="() => this.setTool('box')" t-att-disabled="readonly">Rectángulo</button>
                     <button type="button" t-att-class="'btn btn-sm ' + (state.tool === 'line' ? 'btn-primary' : 'btn-outline-secondary')" t-on-click="() => this.setTool('line')" t-att-disabled="readonly">Línea</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" t-on-click="() => this.add('image')" t-att-disabled="readonly" title="Insertar el logo de la compañía de Odoo">Logo empresa</button>
                 </div>
                 <div class="o_ickab_tool_group">
                     <button type="button" class="btn btn-outline-secondary btn-sm" t-on-click="undo" t-att-disabled="!canUndo" title="Deshacer (Ctrl+Z)">↶</button>
@@ -68,7 +69,7 @@
                         </div>
                         <div class="o_ickab_palette_hint">
                             Arrastra <strong>+</strong> al lienzo o navega con <strong>→</strong> por campos relacionales.
-                            Las rutas se guardan completas.
+                            Los campos de imagen se insertan como fotografías y las rutas se guardan completas.
                         </div>
                         <div class="o_ickab_field_list">
                             <div class="o_ickab_field_card"
@@ -83,11 +84,11 @@
                                      t-att-draggable="readonly ? 'false' : 'true'"
                                      t-on-dragstart="(ev) => this.onFieldDragStart(ev, f)">
                                     <span class="o_ickab_field_label"><t t-esc="f.label"/></span>
-                                    <span class="o_ickab_field_meta"><t t-esc="f.path"/> · <t t-esc="f.type"/><t t-if="f.is_collection"> · múltiple</t></span>
+                                    <span class="o_ickab_field_meta"><t t-esc="f.path"/> · <t t-esc="f.is_image ? 'imagen' : f.type"/><t t-if="f.is_collection"> · múltiple</t></span>
                                 </div>
                                 <div class="o_ickab_field_actions">
                                     <button type="button" class="btn btn-light btn-sm" title="Insertar en el lienzo" t-on-click.stop="() => this.addField(f)" t-att-disabled="readonly">+</button>
-                                    <button t-if="canBindSelected" type="button" class="btn btn-light btn-sm" title="Vincular al elemento seleccionado" t-on-click.stop="() => this.bindFieldToSelected(f)" t-att-disabled="readonly">↗</button>
+                                    <button t-if="canBindField(f)" type="button" class="btn btn-light btn-sm" title="Vincular al elemento seleccionado" t-on-click.stop="() => this.bindFieldToSelected(f)" t-att-disabled="readonly">↗</button>
                                     <button t-if="f.navigable" type="button" class="btn btn-outline-secondary btn-sm" title="Abrir modelo relacionado" t-on-click.stop="() => this.enterRelation(f)">→</button>
                                 </div>
                             </div>
@@ -137,6 +138,10 @@
                                             <img t-if="previewSrc(el)" class="o_ickab_native_code is-qr" t-att-src="previewSrc(el)" draggable="false"/>
                                             <div t-else="" class="o_ickab_code_placeholder">QR</div>
                                         </t>
+                                        <t t-elif="el.type === 'image'">
+                                            <img t-if="imagePreviewSrc(el)" class="o_ickab_label_image" t-att-src="imagePreviewSrc(el)" t-att-style="imageStyle(el)" draggable="false"/>
+                                            <div t-else="" class="o_ickab_image_placeholder"><span>▧</span><small><t t-esc="imagePlaceholder(el)"/></small></div>
+                                        </t>
                                         <t t-elif="el.type === 'box'"><div t-att-style="boxStyle(el)"/></t>
                                         <t t-elif="el.type === 'line'"><div t-att-style="lineStyle(el)"/></t>
 
@@ -168,9 +173,9 @@
                     <div class="o_ickab_panel_title"><strong>Propiedades</strong><span class="badge text-bg-light" t-if="selected"><t t-esc="selected.type"/></span></div>
                     <t t-if="selected">
                         <label class="form-label">Tipo de elemento</label>
-                        <select class="form-select form-select-sm" t-att-value="selected.type" t-on-change="(ev) => this.updateSelected('type', ev)" t-att-disabled="readonly || ['box','line'].includes(selected.type)">
+                        <select class="form-select form-select-sm" t-att-value="selected.type" t-on-change="(ev) => this.updateSelected('type', ev)" t-att-disabled="readonly || ['box','line','image'].includes(selected.type)">
                             <option value="text">Texto</option><option value="barcode">Código de barras</option><option value="qrcode">QR</option>
-                            <option t-if="selected.type === 'box'" value="box">Rectángulo</option><option t-if="selected.type === 'line'" value="line">Línea</option>
+                            <option t-if="selected.type === 'box'" value="box">Rectángulo</option><option t-if="selected.type === 'line'" value="line">Línea</option><option t-if="selected.type === 'image'" value="image">Imagen</option>
                         </select>
 
                         <div class="o_ickab_prop_section">
@@ -223,6 +228,38 @@
                                     <label class="form-label mt-2">Valor de muestra</label>
                                     <input class="form-control form-control-sm" t-att-value="selected.sample" t-on-change="(ev) => this.updateSelected('sample',ev)" t-att-disabled="readonly"/>
                                 </t>
+                            </div>
+                        </t>
+
+                        <t t-if="selected.type === 'image'">
+                            <div class="o_ickab_prop_section">
+                                <div class="o_ickab_prop_section_title">Imagen</div>
+                                <label class="form-label">Origen</label>
+                                <select class="form-select form-select-sm" t-att-value="selected.source || 'company_logo'" t-on-change="(ev) => this.updateSelected('source',ev)" t-att-disabled="readonly">
+                                    <option value="company_logo">Logo de la empresa</option>
+                                    <option value="field">Campo imagen de Odoo</option>
+                                </select>
+                                <t t-if="(selected.source || 'company_logo') === 'company_logo'">
+                                    <div class="small text-muted mt-2">Usa automáticamente el logo de la compañía correspondiente al registro; si no existe, usa la compañía del diseño.</div>
+                                </t>
+                                <t t-else="">
+                                    <label class="form-label mt-2">Ruta Odoo</label>
+                                    <div class="o_ickab_field_path_value"><t t-esc="selected.field_label || selected.field_path || 'Selecciona un campo de imagen en el panel izquierdo'"/></div>
+                                    <code class="o_ickab_field_path_code" t-if="selected.field_path"><t t-esc="selected.field_path"/></code>
+                                    <div class="small text-muted mt-1">Ejemplo: <code>image_1920</code> o <code>product_tmpl_id.image_1920</code>.</div>
+                                </t>
+                                <label class="form-label mt-2">Ajuste</label>
+                                <select class="form-select form-select-sm" t-att-value="selected.fit || 'contain'" t-on-change="(ev) => this.updateSelected('fit',ev)" t-att-disabled="readonly">
+                                    <option value="contain">Contener (sin recortar)</option>
+                                    <option value="cover">Rellenar (puede recortar)</option>
+                                    <option value="stretch">Estirar</option>
+                                </select>
+                                <div class="row g-2 mt-1">
+                                    <div class="col-6"><label>Umbral B/N</label><input type="number" min="0" max="255" step="1" class="form-control form-control-sm" t-att-value="selected.threshold !== undefined &amp;&amp; selected.threshold !== null ? selected.threshold : 128" t-on-change="(ev) => this.updateSelected('threshold',ev)" t-att-disabled="readonly"/></div>
+                                    <div class="col-6"><label>Dithering</label><select class="form-select form-select-sm" t-att-value="selected.dither || 'none'" t-on-change="(ev) => this.updateSelected('dither',ev)" t-att-disabled="readonly"><option value="none">Ninguno</option><option value="floyd_steinberg">Floyd-Steinberg</option></select></div>
+                                </div>
+                                <div class="form-check mt-2"><input class="form-check-input" type="checkbox" t-att-checked="selected.invert" t-on-change="(ev) => this.updateSelected('invert',ev)" t-att-disabled="readonly"/><label class="form-check-label">Invertir blanco/negro</label></div>
+                                <div class="small text-muted mt-2">La impresión se rasteriza al DPI de la etiqueta para conservar el tamaño físico.</div>
                             </div>
                         </t>
 

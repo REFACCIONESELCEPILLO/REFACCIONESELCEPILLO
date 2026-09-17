@@ -13,8 +13,8 @@
                         </setting>
                     </block>
 
-                    <block title="Etiquetas" name="ickab_direct_print_labels">
-                        <setting string="Impresora predeterminada" help="Sólo se muestran impresoras de tipo Etiquetas disponibles para la compañía.">
+                    <block title="Fallback global / instalaciones sin sucursales" name="ickab_direct_print_labels">
+                        <setting string="Impresora global de etiquetas" help="Respaldo para instalaciones legacy o sin asignación por sucursal/usuario. En multisucursal administra Sucursales y Asignaciones por usuario desde el módulo Direct Print.">
                             <field name="ickab_default_label_printer_id" domain="[('company_id','=',company_id),('printer_type','=','label'),('active','=',True)]"/>
                         </setting>
                         <setting string="Papel de respaldo (opcional)" help="Sólo se usa cuando un reporte de etiquetas NO indica su tamaño. Si el usuario eligió 50×30, 70×50 u otro formato en el documento, esa elección tiene prioridad y este valor se ignora.">
@@ -22,8 +22,8 @@
                         </setting>
                     </block>
 
-                    <block title="Tickets / POS" name="ickab_direct_print_tickets">
-                        <setting string="Impresora predeterminada">
+                    <block title="Tickets / POS (fallback global)" name="ickab_direct_print_tickets">
+                        <setting string="Impresora global de tickets">
                             <field name="ickab_default_ticket_printer_id" domain="[('company_id','=',company_id),('printer_type','=','ticket'),('active','=',True)]"/>
                         </setting>
                         <setting string="Papel predeterminado">
@@ -31,8 +31,8 @@
                         </setting>
                     </block>
 
-                    <block title="Documentos" name="ickab_direct_print_documents">
-                        <setting string="Impresora predeterminada" help="Usada como fallback para cotizaciones, pedidos, facturas y otros PDF.">
+                    <block title="Documentos (fallback global)" name="ickab_direct_print_documents">
+                        <setting string="Impresora global de documentos" help="Usada sólo como fallback cuando no existe una asignación válida por sucursal/usuario.">
                             <field name="ickab_default_document_printer_id" domain="[('company_id','=',company_id),('printer_type','=','document'),('active','=',True)]"/>
                         </setting>
                         <setting string="Papel predeterminado">

@@ -77,41 +77,72 @@ class IrActionsReport(models.Model):
             return [docids]
         return [int(value) for value in docids]
 
-    def _ickab_default_printer_paper(self, *, user=None, company=None):
+    def _ickab_default_printer_paper(self, *, user=None, company=None, branch=None):
         self.ensure_one()
         user = user or self.env.user
         company = company or self.env.company
+        branch = branch or user._ickab_resolve_print_branch(company)
 
+        # 1) Perfil avanzado: permite reglas específicas por reporte/modelo/usuario/sucursal.
         profile = self.env["ickab.print.profile"].resolve_profile(
             self.ickab_document_kind,
             report=self,
             user=user,
             company=company,
             model_name=self.model,
+            branch=branch,
         )
         if profile:
-            return profile.printer_id, profile.paper_id, profile.copies
+            return profile.printer_id, profile.paper_id, profile.copies, branch
 
-        if self.ickab_printer_id:
+        # 2) Asignación operativa usuario + sucursal + tipo de impresión.
+        assignment = self.env["ickab.print.assignment"].resolve_assignment(
+            self.ickab_document_kind, user=user, company=company, branch=branch
+        )
+        if assignment:
+            paper = assignment.paper_id or assignment.printer_id.default_paper_id
+            return assignment.printer_id, paper, assignment.copies, branch
+
+        # 3) Impresora fijada directamente en el reporte, si pertenece a la sucursal actual
+        # o si aún es una impresora legacy sin sucursal.
+        printer = self.env["ickab.print.printer"]
+        if self.ickab_printer_id and (
+            not branch or not self.ickab_printer_id.branch_id or self.ickab_printer_id.branch_id == branch
+        ):
             printer = self.ickab_printer_id
-        elif self.ickab_document_kind == "label":
-            printer = company.ickab_default_label_printer_id
-        elif self.ickab_document_kind == "ticket":
-            printer = company.ickab_default_ticket_printer_id
-        else:
-            printer = company.ickab_default_document_printer_id
+
+        # 4) Predeterminada de la sucursal.
+        if not printer and branch:
+            printer = branch.default_printer_for(self.ickab_document_kind)
+
+        # 5) Fallback legacy/global de compañía.
+        if not printer:
+            if self.ickab_document_kind == "label":
+                company_printer = company.ickab_default_label_printer_id
+            elif self.ickab_document_kind == "ticket":
+                company_printer = company.ickab_default_ticket_printer_id
+            else:
+                company_printer = company.ickab_default_document_printer_id
+            # Un fallback legacy sin sucursal sigue siendo válido. Una impresora ya
+            # asociada a otra sucursal nunca debe cruzarse accidentalmente.
+            if company_printer and (
+                not company_printer.branch_id or not branch or company_printer.branch_id == branch
+            ):
+                printer = company_printer
 
         if self.ickab_paper_id:
             paper = self.ickab_paper_id
         elif printer and printer.default_paper_id:
             paper = printer.default_paper_id
+        elif branch and branch.default_paper_for(self.ickab_document_kind):
+            paper = branch.default_paper_for(self.ickab_document_kind)
         elif self.ickab_document_kind == "label":
             paper = company.ickab_default_label_paper_id
         elif self.ickab_document_kind == "ticket":
             paper = company.ickab_default_ticket_paper_id
         else:
             paper = company.ickab_default_document_paper_id
-        return printer, paper, self.ickab_copies or 1
+        return printer, paper, self.ickab_copies or 1, branch
 
 
     def _ickab_requested_paper(self, data=None):
@@ -176,15 +207,17 @@ class IrActionsReport(models.Model):
         safe = "".join(ch if ch.isalnum() or ch in "-_." else "_" for ch in (self.name or "report"))
         return f"{safe}.{ext}"
 
-    def _ickab_enqueue_direct_print(self, *, res_ids=None, data=None, printer=None, paper=None, copies=None):
+    def _ickab_enqueue_direct_print(self, *, res_ids=None, data=None, printer=None, paper=None, copies=None, branch=None):
         self.ensure_one()
         company = self.env.company
         if not company.ickab_direct_print_enabled:
             raise UserError(_("ICKAB Direct Print no está habilitado para la compañía actual."))
-        default_printer, default_paper, default_copies = self._ickab_default_printer_paper(company=company)
+        default_printer, default_paper, default_copies, resolved_branch = self._ickab_default_printer_paper(company=company, branch=branch)
+        branch = branch or resolved_branch or (printer.branch_id if printer else False)
         requested_paper = self._ickab_requested_paper(data)
         paper = paper or requested_paper or default_paper
         printer = printer or default_printer
+        branch = branch or (printer.branch_id if printer else False)
         if printer and paper and not self._ickab_printer_supports_paper(printer, paper):
             printer = False
         copies = int(copies or default_copies or 1)
@@ -207,6 +240,7 @@ class IrActionsReport(models.Model):
             source_record=source_record,
             report=self,
             filename=self._ickab_filename(payload_type),
+            branch=branch,
         )
         return {
             "type": "ir.actions.client",
@@ -223,7 +257,7 @@ class IrActionsReport(models.Model):
     def _ickab_open_print_wizard(self, *, res_ids=None, data=None):
         self.ensure_one()
         data = data or {}
-        printer, fallback_paper, copies = self._ickab_default_printer_paper()
+        printer, fallback_paper, copies, branch = self._ickab_default_printer_paper()
         requested_paper = self._ickab_requested_paper(data)
         paper = requested_paper or fallback_paper
 
@@ -234,11 +268,16 @@ class IrActionsReport(models.Model):
             printer = False
 
         if not printer:
-            candidates = self.env["ickab.print.printer"].search([
+            assigned = self.env["ickab.print.assignment"].assigned_printers(
+                self.ickab_document_kind, user=self.env.user, company=self.env.company, branch=branch
+            )
+            candidates = assigned or self.env["ickab.print.printer"].search([
                 ("company_id", "=", self.env.company.id),
+                ("branch_id", "=", branch.id if branch else False),
                 ("printer_type", "=", self.ickab_document_kind),
                 ("active", "=", True),
-            ]).filtered(lambda item: self._ickab_printer_supports_paper(item, paper))
+            ])
+            candidates = candidates.filtered(lambda item: self._ickab_printer_supports_paper(item, paper))
             if len(candidates) == 1:
                 printer = candidates
 
@@ -254,6 +293,7 @@ class IrActionsReport(models.Model):
             "default_paper_locked": paper_locked,
             "default_copies": copies or 1,
             "default_company_id": self.env.company.id,
+            "default_branch_id": branch.id if branch else False,
         })
         return {
             "type": "ir.actions.act_window",
@@ -279,7 +319,7 @@ class IrActionsReport(models.Model):
         if self.ickab_print_mode == "ask":
             return self._ickab_open_print_wizard(res_ids=res_ids, data=data or {})
 
-        printer, paper, copies = self._ickab_default_printer_paper()
+        printer, paper, copies, branch = self._ickab_default_printer_paper()
         requested_paper = self._ickab_requested_paper(data or {})
         if requested_paper:
             paper = requested_paper
@@ -293,4 +333,5 @@ class IrActionsReport(models.Model):
             printer=printer,
             paper=paper,
             copies=copies,
+            branch=branch,
         )

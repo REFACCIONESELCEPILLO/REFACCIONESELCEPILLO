@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_users_form_ickab_direct_print" model="ir.ui.view">
+        <field name="name">res.users.form.ickab.direct.print</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="ICKAB Direct Print" groups="ickab_direct_print.group_direct_print_manager">
+                    <group string="Sucursales habilitadas">
+                        <field name="ickab_print_branch_line_ids" context="{'default_user_id': id}">
+                            <list editable="bottom">
+                                <field name="user_company_ids" column_invisible="True"/>
+                                <field name="branch_id"/>
+                                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                                <field name="is_default"/>
+                                <field name="active"/>
+                                <field name="notes" optional="hide"/>
+                            </list>
+                        </field>
+                    </group>
+                    <group string="Asignaciones de impresión">
+                        <field name="ickab_print_assignment_ids" context="{'default_user_id': id}">
+                            <list editable="bottom">
+                                <field name="branch_id"/>
+                                <field name="document_kind"/>
+                                <field name="printer_id"/>
+                                <field name="host_id" readonly="1" optional="show"/>
+                                <field name="paper_id" optional="hide"/>
+                                <field name="copies"/>
+                                <field name="is_default"/>
+                                <field name="active"/>
+                            </list>
+                        </field>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

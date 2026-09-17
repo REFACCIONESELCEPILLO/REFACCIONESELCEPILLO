@@ -17,6 +17,10 @@ class IckabPrintJob(models.Model):
     name = fields.Char(default=lambda self: _("Nuevo"), readonly=True, copy=False, index=True)
     company_id = fields.Many2one("res.company", required=True, default=lambda self: self.env.company, index=True)
     user_id = fields.Many2one("res.users", required=True, default=lambda self: self.env.user, index=True)
+    branch_id = fields.Many2one(
+        "ickab.print.branch", string="Sucursal",
+        compute="_compute_branch_id", search="_search_branch_id", readonly=True,
+    )
     printer_id = fields.Many2one(
         "ickab.print.printer", required=True, ondelete="restrict",
         domain="[('company_id', '=', company_id), ('active', '=', True)]", index=True,
@@ -77,6 +81,47 @@ class IckabPrintJob(models.Model):
                 vals["payload_size"] = len(raw)
         return super().create(vals_list)
 
+    def _compute_branch_id(self):
+        Context = self.env["ickab.print.job.context"]
+        contexts = Context.search([("job_id", "in", self.ids)]) if self.ids else Context
+        by_job = {context.job_id.id: context.branch_id for context in contexts}
+        for job in self:
+            job.branch_id = by_job.get(job.id) or job.printer_id.branch_id
+
+    @api.model
+    def _search_branch_id(self, operator, value):
+        # branch_id is intentionally non-stored so a code deployment cannot break
+        # the historical ickab_print_job table before the module is upgraded.
+        # Searches combine the explicit job context with the printer/host branch,
+        # which also keeps legacy jobs (created before multisucursal) searchable.
+        if operator not in ("=", "!=", "in", "not in"):
+            return [("id", "=", 0)]
+
+        Context = self.env["ickab.print.job.context"]
+        positive_operator = "=" if operator in ("=", "!=") else "in"
+        positive_value = value
+
+        contexts = Context.search([("branch_id", positive_operator, positive_value)])
+        context_job_ids = contexts.mapped("job_id").ids
+        printers = self.env["ickab.print.printer"].search([
+            ("branch_id", positive_operator, positive_value),
+        ])
+        printer_job_ids = self.search([("printer_id", "in", printers.ids)]).ids if printers else []
+        matched_ids = list(set(context_job_ids + printer_job_ids))
+
+        if operator in ("=", "in"):
+            # '=' False means jobs with no explicit context and a printer without branch.
+            if operator == "=" and value is False:
+                contextualized = Context.search([]).mapped("job_id").ids
+                branched_printers = self.env["ickab.print.printer"].search([("branch_id", "!=", False)])
+                return [
+                    ("id", "not in", list(set(contextualized + self.search([
+                        ("printer_id", "in", branched_printers.ids)
+                    ]).ids))),
+                ]
+            return [("id", "in", matched_ids)]
+        return [("id", "not in", matched_ids)]
+
     @api.constrains("copies")
     def _check_copies(self):
         for job in self:
@@ -91,7 +136,7 @@ class IckabPrintJob(models.Model):
 
     @api.model
     def enqueue(self, *, printer, payload_type, payload, paper=None, copies=1,
-                source_record=None, report=None, filename=None, mime_type=None):
+                source_record=None, report=None, filename=None, mime_type=None, branch=None):
         if not printer:
             raise UserError(_("Debe indicar una impresora."))
         native_languages = {"zpl", "tspl", "epl", "escpos", "cpcl"}
@@ -108,6 +153,7 @@ class IckabPrintJob(models.Model):
                 "language": (printer.language or "RAW").upper(),
                 "payload": (payload_type or "RAW").upper(),
             })
+        branch = branch or printer.branch_id
         vals = {
             "company_id": printer.company_id.id,
             "user_id": self.env.user.id,
@@ -132,7 +178,13 @@ class IckabPrintJob(models.Model):
             if isinstance(payload, str):
                 payload = payload.encode("utf-8")
             vals["payload_data"] = base64.b64encode(payload or b"")
-        return self.create(vals)
+        job = self.create(vals)
+        if branch:
+            self.env["ickab.print.job.context"].create({
+                "job_id": job.id,
+                "branch_id": branch.id,
+            })
+        return job
 
     @api.model
     def _default_mime_type(self, payload_type):
@@ -184,7 +236,7 @@ class IckabPrintJob(models.Model):
         new_job = self.enqueue(
             printer=self.printer_id, payload_type=self.payload_type, payload=payload,
             paper=self.paper_id, copies=self.copies, report=self.report_id,
-            filename=self.filename, mime_type=self.mime_type,
+            filename=self.filename, mime_type=self.mime_type, branch=self.branch_id,
         )
         return new_job.action_open_job()
 

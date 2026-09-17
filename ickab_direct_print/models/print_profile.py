@@ -56,9 +56,10 @@ class IckabPrintProfile(models.Model):
                 raise ValidationError(_("El papel seleccionado no está permitido en la impresora."))
 
     @api.model
-    def resolve_profile(self, document_kind, report=None, user=None, company=None, model_name=None):
+    def resolve_profile(self, document_kind, report=None, user=None, company=None, model_name=None, branch=None):
         company = company or self.env.company
         user = user or self.env.user
+        branch = branch or user._ickab_resolve_print_branch(company)
         domain = [
             ("active", "=", True),
             ("company_id", "=", company.id),
@@ -68,6 +69,8 @@ class IckabPrintProfile(models.Model):
         best = self.browse()
         best_score = -1
         for profile in profiles:
+            if profile.printer_id.branch_id and branch and profile.printer_id.branch_id != branch:
+                continue
             if profile.user_id and profile.user_id != user:
                 continue
             if profile.report_id and (not report or profile.report_id != report):

@@ -7,6 +7,7 @@
             <search>
                 <field name="name"/>
                 <field name="printer_id"/>
+                <field name="branch_id"/>
                 <field name="user_id"/>
                 <field name="source_display_name" string="Documento de origen"/>
                 <filter string="Pendientes" name="pending" domain="[('state','in',['queued','claimed','printing'])]"/>
@@ -29,6 +30,7 @@
                 <field name="name"/>
                 <field name="queued_at" string="En cola desde"/>
                 <field name="user_id"/>
+                <field name="branch_id"/>
                 <field name="printer_id"/>
                 <field name="paper_id"/>
                 <field name="payload_type" string="Formato"/>
@@ -61,6 +63,7 @@
                             <field name="name"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                             <field name="user_id"/>
+                            <field name="branch_id"/>
                             <field name="printer_id"/>
                             <field name="host_id"/>
                             <field name="paper_id"/>

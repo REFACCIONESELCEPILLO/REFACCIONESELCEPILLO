@@ -16,7 +16,7 @@ El servidor Odoo nunca necesita acceder a la red privada del cliente. El agente
 local consulta trabajos mediante HTTPS, por lo que funciona tanto en Odoo.sh
 como en instalaciones on-premise.
     """,
-    "version": "18.0.1.0.0",
+    "version": "18.0.2.0.2",
     "category": "Productivity",
     "author": "ICKAB",
     "website": "https://ickab.mx",
@@ -29,6 +29,9 @@ como en instalaciones on-premise.
         "data/print_paper_data.xml",
         "data/print_cron.xml",
         "data/compatibility_profile_data.xml",
+        "views/print_branch_views.xml",
+        "views/print_user_branch_views.xml",
+        "views/print_assignment_views.xml",
         "views/print_host_views.xml",
         "views/ir_actions_report_views.xml",
         "wizard/direct_print_wizard_views.xml",
@@ -37,6 +40,7 @@ como en instalaciones on-premise.
         "views/print_profile_views.xml",
         "views/print_compatibility_profile_views.xml",
         "views/print_job_views.xml",
+        "views/res_users_views.xml",
         "views/res_config_settings_views.xml",
         "views/print_help_views.xml",
         "views/print_menus.xml",
