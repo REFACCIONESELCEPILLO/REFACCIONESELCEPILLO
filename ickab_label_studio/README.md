@@ -1,4 +1,4 @@
-# ICKAB Label Studio 18.0.5.2.0
+# ICKAB Label Studio 18.0.5.3.1
 
 Diseñador de etiquetas propietario de ICKAB para Odoo 18.
 
@@ -65,7 +65,7 @@ Core:
 
 Runtime Python para imágenes:
 
-- `Pillow` (import `PIL`), declarado como dependencia externa del addon.
+- `Pillow` (importado en Python como `PIL`), declarado por su nombre de distribución PyPI para Odoo 18.
 
 No depende de `ickab_direct_print`, hardware ni módulos verticales.
 
@@ -81,6 +81,11 @@ la responsabilidad de ZPL/TSPL y del Print Agent.
 ## 18.0.5.1.1
 
 Corrección de lectura de imágenes Binary/Image en contextos `bin_size` y diagnóstico mejorado de formatos de imagen.
+
+
+## 18.0.5.3.1
+
+Liberación de mantenimiento. La dependencia externa de imágenes se declara como `Pillow`, que es el nombre de distribución PyPI usado por el verificador de dependencias de Odoo 18; el código Python continúa importando el paquete mediante `PIL`. Esto elimina el warning de dependencia externa sin requerir instalaciones manuales ni alterar el pipeline WebP.
 
 
 ## 18.0.5.3.0

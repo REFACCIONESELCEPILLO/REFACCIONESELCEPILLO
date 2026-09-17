@@ -1,6 +1,6 @@
 {
     "name": "ICKAB Label Studio",
-    "version": "18.0.5.3.0",
+    "version": "18.0.5.3.1",
     "category": "Tools",
     "summary": "Diseñador WYSIWYG profesional de etiquetas para Odoo",
     "description": """
@@ -15,7 +15,7 @@ contrato neutral para renderers y comunicación opcional con ICKAB Direct Print.
     "maintainer": "ICKAB",
     "website": "https://ickab.mx",
     "depends": ["base", "web", "product"],
-    "external_dependencies": {"python": ["PIL"]},
+    "external_dependencies": {"python": ["Pillow"]},
     "data": [
         "security/label_studio_security.xml",
         "security/ir.model.access.csv",

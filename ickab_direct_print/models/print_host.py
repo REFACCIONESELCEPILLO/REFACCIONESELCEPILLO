@@ -90,7 +90,7 @@ class IckabPrintHost(models.Model):
     ip_address = fields.Char(string="IP informativa", readonly=True)
     notes = fields.Text(string="Notas")
     printer_ids = fields.One2many("ickab.print.printer", "host_id", string="Impresoras")
-    printer_count = fields.Integer(string="Impresoras", compute="_compute_printer_count")
+    printer_count = fields.Integer(string="Número de impresoras", compute="_compute_printer_count")
 
     _sql_constraints = [
         ("uuid_unique", "unique(uuid)", "El UUID del host debe ser único."),
