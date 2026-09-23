@@ -1,11 +1,10 @@
 # Copyright 2026 ICKAB. All rights reserved.
-"""Optional runtime integration between ICKAB Label Studio and Direct Print.
+"""Integration between ICKAB Label Studio and ICKAB Direct Print.
 
-This code intentionally lives inside Label Studio but does not add a manifest
-hard dependency on ``ickab_direct_print``. Studio remains fully usable on its
-own. When Direct Print is present, Studio only hands off the finished label
-report and its physical media profile. Direct Print keeps ownership of printer
-selection, language AUTO (ZPL/TSPL/etc.), queueing and Print Agent delivery.
+Label Studio owns design and preview.  Printing always goes through Direct Print,
+which owns printer selection, capabilities, language/rendering, queueing and Print
+Agent delivery.  Export/import actions remain design utilities and are not an
+alternate physical print path.
 """
 
 import logging
@@ -38,7 +37,7 @@ DIRECT_PRINT_REPORT_VALUES = {
     "ickab_document_kind": "label",
     "ickab_text_language": "auto",
     "ickab_copies": 1,
-    "ickab_fallback_download": True,
+    "ickab_fallback_download": False,
 }
 
 
@@ -59,11 +58,7 @@ class IckabLabelTemplateDirectPrintIntegration(models.Model):
 
     @api.model
     def _direct_print_runtime_available(self):
-        """Return True only when the Direct Print runtime contract is loaded.
-
-        No ``ir.module.module`` lookup is used here. The loaded registry is the
-        authoritative runtime state and avoids creating a hard module coupling.
-        """
+        """Return True when the required Direct Print runtime is loaded."""
         return DIRECT_PRINT_PAPER_MODEL in self.env.registry.models
 
     @api.model
@@ -78,7 +73,7 @@ class IckabLabelTemplateDirectPrintIntegration(models.Model):
         if not self._direct_print_runtime_available():
             raise UserError(_(
                 "ICKAB Direct Print no está instalado o no está cargado en esta base de datos. "
-                "Label Studio puede seguir diseñando, previsualizando y exportando etiquetas sin Direct Print."
+                "La impresión física desde Label Studio requiere ICKAB Direct Print."
             ))
         if not self._direct_print_user_allowed():
             raise UserError(_("No tiene permisos para utilizar ICKAB Direct Print."))

@@ -1,15 +1,15 @@
-Auto Part Vehicle Labels 18.0.3.2.1
+Auto Part Vehicle Labels 18.0.3.3.0
 ===================================
 
-Motor unificado de etiquetas de autopartes para Odoo 18.
+Formato preestablecido de etiquetas de autopartes para Odoo 18.
 
 Principio de diseño 3.0
 -----------------------
 
-La geometría se resuelve una sola vez en milímetros. El preview SVG, ZPL y TSPL
-consumen el mismo plan semántico: SKU/referencia interna, nombre, OEM y código
-de barras cuando corresponde. Los renderers no tienen coordenadas particulares
-por marca/modelo.
+La geometría del formato se define una sola vez en milímetros: SKU/referencia
+interna, nombre, OEM y código de barras cuando corresponde. La vista previa usa
+esa misma geometría. Al imprimir, el módulo entrega el formato y los datos a
+``ickab_direct_print``; no selecciona lenguaje, DPI, transporte ni impresora.
 
 Las diferencias físicas pertenecen a ``ickab_direct_print``:
 
@@ -22,19 +22,17 @@ Las diferencias físicas pertenecen a ``ickab_direct_print``:
 Salida
 ------
 
-* Zebra/ZPL: comandos ZPL nativos.
-* TSPL/TSPL2: ``TEXT`` y ``BARCODE`` nativos.
-* La jerarquía tipográfica se expresa en milímetros dentro del layout. Cada
-  perfil decide si puede usar fuente 0 escalable; cuando no está físicamente
-  validada se usan las fuentes residentes fijas 1..5. La 4BARCODE 4B-2054L
-  validada por ICKAB usa fuentes fijas por consistencia y legibilidad.
+La impresión física siempre pasa por ``ickab_direct_print``. Direct Print usa un
+renderer nativo cuando dispone de él (por ejemplo ZPL/TSPL) o genera un PDF al
+tamaño exacto y utiliza el driver del sistema operativo para otras impresoras
+de etiquetas compatibles.
 
 Formatos
 --------
 
 * 50 x 30 mm: SKU, nombre y hasta 7 referencias OEM; sin código de barras.
 * 70 x 50 mm: SKU, nombre, hasta 8 referencias OEM y Code 128.
-* 203/300 dpi; al usar Direct Print manda el DPI real de la impresora.
+* El DPI final siempre lo determina la impresora seleccionada en Direct Print.
 
 Integración
 -----------
@@ -67,3 +65,11 @@ no altera GAP, sensor, dirección ni origen físico de la impresora.
 - Se elimina el logo de compañía de los formatos 50x30 y 70x50.
 - SKU utiliza todo el ancho disponible de la cabecera, manteniendo el margen superior físico validado.
 - Preview, ZPL y TSPL consumen el mismo layout sin logo.
+
+
+18.0.3.3.0
+------------
+- El formato fijo se entrega a Direct Print como geometría y datos en milímetros.
+- Se elimina del camino de impresión la decisión ZPL/TSPL.
+- Direct Print elige renderer nativo o fallback PDF/driver según la impresora.
+- El preview y las exportaciones históricas permanecen disponibles sin convertirse en un motor paralelo de impresión.

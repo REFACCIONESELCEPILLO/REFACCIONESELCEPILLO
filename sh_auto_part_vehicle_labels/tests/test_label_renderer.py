@@ -7,6 +7,11 @@ class TestAutoPartLabelRenderer(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.renderer = cls.env["sh.auto.part.vehicle.label.renderer"]
+        cls.product = cls.env["product.product"].create({
+            "name": "Producto prueba Auto Part",
+            "default_code": "RDNN0900",
+            "barcode": "7501234567890",
+        })
         cls.data = {
             "code": "RDNN0900",
             "name": "BALERO DELANTERO NS MARCH VERSA C/ABS FT RAM 700",
@@ -136,3 +141,12 @@ class TestAutoPartLabelRenderer(TransactionCase):
             self.renderer._mm_to_dots(code["y"], 203),
         )
         self.assertIn("TEXT %s," % expected_xy, cmd)
+
+    def test_direct_print_source_does_not_choose_language(self):
+        source = self.renderer.build_print_source([(self.product, 2)], "auto_part_zpl_50_30")
+        self.assertEqual(source["kind"], "label")
+        document = source["documents"][0]
+        self.assertEqual(document["mode"], "fixed")
+        self.assertEqual(document["copies"], 2)
+        self.assertNotIn("language", document)
+

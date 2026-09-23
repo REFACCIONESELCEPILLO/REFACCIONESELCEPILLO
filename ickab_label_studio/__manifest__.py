@@ -1,21 +1,22 @@
 {
     "name": "ICKAB Label Studio",
-    "version": "18.0.5.3.1",
+    "version": "18.0.5.4.0",
     "category": "Tools",
     "summary": "Diseñador WYSIWYG profesional de etiquetas para Odoo",
     "description": """
 ICKAB Label Studio
 ==================
 Diseñador profesional de etiquetas propiedad de ICKAB para Odoo 18.
-El diseño maestro se almacena en medidas físicas y permanece independiente del
-motor de impresión. Studio diseña, previsualiza, importa/exporta ZPL y expone un
-contrato neutral para renderers y comunicación opcional con ICKAB Direct Print.
+El diseño maestro se almacena en medidas físicas y permanece independiente de la
+impresora. Studio diseña, guarda, previsualiza e importa/exporta etiquetas; al
+imprimir entrega el diseño y los datos a ICKAB Direct Print, que es el único motor
+de impresión de la solución.
     """,
     "author": "ICKAB",
     "maintainer": "ICKAB",
     "website": "https://ickab.mx",
-    "depends": ["base", "web", "product"],
-    "external_dependencies": {"python": ["Pillow"]},
+    "depends": ["base", "web", "product", "ickab_direct_print"],
+    "external_dependencies": {"python": ["PIL"]},
     "data": [
         "security/label_studio_security.xml",
         "security/ir.model.access.csv",

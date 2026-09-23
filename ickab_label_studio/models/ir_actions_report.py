@@ -55,6 +55,20 @@ class IrActionsReportLabelStudio(models.Model):
             raise UserError(_("No hay registros válidos con cantidad positiva para generar etiquetas."))
         return template.render_batch(records_with_qty or [(False, 1)], dpi=dpi, language="zpl")
 
+    def _ickab_prepare_print_source(self, res_ids=None, data=None):
+        report = self
+        if report.report_name != self._LABEL_STUDIO_REPORT:
+            parent_method = getattr(super(), "_ickab_prepare_print_source", None)
+            return parent_method(res_ids=res_ids, data=data) if parent_method else False
+        template = self._label_studio_template(res_ids=res_ids, data=data)
+        if not template:
+            raise UserError(_("No se encontró el diseño de etiqueta."))
+        template.check_access("read")
+        records_with_qty = self._label_studio_records_with_qty(template, data=data)
+        if (data or {}).get("quantity_by_record") and not records_with_qty:
+            raise UserError(_("No hay registros válidos con cantidad positiva para generar etiquetas."))
+        return template.build_print_source(records_with_qty or [(False, 1)])
+
     @api.model
     def _render_qweb_text(self, report_ref, res_ids, data=None):
         report = self._get_report(report_ref)

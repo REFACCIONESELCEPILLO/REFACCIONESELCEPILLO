@@ -6,7 +6,7 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
 
 
-TEXT_PAYLOAD_TYPES = {"zpl", "tspl", "epl", "cpcl"}
+TEXT_PAYLOAD_TYPES = {"zpl", "tspl", "epl", "cpcl", "sbpl", "dpl", "ipl", "fingerprint"}
 
 
 class IckabPrintJob(models.Model):
@@ -33,9 +33,13 @@ class IckabPrintJob(models.Model):
     source_display_name = fields.Char()
     payload_type = fields.Selection(
         [
-            ("zpl", "ZPL"), ("tspl", "TSPL / TSPL2"), ("epl", "EPL / EPL2"),
-            ("escpos", "ESC/POS"), ("cpcl", "CPCL"), ("pdf", "PDF"),
-            ("image", "Imagen"), ("raw", "RAW"),
+            ("zpl", "ZPL / ZPL II"), ("tspl", "TSPL / TSPL2"), ("epl", "EPL / EPL2"),
+            ("cpcl", "CPCL"), ("escpos", "ESC/POS"), ("starprnt", "StarPRNT"),
+            ("sbpl", "SATO SBPL"), ("dpl", "Datamax DPL"), ("ipl", "Intermec IPL"),
+            ("fingerprint", "Intermec Fingerprint / Direct Protocol"),
+            ("brother_raster", "Brother Raster / P-touch"),
+            ("pcl", "PCL"), ("postscript", "PostScript"), ("pwg_raster", "PWG Raster"),
+            ("pdf", "PDF"), ("image", "Imagen"), ("raw", "RAW"),
         ],
         required=True, index=True,
     )
@@ -139,19 +143,15 @@ class IckabPrintJob(models.Model):
                 source_record=None, report=None, filename=None, mime_type=None, branch=None):
         if not printer:
             raise UserError(_("Debe indicar una impresora."))
-        native_languages = {"zpl", "tspl", "epl", "escpos", "cpcl"}
-        if (
-            printer.language in native_languages
-            and payload_type in native_languages
-            and payload_type != printer.language
-        ):
+        accepted = printer.accepted_payload_types()
+        if payload_type not in accepted:
             raise UserError(_(
-                "La impresora %(printer)s está configurada como %(language)s y el trabajo fue generado como %(payload)s. "
-                "Direct Print no convierte lenguajes de impresora: el módulo que genera el documento debe renderizarlo en el lenguaje seleccionado."
+                "La impresora %(printer)s no puede recibir directamente el payload %(payload)s. "
+                "Direct Print declara como compatibles: %(accepted)s."
             ) % {
                 "printer": printer.display_name,
-                "language": (printer.language or "RAW").upper(),
                 "payload": (payload_type or "RAW").upper(),
+                "accepted": ", ".join(sorted(code.upper() for code in accepted)),
             })
         branch = branch or printer.branch_id
         vals = {
@@ -189,9 +189,14 @@ class IckabPrintJob(models.Model):
     @api.model
     def _default_mime_type(self, payload_type):
         return {
-            "zpl": "text/plain", "tspl": "text/plain", "epl": "text/plain", "cpcl": "text/plain",
-            "escpos": "application/octet-stream", "pdf": "application/pdf", "image": "image/png",
-            "raw": "application/octet-stream",
+            "zpl": "application/octet-stream", "tspl": "application/octet-stream",
+            "epl": "application/octet-stream", "cpcl": "application/octet-stream",
+            "escpos": "application/octet-stream", "starprnt": "application/octet-stream",
+            "sbpl": "application/octet-stream", "dpl": "application/octet-stream",
+            "ipl": "application/octet-stream", "fingerprint": "application/octet-stream",
+            "brother_raster": "application/octet-stream", "pcl": "application/octet-stream",
+            "postscript": "application/postscript", "pwg_raster": "image/pwg-raster",
+            "pdf": "application/pdf", "image": "image/png", "raw": "application/octet-stream",
         }.get(payload_type, "application/octet-stream")
 
     def _raw_payload(self):

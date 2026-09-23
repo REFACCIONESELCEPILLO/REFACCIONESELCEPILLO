@@ -1,12 +1,12 @@
-# ICKAB Label Studio 18.0.5.3.1
+# ICKAB Label Studio 18.0.5.4.0
 
 Diseñador de etiquetas propietario de ICKAB para Odoo 18.
 
 ## Principio
 
-**Studio diseña. El agente imprime.**
+**Studio diseña. Direct Print imprime.**
 
-Label Studio no administra impresoras, drivers, USB, spoolers ni colas. Mantiene un documento de etiqueta físico y neutral; un agente/renderer opcional decide cómo materializarlo para el hardware disponible.
+Label Studio no administra impresoras, drivers, USB, spoolers ni colas. Mantiene el diseño en medidas físicas y, cuando el usuario imprime, entrega el diseño y los datos a ICKAB Direct Print. Direct Print decide impresora, DPI, salida y transporte; el Print Agent sólo ejecuta la entrega al dispositivo.
 
 ## Diseñador
 
@@ -51,9 +51,9 @@ Se puede navegar por Many2one, One2many y Many2many hasta cinco niveles. Las rel
 
 Canvas, preview y ZPL comparten la misma geometría física. Las líneas se renderizan sobre el mismo eje central y los saltos de línea de texto se conservan en ZPL mediante `^FB`.
 
-## Contrato neutral
+## Interfaz interna de impresión
 
-`ickab.label.template.build_print_document()` devuelve `ickab.label.document/1`.
+`ickab.label.template.build_print_document()` entrega a Direct Print la geometría, datos y medios físicos del diseño. Esta estructura es interna; no es un módulo ni una aplicación adicional.
 
 ## Dependencias
 
@@ -62,20 +62,15 @@ Core:
 - `base`
 - `web`
 - `product`
+- `ickab_direct_print`
 
 Runtime Python para imágenes:
 
-- `Pillow` (importado en Python como `PIL`), declarado por su nombre de distribución PyPI para Odoo 18.
+- `Pillow` (importado en Python como `PIL`).
 
-No depende de `ickab_direct_print`, hardware ni módulos verticales.
+## Integración con ICKAB Direct Print
 
-## Integración opcional con ICKAB Direct Print (18.0.5)
-
-La integración está incorporada en este mismo addon y se detecta en runtime.
-No existe dependencia dura con `ickab_direct_print` y no se requiere un addon
-puente adicional. Cuando Direct Print está disponible, el botón **Imprimir**
-entrega el diseño al flujo existente con lenguaje `auto`; Direct Print conserva
-la responsabilidad de ZPL/TSPL y del Print Agent.
+La impresión física requiere `ickab_direct_print`; no existe un addon puente. El botón **Imprimir** entrega el diseño a Direct Print, que resuelve la impresora configurada, el DPI real, la salida nativa disponible o el fallback por driver y la cola del Print Agent. Importar/exportar ZPL sigue siendo una utilidad del diseñador, no una ruta física de impresión.
 
 
 ## 18.0.5.1.1
@@ -95,3 +90,10 @@ Corrección arquitectónica de WebP para Odoo 18. Odoo limita deliberadamente el
 ## 18.0.5.2.0
 
 Revisión estructural del subsistema de imágenes. La lectura, validación, rasterización y empaquetado térmico se concentran en `ickab.label.image.processor`; los campos Binary/Image se leen por ORM con `bin_size=False`; se valida que el Base64 decodificado sea realmente una imagen; se recuperan envolturas Base64 accidentales; y los errores identifican el origen sin provocar excepciones secundarias de traducción.
+
+
+## 18.0.5.4.0
+
+- Direct Print recibe el diseño físico y sus datos: Studio ya no decide lenguaje, DPI, transporte ni impresora.
+- El diseño permanece en milímetros y las imágenes se entregan en su fuente raster original.
+- La exportación ZPL de Studio se conserva como función de diseño/descarga, pero no es el camino de impresión directa.

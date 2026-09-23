@@ -36,7 +36,20 @@ class IckabPrintPrinter(models.Model):
         string="Tipo", required=True, default="document", index=True,
     )
     transport = fields.Selection(TRANSPORT_SELECTION, required=True, default="windows_spooler")
-    language = fields.Selection(LANGUAGE_SELECTION, required=True, default="pdf")
+    language = fields.Selection(
+        LANGUAGE_SELECTION,
+        required=True,
+        default="pdf",
+        string="Lenguaje preferido",
+        help="Lenguaje/formato preferido. Direct Print puede negociar otro lenguaje compatible o usar el driver.",
+    )
+    alternate_languages = fields.Char(
+        string="Lenguajes compatibles adicionales",
+        help=(
+            "Códigos separados por coma, por ejemplo zpl,epl. Se usan junto con el lenguaje preferido "
+            "para seleccionar el renderer disponible sin modificar el diseño."
+        ),
+    )
     compatibility_profile_id = fields.Many2one(
         "ickab.print.compatibility.profile",
         string="Perfil de compatibilidad",
@@ -142,7 +155,7 @@ class IckabPrintPrinter(models.Model):
 
     @api.onchange("printer_type")
     def _onchange_printer_type(self):
-        label_languages = ("zpl", "tspl", "epl", "cpcl")
+        label_languages = ("zpl", "tspl", "epl", "cpcl", "sbpl", "dpl", "ipl", "fingerprint", "brother_raster")
         for printer in self:
             if printer.printer_type == "label" and printer.language == "pdf":
                 printer.language = "zpl"
@@ -160,28 +173,34 @@ class IckabPrintPrinter(models.Model):
             if not profile:
                 raise UserError(_("No existe un perfil de compatibilidad seleccionado o sugerido."))
             # El transporte NO se modifica: describe la conexión física real (USB/red/etc.).
-            printer.write({
+            values = {
                 "compatibility_profile_id": profile.id,
                 "printer_type": profile.printer_type,
                 "language": profile.language,
                 "dpi": profile.dpi,
-            })
+            }
+            if profile.alternate_languages:
+                values["alternate_languages"] = profile.alternate_languages
+            printer.write(values)
         return True
 
-    def accepted_payload_types(self):
-        """Tipos que una impresora puede recibir sin conversión de lenguaje."""
+    def _ickab_supported_languages(self):
+        """Return language codes physically accepted by this printer."""
         self.ensure_one()
-        mapping = {
-            "zpl": {"zpl", "raw"},
-            "tspl": {"tspl", "raw"},
-            "epl": {"epl", "raw"},
-            "escpos": {"escpos", "raw"},
-            "cpcl": {"cpcl", "raw"},
-            "pdf": {"pdf", "raw"},
-            "image": {"image", "raw"},
-            "raw": {"zpl", "tspl", "epl", "escpos", "cpcl", "pdf", "image", "raw"},
-        }
-        return mapping.get(self.language, {"raw"})
+        return self.env["ickab.print.engine"].printer_supported_languages(self)
+
+    def accepted_payload_types(self):
+        """Payloads that can be delivered without asking the source module to convert them."""
+        self.ensure_one()
+        if self.language == "raw":
+            selection = self.env["ickab.print.job"]._fields["payload_type"].selection
+            if callable(selection):
+                selection = selection(self.env["ickab.print.job"])
+            return {code for code, _label in (selection or [])} | {"raw"}
+        accepted = set(self._ickab_supported_languages()) | {"raw"}
+        if self.env["ickab.print.engine"]._driver_fallback_available(self):
+            accepted.update({"pdf", "image"})
+        return accepted
 
     def action_test_print(self):
         self.ensure_one()
@@ -222,9 +241,44 @@ class IckabPrintPrinter(models.Model):
                 paper=paper, filename="ickab_test.cpcl",
             ).action_open_job()
 
+        if self.printer_type == "label":
+            width_mm, height_mm, _dpi = self._paper_geometry(paper)
+            source = {
+                "schema": "ickab.print.source/1",
+                "kind": "label",
+                "origin": "ickab_direct_print_test",
+                "documents": [{
+                    "schema": "ickab.label.document/1",
+                    "template_key": "DIRECT_PRINT_TEST",
+                    "mode": "fixed",
+                    "media": {
+                        "width_mm": width_mm,
+                        "height_mm": height_mm,
+                        "dpi_reference": self._resolved_dpi(paper),
+                        "media_type": paper.sensor_mode if paper else "gap",
+                        "gap_mm": paper.gap_mm if paper else 2.0,
+                        "gap_offset_mm": paper.gap_offset_mm if paper else 0.0,
+                    },
+                    "copies": 1,
+                    "elements": [
+                        {"id": "frame", "type": "box", "x_mm": 1.0, "y_mm": 1.0, "w_mm": max(1.0, width_mm - 2.0), "h_mm": max(1.0, height_mm - 2.0), "thickness_mm": 0.25},
+                        {"id": "title", "type": "text", "x_mm": 3.0, "y_mm": 4.0, "w_mm": max(1.0, width_mm - 6.0), "h_mm": 6.0, "font_mm": 3.0, "max_lines": 1, "align": "L", "value": "ICKAB DIRECT PRINT"},
+                    ],
+                }],
+            }
+            result = self.env["ickab.print.engine"].render_label_source(source, printer=self, paper=paper)
+            return self.env["ickab.print.job"].enqueue(
+                printer=self,
+                payload_type=result["payload_type"],
+                payload=result["payload"],
+                paper=paper,
+                filename="ickab_test.%s" % result["extension"],
+                mime_type=result["mime_type"],
+            ).action_open_job()
+
         raise UserError(_(
-            "La prueba RAW automática está disponible para ZPL, TSPL/TSPL2, EPL/EPL2, ESC/POS y CPCL. "
-            "Para PDF/Imagen utilice un reporte real mediante el driver del sistema operativo."
+            "La prueba automática para este tipo de impresora requiere un documento real. "
+            "Use un reporte de Odoo para validar PDF/driver o el flujo funcional correspondiente."
         ))
 
     def _resolved_dpi(self, paper=None):
