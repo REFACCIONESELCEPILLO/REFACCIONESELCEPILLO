@@ -140,6 +140,16 @@ class TestIckabLabelStudio(TransactionCase):
         self.assertEqual(doc["elements"][0]["x_mm"], 2.5)
         self.assertEqual(doc["copies"], 2)
 
+
+    def test_direct_print_source_does_not_choose_printer_language(self):
+        template = self._template()
+        source = template.build_print_source([(self.product, 2)])
+        self.assertEqual(source["kind"], "label")
+        self.assertEqual(source["origin"], "ickab_label_studio")
+        self.assertEqual(source["documents"][0]["copies"], 2)
+        self.assertNotIn("language", source["documents"][0])
+        self.assertNotIn("dpi_target", source["documents"][0])
+
     def test_core_has_no_direct_print_model_dependency(self):
         template = self._template()
         self.assertNotIn("ickab_paper_id", template._fields)

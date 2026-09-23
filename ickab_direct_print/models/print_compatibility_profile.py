@@ -8,12 +8,22 @@ LANGUAGE_SELECTION = [
     ("zpl", "ZPL / ZPL II"),
     ("tspl", "TSPL / TSPL2"),
     ("epl", "EPL / EPL2"),
-    ("escpos", "ESC/POS"),
     ("cpcl", "CPCL"),
+    ("escpos", "ESC/POS"),
+    ("starprnt", "StarPRNT / Star"),
+    ("sbpl", "SATO SBPL"),
+    ("dpl", "Datamax DPL"),
+    ("ipl", "Intermec IPL"),
+    ("fingerprint", "Intermec Fingerprint / Direct Protocol"),
+    ("brother_raster", "Brother Raster / P-touch"),
+    ("pcl", "HP PCL"),
+    ("postscript", "PostScript"),
+    ("pwg_raster", "PWG Raster"),
     ("pdf", "PDF / Driver"),
     ("image", "Imagen / Driver"),
     ("raw", "RAW genérico"),
 ]
+
 
 TRANSPORT_SELECTION = [
     ("windows_raw", "Windows RAW"),
@@ -113,7 +123,10 @@ class IckabPrintCompatibilityProfile(models.Model):
     )
     alternate_languages = fields.Char(
         string="Lenguajes alternos",
-        help="Información documental. El lenguaje activo de la impresora se define en la ficha de impresora.",
+        help=(
+            "Códigos separados por coma. Ejemplo: zpl,epl. Direct Print los usa para "
+            "negociar un renderer disponible sin cambiar el diseño de la etiqueta."
+        ),
     )
     source_reference = fields.Char(
         string="Referencia técnica",

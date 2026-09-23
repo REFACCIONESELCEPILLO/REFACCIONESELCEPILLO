@@ -3,6 +3,7 @@ from collections import defaultdict
 
 from odoo import _, fields, models
 from odoo.exceptions import UserError
+from odoo.tools import float_compare, float_is_zero
 
 
 class ProductLabelLayout(models.TransientModel):
@@ -25,8 +26,58 @@ class ProductLabelLayout(models.TransientModel):
         domain="[('model_id.model', 'in', ['product.product', 'product.template'])]",
     )
 
+    def _ickab_studio_stock_move_quantities(self):
+        """Mirror Odoo's stock label quantities when the wizard comes from a picking.
+
+        The stock module adds ``move_ids`` / ``move_quantity`` to the standard
+        product label wizard.  Label Studio remains installable without a hard
+        dependency on stock, so those fields are detected at runtime.
+        """
+        self.ensure_one()
+        if "move_ids" not in self._fields or "move_quantity" not in self._fields:
+            return {}
+        if self.move_quantity != "move" or not self.move_ids:
+            return {}
+
+        quantities = defaultdict(int)
+        unit_category = self.env.ref("uom.product_uom_categ_unit", raise_if_not_found=False)
+        move_lines = self.move_ids.move_line_ids
+        all_done_zero = bool(move_lines) and all(
+            float_is_zero(line.quantity, precision_rounding=line.product_uom_id.rounding)
+            for line in move_lines
+        )
+
+        if not move_lines or all_done_zero:
+            for move in self.move_ids:
+                if unit_category and move.product_uom.category_id != unit_category:
+                    quantities[move.product_id.id] = 1
+                    continue
+                use_reserved = float_compare(
+                    move.quantity, 0, precision_rounding=move.product_uom.rounding
+                ) > 0
+                usable_qty = move.quantity if use_reserved else move.product_uom_qty
+                if not float_is_zero(usable_qty, precision_rounding=move.product_uom.rounding):
+                    quantities[move.product_id.id] += int(usable_qty)
+        else:
+            for line in move_lines:
+                if unit_category and line.product_uom_id.category_id != unit_category:
+                    quantities[line.product_id.id] = 1
+                    continue
+                if not float_is_zero(line.quantity, precision_rounding=line.product_uom_id.rounding):
+                    quantities[line.product_id.id] += int(line.quantity)
+        return {product_id: qty for product_id, qty in quantities.items() if qty > 0}
+
     def _ickab_studio_source_quantities(self):
         self.ensure_one()
+
+        # When opened from an inventory receipt/delivery and the user selected
+        # "Operation Quantities", the actual stock operation controls how many
+        # labels are printed. This is the native Odoo flow the user expects from
+        # the Print Labels button on a picking.
+        move_quantities = self._ickab_studio_stock_move_quantities()
+        if move_quantities:
+            return "product.product", move_quantities
+
         if self.custom_quantity <= 0:
             raise UserError(_("La cantidad de etiquetas debe ser mayor que cero."))
         if self.product_tmpl_ids:
@@ -91,21 +142,14 @@ class ProductLabelLayout(models.TransientModel):
         data = self._ickab_studio_prepare_data()
         template = self.ickab_label_template_id
 
-        # Optional embedded integration: when Direct Print is installed and the
-        # current user has its print permission, hand the finished Studio design
-        # to Direct Print. Studio never chooses ZPL/TSPL or a printer itself.
-        if template._direct_print_runtime_available() and template._direct_print_user_allowed():
-            report = self.env.ref("ickab_label_studio.action_report_label_zpl")
-            template._direct_print_configure_report(report)
-            data = template._direct_print_prepare_data(data)
-            return report.report_action(None, data=data, config=False)
-
-        # Standalone Label Studio behavior is intentionally preserved.
-        return {
-            "type": "ir.actions.act_url",
-            "url": f"/ickab_label_studio/zpl/product_layout/{self.id}",
-            "target": "self",
-        }
+        # Physical printing from Label Studio always goes through Direct Print.
+        # Studio supplies only design/data; it never selects printer language,
+        # DPI, transport or device-specific commands for this path.
+        template._direct_print_assert_available()
+        report = self.env.ref("ickab_label_studio.action_report_label_zpl")
+        template._direct_print_configure_report(report)
+        data = template._direct_print_prepare_data(data)
+        return report.report_action(None, data=data, config=False)
 
     def action_ickab_label_preview(self):
         self.ensure_one()

@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <record id="action_report_label_zpl" model="ir.actions.report">
-        <field name="name">ICKAB Label Studio - ZPL</field>
+        <field name="name">ICKAB Label Studio - Etiqueta</field>
         <field name="model">ickab.label.template</field>
         <field name="report_type">qweb-text</field>
         <field name="report_name">ickab_label_studio.report_label_zpl</field>
         <field name="report_file">ickab_label_studio.report_label_zpl</field>
         <field name="print_report_name">'ICKAB_Label_Studio'</field>
+        <field name="ickab_print_mode">ask</field>
+        <field name="ickab_document_kind">label</field>
+        <field name="ickab_text_language">auto</field>
+        <field name="ickab_copies">1</field>
+        <field name="ickab_fallback_download">False</field>
     </record>
 
     <record id="action_report_label_preview" model="ir.actions.report">
@@ -62,7 +67,7 @@
                             </t>
                         </div>
                         <div class="text-muted mt-1">
-                            <t t-esc="'{} × {} mm · {} · {} DPI'.format(page['width_mm'], page['height_mm'], page.get('shape'), page['template'].dpi)"/>
+                            <t t-esc="'{} × {} mm · {} · {} DPI referencia'.format(page['width_mm'], page['height_mm'], page.get('shape'), page['template'].dpi)"/>
                         </div>
                     </div>
                 </t>

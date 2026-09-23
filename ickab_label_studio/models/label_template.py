@@ -1067,10 +1067,10 @@ class IckabLabelTemplate(models.Model):
         }
 
     def build_print_document(self, record=None, copies=1):
-        """Return the printer-neutral document owned by Label Studio.
+        """Return the printer-neutral label contract consumed by Direct Print.
 
-        Print agents/renderers may consume this contract without learning how the
-        visual editor stores its state. This is the canonical hand-off boundary.
+        Geometry stays in millimetres and images keep their original raster
+        source.  No printer language or target DPI is chosen in Label Studio.
         """
         self.ensure_one()
         copies = max(1, int(copies or 1))
@@ -1083,8 +1083,35 @@ class IckabLabelTemplate(models.Model):
                 "raw_content": self.source_zpl or "",
                 "media": self.get_physical_profile(),
                 "copies": copies,
-                "elements": self.resolve_elements(record=None),
+                "elements": [],
             }
+
+        elements = []
+        for el in self.resolve_elements(record=record):
+            item = {
+                "id": el["id"],
+                "type": el["type"],
+                "x_mm": float(el["x_mm"]),
+                "y_mm": float(el["y_mm"]),
+                "w_mm": float(el["w_mm"]),
+                "h_mm": float(el["h_mm"]),
+                "z": int(el.get("z", 0) or 0),
+                "value": el.get("value_resolved", ""),
+                **{key: el[key] for key in (
+                    "font_mm", "align", "max_lines", "barcode_type", "human_readable",
+                    "magnification", "thickness_mm", "line_direction", "rounding",
+                    "source", "field_path", "fit", "threshold", "dither", "invert",
+                ) if key in el},
+            }
+            if el["type"] == "image":
+                image_value, image_label = self._image_source_value(el, record=record)
+                if image_value:
+                    item["image_source_b64"] = self._normalize_image_b64(
+                        image_value, image_label=image_label
+                    )
+                    item["image_source_label"] = image_label
+            elements.append(item)
+
         return {
             "schema": "ickab.label.document/1",
             "template_key": self.technical_key,
@@ -1093,26 +1120,26 @@ class IckabLabelTemplate(models.Model):
             "copies": copies,
             "model": self.model_id.model if self.model_id else False,
             "record_id": record.id if record else False,
-            "elements": [
-                {
-                    "id": el["id"],
-                    "type": el["type"],
-                    "x_mm": float(el["x_mm"]),
-                    "y_mm": float(el["y_mm"]),
-                    "w_mm": float(el["w_mm"]),
-                    "h_mm": float(el["h_mm"]),
-                    "z": int(el.get("z", 0) or 0),
-                    "value": el.get("value_resolved", ""),
-                    **{key: el[key] for key in (
-                        "font_mm", "align", "max_lines", "barcode_type", "human_readable",
-                        "magnification", "thickness_mm", "line_direction", "rounding",
-                        "source", "field_path", "fit", "threshold", "dither", "invert",
-                        "image_bitmap_b64", "image_bytes_per_row", "image_width_dot", "image_height_dot",
-                        "image_format", "image_source_bytes", "image_source_label"
-                    ) if key in el},
-                }
-                for el in self.resolve_elements(record=record)
-            ],
+            "elements": elements,
+        }
+
+    def build_print_source(self, records_with_qty=None):
+        """Build the batch hand-off consumed by ICKAB Direct Print."""
+        self.ensure_one()
+        records_with_qty = records_with_qty or [(False, 1)]
+        documents = []
+        for record, quantity in records_with_qty:
+            quantity = int(quantity or 0)
+            if quantity <= 0:
+                continue
+            documents.append(self.build_print_document(record=record, copies=quantity))
+        if not documents:
+            documents.append(self.build_print_document(record=False, copies=1))
+        return {
+            "schema": "ickab.print.source/1",
+            "kind": "label",
+            "origin": "ickab_label_studio",
+            "documents": documents,
         }
 
     def _label_renderer_registry(self):

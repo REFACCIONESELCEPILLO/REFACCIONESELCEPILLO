@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 
 class ProductLabelLayout(models.TransientModel):
@@ -16,14 +17,14 @@ class ProductLabelLayout(models.TransientModel):
             "auto_part_zpl_70_50": "set default",
         },
     )
+    # Legacy field kept to avoid breaking existing transient-view metadata.
+    # It is no longer a print decision: Direct Print uses the selected printer DPI.
     label_dpi = fields.Selection(
-        [
-            ("203", "203 dpi"),
-            ("300", "300 dpi"),
-        ],
-        string="Resolución de etiqueta",
+        [("203", "203 dpi"), ("300", "300 dpi")],
+        string="DPI de referencia (vista previa)",
         default="203",
         required=True,
+        help="Sólo se conserva para compatibilidad/vista previa. La impresión usa el DPI real configurado en Direct Print.",
     )
     label_preview_html = fields.Html(
         string="Vista previa de etiqueta",
@@ -63,6 +64,15 @@ class ProductLabelLayout(models.TransientModel):
         self.ensure_one()
         return self.product_ids or self.product_tmpl_ids
 
+    def process(self):
+        self.ensure_one()
+        if self._is_auto_part_label_format():
+            if not self.env.company.ickab_direct_print_enabled:
+                raise UserError(_("ICKAB Direct Print debe estar habilitado para imprimir etiquetas de autopartes."))
+            if not self.env.user.has_group("ickab_direct_print.group_direct_print_user"):
+                raise UserError(_("No tiene permisos para utilizar ICKAB Direct Print."))
+        return super().process()
+
     def _prepare_report_data(self):
         xml_id, data = super()._prepare_report_data()
         if not self._is_auto_part_label_format():
@@ -83,7 +93,6 @@ class ProductLabelLayout(models.TransientModel):
 
         data["quantity_by_product"] = quantity_by_product
         data.pop("custom_barcodes", None)
-        data["label_dpi"] = int(self.label_dpi or 203)
         data["auto_part_label_format"] = self.print_format
         paper_codes = {
             "auto_part_zpl_50_30": "LABEL_50X30",

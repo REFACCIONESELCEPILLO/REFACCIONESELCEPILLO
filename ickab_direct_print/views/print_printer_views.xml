@@ -65,6 +65,7 @@
                             <field name="printer_type"/>
                             <field name="transport"/>
                             <field name="language"/>
+                            <field name="alternate_languages" placeholder="zpl,epl"/>
                             <field name="dpi" invisible="printer_type == 'document'"/>
                             <field name="last_seen" readonly="1"/>
                         </group>

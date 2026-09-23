@@ -45,6 +45,13 @@ class IrActionsReport(models.Model):
             ("epl", "EPL / EPL2"),
             ("escpos", "ESC/POS"),
             ("cpcl", "CPCL"),
+            ("starprnt", "StarPRNT"),
+            ("sbpl", "SATO SBPL"),
+            ("dpl", "Datamax DPL"),
+            ("ipl", "Intermec IPL"),
+            ("fingerprint", "Intermec Fingerprint / Direct Protocol"),
+            ("pcl", "PCL"),
+            ("postscript", "PostScript"),
             ("raw", "RAW genérico"),
         ],
         string="Lenguaje para reportes de texto",
@@ -166,6 +173,16 @@ class IrActionsReport(models.Model):
         self.ensure_one()
         return bool(printer and (not paper or not printer.paper_ids or paper in printer.paper_ids))
 
+    def _ickab_prepare_print_source(self, res_ids=None, data=None):
+        """Optional content hand-off hook for modules that own non-PDF content.
+
+        The source module describes *what* must be printed; Direct Print remains
+        responsible for printer selection, renderer choice, DPI and transport.
+        Returning False preserves the standard Odoo PDF/QWeb Text path.
+        """
+        self.ensure_one()
+        return False
+
     def _ickab_payload_type(self, printer):
         self.ensure_one()
         if self.report_type == "qweb-pdf":
@@ -174,17 +191,35 @@ class IrActionsReport(models.Model):
             raise UserError(_("ICKAB Direct Print soporta de forma genérica reportes QWeb PDF y QWeb Text."))
         if self.ickab_text_language != "auto":
             return self.ickab_text_language
-        if printer and printer.language in ("zpl", "tspl", "epl", "escpos", "cpcl", "raw"):
+        if printer and printer.language not in ("pdf", "image"):
             return printer.language
         return "raw"
 
-    def _ickab_render_payload(self, res_ids=None, data=None, printer=None):
+    def _ickab_render_payload(self, res_ids=None, data=None, printer=None, paper=None):
         self.ensure_one()
         res_ids = res_ids or []
+
+        # Preferred path for designer/fixed-label integrations.  They hand off a
+        # physical label design/data; Direct Print chooses ZPL/TSPL or the
+        # universal PDF/driver fallback based on the selected printer.
+        source = self._ickab_prepare_print_source(res_ids=res_ids, data=data or {})
+        if source:
+            kind = source.get("kind") if isinstance(source, dict) else False
+            if kind == "label":
+                result = self.env["ickab.print.engine"].render_label_source(
+                    source, printer=printer, paper=paper
+                )
+                return result["payload_type"], result["payload"]
+            if kind == "payload":
+                payload_type = source.get("payload_type") or "raw"
+                return payload_type, source.get("payload") or b""
+            raise UserError(_("Tipo de fuente ICKAB no soportado: %s", kind))
+
+        # Standard Odoo reports keep their native generation path.  QWeb PDF is
+        # sent as PDF to the configured driver; specialized QWeb Text reports
+        # may still provide a pre-rendered native payload.
         payload_type = self._ickab_payload_type(printer)
         render_data = dict(data or {})
-        # Contrato genérico para módulos generadores: la impresora seleccionada
-        # informa lenguaje y DPI reales sin que Direct Print conozca el diseño.
         if printer:
             render_data["ickab_target_language"] = printer.language or "raw"
             if printer.dpi in ("203", "300", "600"):
@@ -197,13 +232,19 @@ class IrActionsReport(models.Model):
             raw = content.encode("utf-8")
         else:
             raw = bytes(content or b"")
-        if payload_type in ("zpl", "tspl", "epl", "cpcl"):
-            return payload_type, raw.decode("utf-8", errors="replace")
+        text_payloads = {"zpl", "tspl", "epl", "cpcl", "sbpl", "dpl", "ipl", "fingerprint"}
+        if payload_type in text_payloads:
+            return payload_type, raw.decode("utf-8", errors="strict")
         return payload_type, raw
 
     def _ickab_filename(self, payload_type):
         self.ensure_one()
-        ext = {"pdf": "pdf", "zpl": "zpl", "tspl": "tspl", "epl": "epl", "escpos": "bin", "cpcl": "cpcl", "raw": "bin", "image": "png"}.get(payload_type, "bin")
+        ext = {
+            "pdf": "pdf", "zpl": "zpl", "tspl": "tspl", "epl": "epl", "cpcl": "cpcl",
+            "escpos": "bin", "starprnt": "bin", "sbpl": "sbpl", "dpl": "dpl", "ipl": "ipl",
+            "fingerprint": "txt", "brother_raster": "bin", "pcl": "pcl", "postscript": "ps",
+            "pwg_raster": "ras", "raw": "bin", "image": "png",
+        }.get(payload_type, "bin")
         safe = "".join(ch if ch.isalnum() or ch in "-_." else "_" for ch in (self.name or "report"))
         return f"{safe}.{ext}"
 
@@ -229,7 +270,7 @@ class IrActionsReport(models.Model):
             raise UserError(_("El papel %s no está permitido en %s.") % (paper.display_name, printer.display_name))
 
         res_ids = self._ickab_normalize_res_ids(res_ids)
-        payload_type, payload = self._ickab_render_payload(res_ids=res_ids, data=data or {}, printer=printer)
+        payload_type, payload = self._ickab_render_payload(res_ids=res_ids, data=data or {}, printer=printer, paper=paper)
         source_record = self.env[self.model].browse(res_ids[0]).exists() if self.model and len(res_ids) == 1 else None
         job = self.env["ickab.print.job"].enqueue(
             printer=printer,

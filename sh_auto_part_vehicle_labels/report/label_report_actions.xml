@@ -12,6 +12,6 @@
         <field name="ickab_document_kind">label</field>
         <field name="ickab_text_language">auto</field>
         <field name="ickab_copies">1</field>
-        <field name="ickab_fallback_download">True</field>
+        <field name="ickab_fallback_download">False</field>
     </record>
 </odoo>

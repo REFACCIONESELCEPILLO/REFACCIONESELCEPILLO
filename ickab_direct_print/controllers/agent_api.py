@@ -45,6 +45,7 @@ class IckabDirectPrintAgentAPI(http.Controller):
             "printer_type": printer.printer_type,
             "transport": printer.transport,
             "language": printer.language,
+            "alternate_languages": printer.alternate_languages or "",
             "dpi": printer.dpi,
             "network_host": printer.network_host,
             "network_port": printer.network_port,

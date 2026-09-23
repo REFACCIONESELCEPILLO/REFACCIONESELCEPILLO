@@ -72,6 +72,30 @@ class TestPrinterCompatibility(TransactionCase):
         self.assertTrue(copy)
         self.assertEqual(copy._raw_payload(), payload)
 
+
+    def test_zebra_epl_queue_can_negotiate_zpl_from_profile(self):
+        self.host.write({"platform_type": "windows"})
+        zebra = self._printer(
+            name="ZDesigner GK420d (EPL)",
+            system_name="ZDesigner GK420d (EPL)",
+            transport="windows_spooler",
+            language="epl",
+            compatibility_profile_id=self.env.ref("ickab_direct_print.compat_zebra_gk420d").id,
+        )
+        self.assertIn("zpl", zebra._ickab_supported_languages())
+        self.assertEqual(self.env["ickab.print.engine"]._select_label_renderer(zebra), "zpl")
+
+    def test_unknown_label_language_uses_pdf_driver_fallback(self):
+        self.host.write({"platform_type": "windows"})
+        printer = self._printer(
+            name="Etiqueta con driver",
+            system_name="Etiqueta con driver",
+            transport="windows_spooler",
+            language="epl",
+        )
+        self.assertEqual(self.env["ickab.print.engine"]._select_label_renderer(printer), "pdf")
+        self.assertIn("pdf", printer.accepted_payload_types())
+
     def test_4barcode_profile_owns_tspl_physical_capabilities(self):
         profile = self.env.ref("ickab_direct_print.compat_4barcode_4b2054l")
         self.assertEqual(profile.label_direction, "1")

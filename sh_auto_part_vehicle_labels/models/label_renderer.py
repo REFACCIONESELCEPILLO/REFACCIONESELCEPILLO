@@ -198,6 +198,77 @@ class AutoPartVehicleLabelRenderer(models.AbstractModel):
         self._validate_plan_bounds(plan)
         return plan
 
+    def build_print_document(self, record, print_format, copies=1):
+        """Convert the fixed autopart layout to Direct Print's neutral contract.
+
+        This module owns the predefined content/layout only.  It deliberately
+        does not choose ZPL, TSPL, EPL or any printer transport.
+        """
+        data = self.get_record_data(record)
+        plan = self.build_plan(data, print_format)
+        elements = []
+        for index, element in enumerate(plan["elements"], start=1):
+            etype = element["type"]
+            item = {
+                "id": f"auto_part_{index}",
+                "type": etype,
+                "x_mm": float(element.get("x", 0.0)),
+                "y_mm": float(element.get("y", 0.0)),
+                "w_mm": float(element.get("w", 1.0)),
+                "h_mm": float(element.get("h", element.get("font_mm", 2.0) * 1.25)),
+                "z": index,
+            }
+            if etype == "text":
+                item.update({
+                    "value": str(element.get("text") or ""),
+                    "font_mm": float(element.get("font_mm") or 2.0),
+                    "align": "L",
+                    "max_lines": 1,
+                })
+            elif etype == "barcode":
+                item.update({
+                    "value": str(element.get("value") or ""),
+                    "barcode_type": "code128",
+                    "human_readable": False,
+                })
+            elements.append(item)
+        return {
+            "schema": "ickab.label.document/1",
+            "template_key": print_format,
+            "mode": "fixed",
+            "media": {
+                "schema": "ickab.label.media/1",
+                "technical_key": print_format,
+                "shape": "rectangle",
+                "width_mm": float(plan["width_mm"]),
+                "height_mm": float(plan["height_mm"]),
+                "dpi_reference": 203,
+                "media_type": "gap",
+                "gap_mm": 2.0,
+                "gap_offset_mm": 0.0,
+                "orientation": "landscape" if plan["width_mm"] >= plan["height_mm"] else "portrait",
+                "company_id": self.env.company.id,
+            },
+            "copies": max(1, int(copies or 1)),
+            "model": record._name,
+            "record_id": record.id,
+            "elements": elements,
+        }
+
+    def build_print_source(self, records_with_qty, print_format):
+        documents = []
+        for record, quantity in records_with_qty:
+            quantity = int(quantity or 0)
+            if quantity <= 0:
+                continue
+            documents.append(self.build_print_document(record, print_format, copies=quantity))
+        return {
+            "schema": "ickab.print.source/1",
+            "kind": "label",
+            "origin": "sh_auto_part_vehicle_labels",
+            "documents": documents,
+        }
+
     def _validate_plan_bounds(self, plan):
         width, height = plan["width_mm"], plan["height_mm"]
         for element in plan["elements"]:
