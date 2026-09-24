@@ -24,7 +24,7 @@ como en instalaciones on-premise.
     "website": "https://ickab.mx",
     "license": "LGPL-3",
     "depends": ["base", "web"],
-    "external_dependencies": {"python": ["PIL", "reportlab"]},
+    "external_dependencies": {"python": ["Pillow", "reportlab"]},
     "data": [
         "security/print_security.xml",
         "security/ir.model.access.csv",
