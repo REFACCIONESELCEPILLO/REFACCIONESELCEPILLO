@@ -269,6 +269,20 @@ class IrActionsReport(models.Model):
         if paper and printer.paper_ids and paper not in printer.paper_ids:
             raise UserError(_("El papel %s no está permitido en %s.") % (paper.display_name, printer.display_name))
 
+        # The El Cepillo sales ticket is a QWeb PDF. A network ESC/POS socket
+        # cannot interpret PDF bytes; a Windows driver queue can print it.
+        if (
+            self.report_type == "qweb-pdf"
+            and self.ickab_document_kind == "ticket"
+            and printer.transport == "tcp_raw"
+            and printer.language != "pdf"
+        ):
+            raise UserError(_(
+                "Este ticket se genera como PDF y la impresora de tickets usa TCP/IP RAW (%s). "
+                "Configure una cola de Windows para imprimir el PDF mediante el controlador "
+                "de la impresora, o utilice un reporte de ticket ESC/POS nativo."
+            ) % (printer.language or "RAW"))
+
         res_ids = self._ickab_normalize_res_ids(res_ids)
         payload_type, payload = self._ickab_render_payload(res_ids=res_ids, data=data or {}, printer=printer, paper=paper)
         source_record = self.env[self.model].browse(res_ids[0]).exists() if self.model and len(res_ids) == 1 else None
@@ -376,3 +390,32 @@ class IrActionsReport(models.Model):
             copies=copies,
             branch=branch,
         )
+
+    @api.model
+    def ickab_handle_web_report(self, report_name, report_type, res_ids=None, data=None):
+        """Handle reports selected from the web client's Print menu.
+
+        That menu executes an ir.actions.report in JavaScript without invoking
+        report_action(), so the standard download would otherwise bypass the
+        configured Direct Print mode.
+        """
+        if report_type not in ("qweb-pdf", "qweb-text") or not report_name:
+            return False
+        report = self._get_report_from_name(report_name)
+        if not report or report.report_type != report_type:
+            return False
+        if self.env.context.get("ickab_skip_direct_print"):
+            return False
+        if not self.env.user.has_group("ickab_direct_print.group_direct_print_user"):
+            return False
+        if not self.env.company.ickab_direct_print_enabled or report.ickab_print_mode == "standard":
+            return False
+        ids = report._ickab_normalize_res_ids(res_ids)
+        if ids:
+            self.env[report.model].browse(ids).check_access("read")
+        result = report.report_action(ids, data=data or {})
+        # A report action means that the configured fallback must use Odoo's
+        # original browser download. Never execute it again from this handler.
+        if result and result.get("type") == "ir.actions.report":
+            return False
+        return result

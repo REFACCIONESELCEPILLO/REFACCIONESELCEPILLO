@@ -40,3 +40,15 @@ al Print Agent.
 - Los diseños de Label Studio y el formato fijo de Auto Part entregan geometría/datos; Direct Print decide la salida física.
 - Para lenguajes de etiqueta sin renderer nativo, Direct Print genera un PDF al tamaño físico exacto y utiliza el driver del sistema operativo cuando existe una cola compatible.
 - POS y EnviaYa podrán usar el punto interno `enqueue_payload`; sus integraciones concretas no forman parte de esta release porque no se proporcionó su código fuente.
+# Impresión desde el menú Imprimir de Odoo 18
+
+El manejador web de reportes envía los QWeb PDF y QWeb Text configurados en modo
+directo o preguntar al motor de ICKAB, incluyendo cotizaciones, albaranes,
+facturas y el reporte **Ticket de venta** de `module_1`. Los reportes en modo
+descarga estándar conservan la descarga de Odoo.
+
+El Ticket de venta de `module_1` es un PDF de 76 mm. En Ajustes > Técnico >
+Reportes > Reportes configure ese reporte en modo directo, tipo Ticket, con
+impresora y papel adecuados. Para una impresora ESC/POS que solo recibe datos
+RAW por TCP se necesita un reporte ESC/POS nativo; el PDF requiere una cola con
+controlador de Windows (o una impresora que acepte PDF nativamente).

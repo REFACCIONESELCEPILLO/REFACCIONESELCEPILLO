@@ -48,6 +48,11 @@ como en instalaciones on-premise.
         "views/print_help_views.xml",
         "views/print_menus.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "ickab_direct_print/static/src/js/report_handler.js",
+        ],
+    },
     "installable": True,
     "application": True,
     "auto_install": False,
