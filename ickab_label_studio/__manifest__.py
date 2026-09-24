@@ -16,7 +16,7 @@ de impresión de la solución.
     "maintainer": "ICKAB",
     "website": "https://ickab.mx",
     "depends": ["base", "web", "product", "ickab_direct_print"],
-    "external_dependencies": {"python": ["PIL"]},
+    "external_dependencies": {"python": ["Pillow"]},
     "data": [
         "security/label_studio_security.xml",
         "security/ir.model.access.csv",

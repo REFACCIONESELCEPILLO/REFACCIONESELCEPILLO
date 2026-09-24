@@ -24,7 +24,7 @@ como en instalaciones on-premise.
     "website": "https://ickab.mx",
     "license": "LGPL-3",
     "depends": ["base", "web"],
-    "external_dependencies": {"python": ["PIL", "reportlab"]},
+    "external_dependencies": {"python": ["Pillow", "reportlab"]},
     "data": [
         "security/print_security.xml",
         "security/ir.model.access.csv",
@@ -48,6 +48,11 @@ como en instalaciones on-premise.
         "views/print_help_views.xml",
         "views/print_menus.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "ickab_direct_print/static/src/js/report_handler.js",
+        ],
+    },
     "installable": True,
     "application": True,
     "auto_install": False,
