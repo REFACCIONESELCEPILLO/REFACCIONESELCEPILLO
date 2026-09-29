@@ -36,7 +36,7 @@ class IrActionsReport(models.Model):
 
         wizard = self.env["product.label.layout"].browse(data.get("layout_wizard")).exists()
         print_format = data.get("auto_part_label_format") or (
-            wizard.print_format if wizard else "auto_part_zpl_70_50"
+            wizard.print_format if wizard else "auto_part_zpl_100_50"
         )
         return self.env["sh.auto.part.vehicle.label.renderer"].build_print_source(
             records_with_qty, print_format

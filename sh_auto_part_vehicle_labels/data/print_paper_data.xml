@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="paper_label_100x50" model="ickab.print.paper">
+        <field name="name">Etiqueta 100 × 50 mm</field>
+        <field name="code">LABEL_100X50</field>
+        <field name="category">label</field>
+        <field name="width_mm">100</field>
+        <field name="height_mm">50</field>
+        <field name="orientation">landscape</field>
+        <field name="default_dpi">203</field>
+        <field name="sensor_mode">gap</field>
+        <field name="gap_mm">2.0</field>
+    </record>
+</odoo>

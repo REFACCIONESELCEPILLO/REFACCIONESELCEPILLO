@@ -9,7 +9,7 @@
             <xpath expr="//form/group" position="after">
                 <group col="1"
                        string="Vista previa"
-                       invisible="print_format not in ['auto_part_zpl_50_30', 'auto_part_zpl_70_50']">
+                       invisible="print_format not in ['auto_part_zpl_50_30', 'auto_part_zpl_100_50']">
                     <field name="label_preview_html" nolabel="1" readonly="1"/>
                 </group>
             </xpath>

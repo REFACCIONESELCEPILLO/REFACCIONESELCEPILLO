@@ -1,4 +1,4 @@
-Auto Part Vehicle Labels 18.0.3.3.0
+Auto Part Vehicle Labels 18.0.3.5.0
 ===================================
 
 Formato preestablecido de etiquetas de autopartes para Odoo 18.
@@ -31,7 +31,7 @@ Formatos
 --------
 
 * 50 x 30 mm: SKU, nombre y hasta 7 referencias OEM; sin código de barras.
-* 70 x 50 mm: SKU, nombre, hasta 8 referencias OEM y Code 128.
+* 100 x 50 mm: logo de compañía, SKU, nombre multilínea, hasta 6 referencias OEM y Code 128.
 * El DPI final siempre lo determina la impresora seleccionada en Direct Print.
 
 Integración
@@ -73,3 +73,23 @@ no altera GAP, sensor, dirección ni origen físico de la impresora.
 - Se elimina del camino de impresión la decisión ZPL/TSPL.
 - Direct Print elige renderer nativo o fallback PDF/driver según la impresora.
 - El preview y las exportaciones históricas permanecen disponibles sin convertirse en un motor paralelo de impresión.
+
+
+18.0.3.4.0
+------------
+- Sustituye el formato grande de 70x50 por el diseño solicitado de 100x50 mm.
+- Agrega logo de compañía de 29x11 mm, cabecera SKU, nombre multilínea y equivalencias OEM.
+- El código Code 128 ocupa un área de 51x10 mm en el bloque inferior derecho.
+
+
+18.0.3.4.1
+------------
+- Centra horizontalmente el código de barras de 51 mm en la etiqueta.
+- Aumenta a 3 mm y centra el número legible del código de barras.
+- Distribuye hasta 6 equivalencias en dos columnas para evitar superposiciones.
+
+
+18.0.3.5.0
+------------
+- Estandariza el formato 50x30 con logo, cabecera SKU, nombre multilínea y OEM en dos columnas.
+- Conserva el formato compacto sin código de barras.

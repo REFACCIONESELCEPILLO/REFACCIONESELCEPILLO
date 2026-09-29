@@ -14,5 +14,5 @@ msgid "Auto Part ZPL - 50 x 30 mm"
 msgstr "Auto Part ZPL - 50 x 30 mm"
 
 #. module: sh_auto_part_vehicle_labels
-msgid "Auto Part ZPL - 70 x 50 mm"
-msgstr "Auto Part ZPL - 70 x 50 mm"
+msgid "Auto Part ZPL - 100 x 50 mm"
+msgstr "Auto Part ZPL - 100 x 50 mm"

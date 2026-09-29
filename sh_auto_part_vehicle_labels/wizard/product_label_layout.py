@@ -10,11 +10,11 @@ class ProductLabelLayout(models.TransientModel):
     print_format = fields.Selection(
         selection_add=[
             ("auto_part_zpl_50_30", "Etiqueta de autoparte - 50 x 30 mm"),
-            ("auto_part_zpl_70_50", "Etiqueta de autoparte - 70 x 50 mm"),
+            ("auto_part_zpl_100_50", "Etiqueta de autoparte - 100 x 50 mm"),
         ],
         ondelete={
             "auto_part_zpl_50_30": "set default",
-            "auto_part_zpl_70_50": "set default",
+            "auto_part_zpl_100_50": "set default",
         },
     )
     # Legacy field kept to avoid breaking existing transient-view metadata.
@@ -57,7 +57,7 @@ class ProductLabelLayout(models.TransientModel):
         self.ensure_one()
         return self.print_format in {
             "auto_part_zpl_50_30",
-            "auto_part_zpl_70_50",
+            "auto_part_zpl_100_50",
         }
 
     def _get_label_source_records(self):
@@ -96,7 +96,7 @@ class ProductLabelLayout(models.TransientModel):
         data["auto_part_label_format"] = self.print_format
         paper_codes = {
             "auto_part_zpl_50_30": "LABEL_50X30",
-            "auto_part_zpl_70_50": "LABEL_70X50",
+            "auto_part_zpl_100_50": "LABEL_100X50",
         }
         data["ickab_paper_code"] = paper_codes.get(self.print_format)
         xml_id = "sh_auto_part_vehicle_labels.action_report_auto_part_label_zpl"

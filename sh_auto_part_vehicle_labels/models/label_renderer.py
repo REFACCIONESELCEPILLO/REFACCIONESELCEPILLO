@@ -24,58 +24,49 @@ class AutoPartVehicleLabelRenderer(models.AbstractModel):
     _description = "Auto Part Vehicle Label Renderer"
 
     FORMAT_50_30 = "auto_part_zpl_50_30"
-    FORMAT_70_50 = "auto_part_zpl_70_50"
+    FORMAT_100_50 = "auto_part_zpl_100_50"
 
     LAYOUTS = {
         FORMAT_50_30: {
             "label": "Etiqueta de autoparte - 50 x 30 mm",
             "width_mm": 50.0,
             "height_mm": 30.0,
-            # Physical acceptance on 4B-2054L (1, 3 and 10 labels) proved
-            # media advance is stable.  The remaining issue was purely visual:
-            # too little top safety margin and text sizes below practical
-            # readability.  Keep geometry canonical and use the lower unused
-            # half of the label instead of compensating with printer offsets.
-            "code": {"x": 0.8, "y": 5.45, "w": 48.4, "font_mm": 3.0},
+            "logo": {"x": 1.0, "y": 1.5, "w": 14.5, "h": 5.5},
+            "sku_label": {"x": 16.0, "y": 3.5, "w": 6.0, "font_mm": 1.8},
+            "code": {"x": 22.0, "y": 3.0, "w": 27.0, "font_mm": 2.6},
             "name": {
-                "x": 0.8, "y": 10.0, "w": 48.4,
-                "font_mm": 2.45, "max_lines": 2, "line_gap_mm": 2.85,
-                # Wrap against the real cell pitch of resident TSPL font 2
-                # with safety margin for compatible/cloned interpreters. This
-                # keeps the complete name visible on the physical 50x30 label
-                # instead of trusting proportional-font estimates.
+                "x": 1.0, "y": 8.5, "w": 48.0,
+                "font_mm": 2.2, "max_lines": 2, "line_gap_mm": 2.7,
                 "wrap_char_mm": 1.60,
             },
             "oem": {
-                "x": 0.8, "y": 16.4, "w": 48.4,
-                # With up to four OEM rows there is enough vertical room to
-                # use resident TSPL font 2 (physically legible). Dense labels
-                # automatically fall back to font 1 through the compact style.
-                "font_mm": 2.35, "max_rows": 7, "line_gap_mm": 2.80,
-                "compact_after": 4,
-                "compact_font_mm": 1.55,
-                "compact_line_gap_mm": 1.75,
+                "x": 1.0, "y": 15.0, "w": 23.0, "x2": 26.0,
+                "font_mm": 1.45, "max_rows": 4, "line_gap_mm": 2.5,
+                "columns": 2, "compact_after": 6,
+                "compact_font_mm": 1.2, "compact_line_gap_mm": 2.2,
             },
             "max_oem": 7,
             "barcode": None,
         },
-        FORMAT_70_50: {
-            "label": "Etiqueta de autoparte - 70 x 50 mm",
-            "width_mm": 70.0,
+        FORMAT_100_50: {
+            "label": "Etiqueta de autoparte - 100 x 50 mm",
+            "width_mm": 100.0,
             "height_mm": 50.0,
-            "code": {"x": 2.0, "y": 3.0, "w": 66.0, "font_mm": 2.5},
+            "logo": {"x": 2.0, "y": 3.0, "w": 29.0, "h": 11.0},
+            "sku_label": {"x": 32.0, "y": 7.0, "w": 11.0, "font_mm": 3.0},
+            "code": {"x": 43.0, "y": 6.0, "w": 55.0, "font_mm": 5.0},
             "name": {
-                "x": 2.0, "y": 10.5, "w": 66.0,
-                "font_mm": 2.0, "max_lines": 2, "line_gap_mm": 2.8,
+                "x": 2.0, "y": 16.0, "w": 96.0,
+                "font_mm": 3.0, "max_lines": 3, "line_gap_mm": 3.6,
             },
             "oem": {
-                "x": 2.0, "y": 18.5, "w": 31.0, "x2": 36.5,
-                "font_mm": 1.75, "max_rows": 4, "line_gap_mm": 3.0,
+                "x": 2.0, "y": 27.0, "w": 46.0, "x2": 52.0,
+                "font_mm": 1.8, "max_rows": 3, "line_gap_mm": 3.0,
                 "columns": 2,
             },
-            "max_oem": 8,
-            "barcode": {"x": 9.0, "y": 32.0, "w": 52.0, "h": 7.5},
-            "barcode_text": {"x": 2.0, "y": 41.0, "w": 66.0, "font_mm": 1.7},
+            "max_oem": 6,
+            "barcode": {"x": 24.5, "y": 35.0, "w": 51.0, "h": 10.0},
+            "barcode_text": {"x": 24.5, "y": 46.0, "w": 51.0, "font_mm": 3.0, "align": "C"},
         },
     }
 
@@ -92,7 +83,7 @@ class AutoPartVehicleLabelRenderer(models.AbstractModel):
     # ------------------------------------------------------------------
 
     def get_spec(self, print_format):
-        return self.LAYOUTS.get(print_format, self.LAYOUTS[self.FORMAT_70_50])
+        return self.LAYOUTS.get(print_format, self.LAYOUTS[self.FORMAT_100_50])
 
     def get_record_data(self, record):
         if record._name == "product.product":
@@ -120,6 +111,7 @@ class AutoPartVehicleLabelRenderer(models.AbstractModel):
             "name": str(name or "").strip(),
             "barcode": str(barcode or code or "").strip(),
             "oem": oem,
+            "logo": self.env.company.logo or False,
             "record": record,
             "template": template,
         }
@@ -139,10 +131,25 @@ class AutoPartVehicleLabelRenderer(models.AbstractModel):
             "elements": [],
         }
 
+        logo_spec = spec.get("logo")
+        if logo_spec and data.get("logo"):
+            plan["elements"].append({
+                "type": "image", "role": "logo",
+                "image_source_b64": data["logo"], **logo_spec,
+            })
+
         code = data.get("code") or "SIN SKU"
         c = spec["code"]
+        sku_label = spec.get("sku_label")
+        if sku_label:
+            plan["elements"].append({
+                "type": "text", "role": "sku_label", "text": "SKU:", **sku_label,
+            })
+            code_text = code
+        else:
+            code_text = f"SKU: {code}"
         plan["elements"].append({
-            "type": "text", "role": "code", "text": f"SKU: {code}", **c,
+            "type": "text", "role": "code", "text": code_text, **c,
         })
 
         name_spec = spec["name"]
@@ -222,7 +229,7 @@ class AutoPartVehicleLabelRenderer(models.AbstractModel):
                 item.update({
                     "value": str(element.get("text") or ""),
                     "font_mm": float(element.get("font_mm") or 2.0),
-                    "align": "L",
+                    "align": element.get("align", "L"),
                     "max_lines": 1,
                 })
             elif etype == "barcode":
@@ -231,6 +238,11 @@ class AutoPartVehicleLabelRenderer(models.AbstractModel):
                     "barcode_type": "code128",
                     "human_readable": False,
                 })
+            elif etype == "image":
+                source = element.get("image_source_b64") or ""
+                item["image_source_b64"] = (
+                    source.decode("ascii") if isinstance(source, bytes) else str(source)
+                )
             elements.append(item)
         return {
             "schema": "ickab.label.document/1",
@@ -313,14 +325,26 @@ class AutoPartVehicleLabelRenderer(models.AbstractModel):
         for element in plan["elements"]:
             if element["type"] == "text":
                 text = html.escape(element["text"])
+                centered = element.get("align") == "C"
+                text_x = element["x"] + element["w"] / 2.0 if centered else element["x"]
+                anchor = "middle" if centered else "start"
                 weight = "700" if element.get("role") == "code" else "600" if element.get("role") == "name" else "400"
                 nodes.append(
-                    f'<text x="{element["x"]}" y="{element["y"] + element["font_mm"]}" '
+                    f'<text x="{text_x}" y="{element["y"] + element["font_mm"]}" text-anchor="{anchor}" '
                     f'font-family="DejaVu Sans,Arial,sans-serif" font-size="{element["font_mm"]}" '
                     f'font-weight="{weight}">{text}</text>'
                 )
             elif element["type"] == "barcode":
                 nodes.append(self._preview_code128_svg(element["value"], element["x"], element["y"], element["w"], element["h"]))
+            elif element["type"] == "image" and element.get("image_source_b64"):
+                source = element["image_source_b64"]
+                if isinstance(source, bytes):
+                    source = source.decode("ascii")
+                nodes.append(
+                    f'<image x="{element["x"]}" y="{element["y"]}" '
+                    f'width="{element["w"]}" height="{element["h"]}" '
+                    f'preserveAspectRatio="xMidYMid meet" href="data:image/png;base64,{source}"/>'
+                )
         width, height = plan["width_mm"], plan["height_mm"]
         return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}" style="display:block;width:min(100%,{int(width*10)}px);height:auto;margin:auto;background:white;border:1px solid #9aa0a6;box-shadow:0 2px 8px rgba(0,0,0,.15);">{''.join(nodes)}</svg>'''
 

@@ -31,12 +31,12 @@ class ReportAutoPartVehicleLabelZpl(models.AbstractModel):
 
         wizard = self.env["product.label.layout"].browse(data.get("layout_wizard")).exists()
         print_format = data.get("auto_part_label_format") or (
-            wizard.print_format if wizard else "auto_part_zpl_70_50"
+            wizard.print_format if wizard else "auto_part_zpl_100_50"
         )
         # En descarga normal se respeta la resolución elegida en el wizard.
         # Cuando ICKAB Direct Print interviene, éste informa la resolución REAL
         # de la impresora seleccionada mediante ickab_target_dpi. Así preview y
-        # ZPL conservan las mismas medidas físicas (50x30 / 70x50 mm).
+        # ZPL conservan las mismas medidas físicas (50x30 / 100x50 mm).
         dpi = int(
             data.get("ickab_target_dpi")
             or data.get("label_dpi")
