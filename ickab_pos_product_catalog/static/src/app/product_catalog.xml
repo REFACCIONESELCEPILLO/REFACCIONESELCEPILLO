@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="ickab_pos_product_catalog.ProductScreen" t-inherit="point_of_sale.ProductScreen" t-inherit-mode="extension">
+        <xpath expr="//div[contains(@t-attf-class, 'product-list')]" position="attributes">
+            <attribute name="class" add="ickab-product-list" separator=" "/>
+            <attribute name="t-att-style">this.ickabCatalogStyle</attribute>
+        </xpath>
+    </t>
+    <t t-name="ickab_pos_product_catalog.ProductCard" t-inherit="point_of_sale.ProductCard" t-inherit-mode="extension">
+        <xpath expr="//article" position="attributes">
+            <attribute name="class" add="ickab-product-card" separator=" "/>
+        </xpath>
+        <xpath expr="//div[hasclass('product-content')]" position="after">
+            <div t-if="pos.config.ickab_catalog_show_price" class="ickab-product-price px-2 pb-2 fw-semibold" t-esc="ickabPrice"/>
+        </xpath>
+    </t>
+</templates>

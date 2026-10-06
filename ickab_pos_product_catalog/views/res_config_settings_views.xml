@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_catalog" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.ickab.pos.catalog</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@id='pos_interface_section']" position="after">
+                <block title="Catálogo y recibo" id="ickab_pos_catalog_section">
+                    <setting string="Tarjetas de producto" help="Configura el tamaño y densidad del catálogo.">
+                        <div class="content-group mt16">
+                            <div class="row"><label for="pos_ickab_catalog_card_width" class="col-lg-5 o_light_label"/><field name="pos_ickab_catalog_card_width"/></div>
+                            <div class="row"><label for="pos_ickab_catalog_image_height" class="col-lg-5 o_light_label"/><field name="pos_ickab_catalog_image_height"/></div>
+                            <div class="row"><label for="pos_ickab_catalog_image_fit" class="col-lg-5 o_light_label"/><field name="pos_ickab_catalog_image_fit"/></div>
+                            <div class="row"><label for="pos_ickab_catalog_font_size" class="col-lg-5 o_light_label"/><field name="pos_ickab_catalog_font_size"/></div>
+                            <div class="row"><label for="pos_ickab_catalog_name_lines" class="col-lg-5 o_light_label"/><field name="pos_ickab_catalog_name_lines"/></div>
+                            <div class="row"><field name="pos_ickab_catalog_show_price"/><label for="pos_ickab_catalog_show_price" class="fw-normal"/></div>
+                        </div>
+                    </setting>
+                    <setting string="Formato del recibo" help="Configura la vista previa y la impresión web.">
+                        <div class="content-group mt16">
+                            <div class="row"><label for="pos_ickab_receipt_paper_width" class="col-lg-5 o_light_label"/><field name="pos_ickab_receipt_paper_width"/></div>
+                            <div class="row"><label for="pos_ickab_receipt_font_size" class="col-lg-5 o_light_label"/><field name="pos_ickab_receipt_font_size"/></div>
+                            <div class="row"><label for="pos_ickab_receipt_line_height" class="col-lg-5 o_light_label"/><field name="pos_ickab_receipt_line_height"/></div>
+                            <div class="row"><label for="pos_ickab_receipt_logo_height" class="col-lg-5 o_light_label"/><field name="pos_ickab_receipt_logo_height"/></div>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,51 @@
+# -*- coding: utf-8 -*-
+################################################################################
+#
+#    Cybrosys Technologies Pvt. Ltd.
+#    Copyright (C) 2024-TODAY Cybrosys Technologies(<https://www.cybrosys.com>).
+#    Author: Adarsh K (odoo@cybrosys.com)
+#
+#    This program is free software: you can modify
+#    it under the terms of the GNU Affero General Public License (AGPL) as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+################################################################################
+from odoo import api, fields, models
+
+
+class ProductTemplate(models.Model):
+    """
+    This class extends the 'product.template' model to associate products with
+    brands.
+    """
+    _inherit = 'product.template'
+
+    brand_id = fields.Many2one(
+        'motorcycle.brand',
+        compute='_compute_brand_id',
+        inverse='_inverse_brand_id',
+        search='_search_brand_id',
+        string='Marca',
+        help="Auto-part brand assigned to the product variant",
+    )
+
+    def _compute_brand_id(self):
+        for template in self:
+            template.brand_id = template.product_variant_ids[:1].brand
+
+    def _inverse_brand_id(self):
+        for template in self:
+            template.product_variant_ids.write({'brand': template.brand_id.id})
+
+    @api.model
+    def _search_brand_id(self, operator, value):
+        return [('product_variant_ids.brand', operator, value)]
