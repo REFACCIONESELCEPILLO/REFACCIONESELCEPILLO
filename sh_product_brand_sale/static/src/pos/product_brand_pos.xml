@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="sh_product_brand_sale.ProductCard" t-inherit="point_of_sale.ProductCard" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('product-content')]" position="after">
+            <div t-if="props.product.brand_name" class="product-brand px-2 pb-1 text-center text-muted">
+                Marca: <t t-esc="props.product.brand_name"/>
+            </div>
+        </xpath>
+    </t>
+
+    <t t-name="sh_product_brand_sale.Orderline" t-inherit="point_of_sale.Orderline" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('product-name')]" position="inside">
+            <span t-if="line.productBrandName" class="product-brand d-block text-wrap">
+                Marca: <t t-esc="line.productBrandName"/>
+            </span>
+        </xpath>
+    </t>
+</templates>

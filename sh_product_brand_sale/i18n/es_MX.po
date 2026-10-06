@@ -1,0 +1,137 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#   * sh_product_brand_sale
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-30 00:00+0000\n"
+"PO-Revision-Date: 2026-09-30 00:00+0000\n"
+"Last-Translator: ICKAB <soporte@ickab.com>\n"
+"Language-Team: Spanish (Mexico)\n"
+"Language: es_MX\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: sh_product_brand_sale
+#: model:ir.module.module,name:sh_product_brand_sale.module_sh_product_brand_sale
+msgid "SH Product Brand in Sale"
+msgstr "Marca de producto en ventas"
+
+#. module: sh_product_brand_sale
+#: model:ir.module.module,summary:sh_product_brand_sale.module_sh_product_brand_sale
+msgid "Product Brand in sale for manage products"
+msgstr "Gestión de marcas de producto en ventas"
+
+#. module: sh_product_brand_sale
+#: model:ir.module.module,description:sh_product_brand_sale.module_sh_product_brand_sale
+msgid "This module allows the odoo users to manage their product brands easily"
+msgstr "Este módulo permite a los usuarios de Odoo administrar fácilmente las marcas de sus productos."
+
+#. module: sh_product_brand_sale
+#: model:ir.model,name:sh_product_brand_sale.model_product_brand
+#: model:ir.actions.act_window,name:sh_product_brand_sale.product_brand_action
+msgid "Product Brand"
+msgstr "Marca de producto"
+
+#. module: sh_product_brand_sale
+#: model:ir.ui.menu,name:sh_product_brand_sale.product_brand_menu
+msgid "Product Brands"
+msgstr "Marcas de producto"
+
+#. module: sh_product_brand_sale
+#: model:ir.model.fields,field_description:sh_product_brand_sale.field_product_brand__name
+msgid "Name"
+msgstr "Nombre"
+
+#. module: sh_product_brand_sale
+#: model:ir.model.fields,help:sh_product_brand_sale.field_product_brand__name
+msgid "Name of the brand"
+msgstr "Nombre de la marca"
+
+#. module: sh_product_brand_sale
+#: model:ir.model.fields,field_description:sh_product_brand_sale.field_product_brand__brand_image
+msgid "Image"
+msgstr "Imagen"
+
+#. module: sh_product_brand_sale
+#: model:ir.model.fields,help:sh_product_brand_sale.field_product_brand__brand_image
+msgid "Image of the brand"
+msgstr "Imagen de la marca"
+
+#. module: sh_product_brand_sale
+#: model:ir.model.fields,field_description:sh_product_brand_sale.field_product_brand__member_ids
+msgid "Members"
+msgstr "Productos"
+
+#. module: sh_product_brand_sale
+#: model:ir.model.fields,help:sh_product_brand_sale.field_product_brand__member_ids
+msgid "Products under the brand"
+msgstr "Productos asociados con la marca"
+
+#. module: sh_product_brand_sale
+#: model:ir.model.fields,field_description:sh_product_brand_sale.field_product_brand__product_count
+msgid "Product Count"
+msgstr "Cantidad de productos"
+
+#. module: sh_product_brand_sale
+#: model:ir.model.fields,help:sh_product_brand_sale.field_product_brand__product_count
+msgid "Total number of products in the brand"
+msgstr "Número total de productos asociados con la marca"
+
+#. module: sh_product_brand_sale
+#: model:ir.model.fields,field_description:sh_product_brand_sale.field_product_product__brand_name
+#: model_terms:ir.ui.view,arch_db:sh_product_brand_sale.product_brand_view_form
+msgid "Brand Name"
+msgstr "Nombre de la marca"
+
+#. module: sh_product_brand_sale
+#: model_terms:ir.ui.view,arch_db:sh_product_brand_sale.product_brand_view_form
+msgid "Products"
+msgstr "Productos"
+
+#. module: sh_product_brand_sale
+#: model:ir.model.fields,field_description:sh_product_brand_sale.field_product_template__brand_id
+#: model:ir.model.fields,field_description:sh_product_brand_sale.field_purchase_order_line__brand_id
+#: model:ir.model.fields,field_description:sh_product_brand_sale.field_sale_order_line__brand_id
+#: model:ir.model.fields,field_description:sh_product_brand_sale.field_sale_report__brand_id
+#: model:ir.model.fields,field_description:sh_product_brand_sale.field_stock_move__brand_id
+#: model:ir.model.fields,field_description:sh_product_brand_sale.field_stock_move_line__brand_id
+#: model_terms:ir.ui.view,arch_db:sh_product_brand_sale.product_product_list_brand
+#: model_terms:ir.ui.view,arch_db:sh_product_brand_sale.product_template_list_brand
+#: model_terms:ir.ui.view,arch_db:sh_product_brand_sale.purchase_order_form_line_brand
+#: model_terms:ir.ui.view,arch_db:sh_product_brand_sale.purchase_order_line_list_brand
+#: model_terms:ir.ui.view,arch_db:sh_product_brand_sale.sale_order_form_line_brand
+#: model_terms:ir.ui.view,arch_db:sh_product_brand_sale.stock_move_line_operation_brand
+#: model_terms:ir.ui.view,arch_db:sh_product_brand_sale.stock_picking_form_move_brand
+#: model_terms:ir.ui.view,arch_db:sh_product_brand_sale.view_order_product_search
+msgid "Brand"
+msgstr "Marca"
+
+#. module: sh_product_brand_sale
+#: model:ir.model.fields,help:sh_product_brand_sale.field_product_template__brand_id
+#: model:ir.model.fields,help:sh_product_brand_sale.field_product_product__brand_id
+msgid "Name of the brand which the product belongs to"
+msgstr "Nombre de la marca a la que pertenece el producto"
+
+#. module: sh_product_brand_sale
+#: model_terms:ir.ui.view,arch_db:sh_product_brand_sale.product_template_kanban_brand
+#: model_terms:ir.ui.view,arch_db:sh_product_brand_sale.product_product_kanban_brand
+#: code:addons/sh_product_brand_sale/static/src/pos/product_brand_pos.xml:0
+msgid "Brand:"
+msgstr "Marca:"
+
+#. module: sh_product_brand_sale
+msgid "Use auto-part brands across products, sales, purchases, inventory and POS"
+msgstr "Usa las marcas de autopartes en productos, ventas, compras, inventario y PdV"
+
+#. module: sh_product_brand_sale
+msgid "Extends the brand catalog provided by sh_auto_part_vehicle across Odoo business flows."
+msgstr "Extiende el catálogo de marcas de sh_auto_part_vehicle a los procesos de Odoo."
+
+#. module: sh_product_brand_sale
+msgid "Auto-part brand assigned to the product variant"
+msgstr "Marca de autoparte asignada a la variante del producto"
