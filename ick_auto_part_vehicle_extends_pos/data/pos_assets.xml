@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- sh_product_brand_sale and ickab_pos_product_catalog already own the
+         brand and product label. Avoid applying the legacy combined template
+         a second time in POS. -->
+    <record id="remove_legacy_auto_part_product_card" model="ir.asset">
+        <field name="name">Remove duplicated automotive POS card template</field>
+        <field name="bundle">point_of_sale._assets_pos</field>
+        <field name="directive">remove</field>
+        <field name="path">sh_auto_part_vehicle/static/src/pos/pos_product_card.xml</field>
+        <field name="sequence">100</field>
+        <field name="active" eval="False"/>
+    </record>
+</odoo>

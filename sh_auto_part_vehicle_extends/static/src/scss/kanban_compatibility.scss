@@ -1,0 +1,79 @@
+.o_ick_vehicle_kanban {
+    display: grid;
+    grid-template-columns: minmax(7rem, 1.05fr) minmax(7.5rem, .95fr);
+    gap: .25rem .65rem;
+    width: 100%;
+    min-width: 0;
+    align-items: start;
+
+    .o_ick_warehouse,
+    .o_ick_compatibility {
+        min-width: 0;
+        font-size: .68rem;
+        line-height: 1.18;
+    }
+
+    .o_ick_warehouse:only-child {
+        grid-column: 1 / -1;
+    }
+
+    .o_ick_warehouse .text-pre-wrap {
+        overflow: visible;
+        white-space: pre !important;
+        word-break: keep-all;
+    }
+
+    .o_ick_compatibility_codes {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: .1rem;
+        min-width: 0;
+    }
+
+    .o_ick_compatibility_link {
+        display: block;
+        width: 100%;
+        min-width: 0;
+        overflow: hidden;
+        color: var(--o-action, #017e84);
+        cursor: pointer;
+        text-decoration: underline;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .o_ick_more_compatibilities {
+        max-width: 100%;
+        overflow: hidden;
+        font-size: .68rem;
+        line-height: 1.1;
+        margin-top: .1rem;
+        padding: 0;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+.o_ick_compatibility_modal_list { display: grid; gap: .5rem; }
+.o_ick_compatibility_image { width: 48px; height: 48px; object-fit: contain; }
+
+.o_kanban_record:has(.o_ick_vehicle_kanban),
+.o_kanban_record:has(.o_ick_related_action) {
+    font-size: .72rem;
+    line-height: 1.2;
+
+    main {
+        min-width: 0;
+    }
+
+    .h5,
+    h5 {
+        font-size: .82rem;
+        line-height: 1.15;
+    }
+
+    aside {
+        max-width: 4.25rem;
+    }
+}

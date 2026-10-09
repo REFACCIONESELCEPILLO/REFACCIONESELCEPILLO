@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Columna "Marca" en productos y en documentos de venta, compra e
+         inventario. -->
+    <record id="product_template_list_brand" model="ir.ui.view">
+        <field name="name">product.template.list.brand</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <field name="default_code" position="after">
+                <field name="ickab_brand_id" string="Marca" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="product_template_kanban_brand" model="ir.ui.view">
+        <field name="name">product.template.kanban.brand</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_kanban_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//span[@t-if='record.default_code.value']" position="after">
+                <div t-if="record.ickab_brand_id.value" class="text-muted">
+                    Marca: <field name="ickab_brand_id"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_product_list_brand" model="ir.ui.view">
+        <field name="name">product.product.list.brand</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_product_tree_view"/>
+        <field name="arch" type="xml">
+            <field name="default_code" position="after">
+                <!-- Campo heredado de la variante: se renombra a ickab_brand_id en E3. -->
+                <field name="brand" string="Marca" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="product_product_kanban_brand" model="ir.ui.view">
+        <field name="name">product.product.kanban.brand</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_kanban_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//span[@t-if='record.default_code.value']" position="after">
+                <div t-if="record.brand.value" class="text-muted">
+                    Marca: <field name="brand"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="sale_order_form_line_brand" model="ir.ui.view">
+        <field name="name">sale.order.form.line.brand</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']/list//field[@name='product_id']" position="after">
+                <field name="ickab_brand_id" string="Marca" optional="show" readonly="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="purchase_order_form_line_brand" model="ir.ui.view">
+        <field name="name">purchase.order.form.line.brand</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']/list//field[@name='product_id']" position="after">
+                <field name="ickab_brand_id" string="Marca" optional="show" readonly="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="purchase_order_line_list_brand" model="ir.ui.view">
+        <field name="name">purchase.order.line.list.brand</field>
+        <field name="model">purchase.order.line</field>
+        <field name="inherit_id" ref="purchase.purchase_order_line_tree"/>
+        <field name="arch" type="xml">
+            <field name="product_id" position="after">
+                <field name="ickab_brand_id" string="Marca" optional="show" readonly="1"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="stock_picking_form_move_brand" model="ir.ui.view">
+        <field name="name">stock.picking.form.move.brand</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='move_ids_without_package']/list//field[@name='product_id']" position="after">
+                <field name="ickab_brand_id" string="Marca" optional="show" readonly="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="stock_move_line_operation_brand" model="ir.ui.view">
+        <field name="name">stock.move.line.operation.brand</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.view_stock_move_line_operation_tree"/>
+        <field name="arch" type="xml">
+            <field name="product_id" position="after">
+                <field name="ickab_brand_id" string="Marca" optional="show" readonly="1"/>
+            </field>
+        </field>
+    </record>
+</odoo>

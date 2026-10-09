@@ -27,10 +27,14 @@ class MotorcycleMotorcycle(models.Model):
                               related="mmodel_id.make_id",
                               store=True
                               )
-    product_ids = fields.Many2many('product.product',
-                                   'product_product_motorcycle_motorcycle_rel',
-                                   'motorcycle_id', 'product_id',
-                                   string='Products', copy=True)
+    product_ids = fields.Many2many(
+        "product.template",
+        "product_template_motorcycle_motorcycle_rel",
+        "motorcycle_id",
+        "product_tmpl_id",
+        string="Products",
+        copy=True,
+    )
     company_id = fields.Many2one(
         'res.company',
         string='Company'

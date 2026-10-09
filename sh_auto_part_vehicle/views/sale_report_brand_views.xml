@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!-- Agrupación por marca en el reporte de ventas (pivote). -->
+    <record id="sale_report_view_order_product_search_brand" model="ir.ui.view">
+        <field name="name">sale.report.view.search.inherit.product.brand.sale</field>
+        <field name="model">sale.report</field>
+        <field name="inherit_id" ref="sale.view_order_product_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='Customer']" position="after">
+                <filter string="Marca" name="Brand"
+                        context="{'group_by':'ickab_brand_id'}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

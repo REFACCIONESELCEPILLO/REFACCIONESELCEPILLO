@@ -23,6 +23,28 @@ class ShVehicleOEM(models.Model):
         string='Website'
     )
 
+    def ickab_get_compatible_product(self):
+        """Devuelve la pieza del catálogo que comparte el mismo código OEM."""
+        self.ensure_one()
+        if not self.name:
+            return self.env["product.template"]
+
+        matching_variants = self.env["product.product"].sudo().search([
+            ("default_code", "=", self.name),
+        ])
+        matching_templates = matching_variants.mapped("product_tmpl_id")
+        if self.product_id:
+            matching_templates -= self.product_id
+
+        website = self.env["website"].get_current_website()
+        if website:
+            matching_templates = matching_templates.filtered_domain(
+                website.sale_product_domain()
+            )
+
+        return matching_templates[:1]
+
+
 class ShProductSpecification(models.Model):
     _name = "sh.product.specification"
     _description = "Product Specification"

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="ick_auto_part_vehicle_extends_pos.ProductCardPreview"
+       t-inherit="point_of_sale.ProductCard" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('product-img')]" position="attributes">
+            <attribute name="t-on-pointerenter">showAutoImagePreview</attribute>
+            <attribute name="t-on-pointerleave">hideAutoImagePreview</attribute>
+        </xpath>
+        <xpath expr="//article" position="inside">
+            <div class="o_auto_card_preview_actions d-flex gap-1 px-1 pb-1 mt-auto">
+                <button t-if="props.imageUrl" type="button" class="btn btn-light btn-sm"
+                        title="Ampliar imagen" aria-label="Ampliar imagen"
+                        t-on-click.stop="() => this.openAutoProductPreview(false)"
+                        t-on-keypress.stop="() => {}">
+                    <i class="fa fa-search-plus"/>
+                </button>
+                <button type="button" class="btn btn-light btn-sm flex-grow-1"
+                        title="Ver especificaciones" aria-label="Ver especificaciones"
+                        t-on-click.stop="() => this.openAutoProductPreview(true)"
+                        t-on-keypress.stop="() => {}">
+                    <i class="fa fa-list-alt"/>
+                </button>
+            </div>
+            <t t-if="autoPreview.visible" t-portal="'body'">
+                <div class="o_auto_image_hover_preview" t-att-style="autoPreview.style">
+                    <img t-att-src="autoPreviewImageUrl" t-att-alt="props.name"/>
+                </div>
+            </t>
+        </xpath>
+    </t>
+    <t t-name="ick_auto_part_vehicle_extends_pos.ProductPreviewDialog">
+        <Dialog title="title" size="'xl'">
+            <div class="row g-3">
+                <div t-att-class="props.specifications ? 'col-12 col-md-5' : 'col-12'">
+                    <img class="o_auto_product_full_image" t-att-src="imageUrl"
+                         t-att-alt="props.product.display_name || props.product.name"/>
+                </div>
+                <div class="col-12 col-md-7" t-if="props.specifications">
+                    <div t-if="state.loading" class="text-muted p-3">
+                        <i class="fa fa-spinner fa-spin me-2"/>Consultando especificaciones…
+                    </div>
+                    <div t-elif="state.error" class="alert alert-danger" t-esc="state.error"/>
+                    <table t-elif="state.lines.length" class="table table-striped align-middle">
+                        <thead><tr><th>Etiqueta</th><th>Valor</th></tr></thead>
+                        <tbody>
+                            <tr t-foreach="state.lines" t-as="line" t-key="line.id">
+                                <td t-esc="line.label"/><td t-esc="line.value"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div t-else="" class="alert alert-info">Esta pieza no tiene especificaciones registradas.</div>
+                </div>
+            </div>
+            <t t-set-slot="footer"><button class="btn btn-secondary" t-on-click="props.close">Cerrar</button></t>
+        </Dialog>
+    </t>
+</templates>

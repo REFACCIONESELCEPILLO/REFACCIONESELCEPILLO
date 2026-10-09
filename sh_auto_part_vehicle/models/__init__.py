@@ -13,6 +13,10 @@ from . import engine_model
 from . import brand_model
 from . import product_type_model
 from . import transmission_model
-from . import res_config_settings
 from . import vehicle_eom
 from . import sale_order
+from . import purchase_order
+from . import stock_move
+from . import sale_report
+from . import pos_config
+from . import res_config_settings

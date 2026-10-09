@@ -37,7 +37,7 @@ class ProductTemplate(models.Model):
             for warehouse, __parent_path in warehouse_data:
                 free_qty = quantities[product.id][warehouse.id]['free_quantity']
                 if free_qty > 0:
-                    lines.append('%s: %.3f %s' % (
+                    lines.append('%s: %.0f %s' % (
                         warehouse.display_name,
                         free_qty,
                         product.uom_id.name,

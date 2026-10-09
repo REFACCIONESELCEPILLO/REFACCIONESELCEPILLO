@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="ick_auto_part_vehicle_extends_sale.StockDialog">
+        <Dialog title="'Disponibilidad por almacén'" size="'lg'">
+            <div t-if="state.loading" class="py-5 text-center text-muted">
+                <i class="fa fa-spinner fa-spin me-2"/>Consultando existencias…
+            </div>
+            <div t-elif="state.error" class="alert alert-danger mb-0" t-esc="state.error"/>
+            <t t-elif="state.data">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <img t-att-src="state.data.product.image_url" class="o_auto_compat_product_img"
+                         t-att-alt="state.data.product.name"/>
+                    <div>
+                        <div class="fw-bold" t-esc="state.data.product.name"/>
+                        <div class="small text-muted" t-esc="state.data.product.default_code"/>
+                    </div>
+                </div>
+                <div class="table-responsive border rounded" t-if="state.data.warehouses.length">
+                    <table class="table table-sm table-hover align-middle mb-0">
+                        <thead class="table-light"><tr><th>Almacén</th><th class="text-end">Disponible para venta</th><th>UdM</th></tr></thead>
+                        <tbody>
+                            <tr t-foreach="state.data.warehouses" t-as="warehouse" t-key="warehouse.id">
+                                <td t-esc="warehouse.name"/>
+                                <td class="text-end fw-semibold" t-att-class="{'text-success': warehouse.available &gt; 0, 'text-danger': warehouse.available &lt;= 0}" t-esc="warehouse.available"/>
+                                <td t-esc="warehouse.uom"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div t-else="" class="alert alert-info mb-0">No existen cantidades registradas en almacenes internos.</div>
+            </t>
+            <t t-set-slot="footer"><button class="btn btn-secondary" t-on-click="props.close">Cerrar</button></t>
+        </Dialog>
+    </t>
+</templates>

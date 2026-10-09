@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="ick_auto_part_vehicle_extends_sale.CompatibilityDialog">
+        <Dialog title="'Compatibilidad automotriz'" size="'xl'">
+            <div t-if="state.loading" class="py-5 text-center text-muted">
+                <i class="fa fa-spinner fa-spin me-2"/>Consultando aplicaciones…
+            </div>
+            <div t-elif="state.error" class="alert alert-danger mb-0" t-esc="state.error"/>
+            <t t-elif="state.data">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <img t-att-src="state.data.product.image_url" class="o_auto_compat_product_img"
+                         t-att-alt="state.data.product.name"/>
+                    <div class="min-w-0">
+                        <div class="fw-bold text-truncate" t-esc="state.data.product.name"/>
+                        <div class="text-muted small">
+                            <span t-if="state.data.product.default_code" t-esc="state.data.product.default_code"/>
+                            <span t-if="state.data.product.brand" class="ms-2" t-esc="state.data.product.brand"/>
+                        </div>
+                    </div>
+                    <span class="badge text-bg-primary ms-auto">
+                        <t t-esc="state.data.application_count"/> aplicaciones
+                    </span>
+                </div>
+
+                <div class="table-responsive border rounded" t-if="state.data.applications.length">
+                    <table class="table table-sm table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr><th>Armadora</th><th>Modelo</th><th>Tipo</th><th>Años</th><th>Motor</th><th>Transmisión</th><th>Grado</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="state.data.applications" t-as="app" t-key="app.id">
+                                <td t-esc="app.make"/><td t-esc="app.model"/><td t-esc="app.type"/>
+                                <td><t t-esc="app.year_from"/>–<t t-esc="app.year_to"/></td>
+                                <td t-esc="app.engines"/><td t-esc="app.transmissions"/><td t-esc="app.grades"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div t-else="" class="alert alert-info">Este producto no tiene aplicaciones registradas.</div>
+                <div t-if="state.data.truncated" class="small text-muted mt-2">
+                    Se muestran las primeras <t t-esc="state.data.applications.length"/> aplicaciones.
+                </div>
+
+                <div t-if="state.data.oem.length" class="mt-3">
+                    <h6 class="mb-2">Códigos OEM</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge text-bg-light border" t-foreach="state.data.oem" t-as="oem" t-key="oem.id">
+                            <t t-if="oem.brand"><t t-esc="oem.brand"/>: </t><t t-esc="oem.code"/>
+                        </span>
+                    </div>
+                </div>
+            </t>
+            <t t-set-slot="footer"><button class="btn btn-secondary" t-on-click="props.close">Cerrar</button></t>
+        </Dialog>
+    </t>
+</templates>

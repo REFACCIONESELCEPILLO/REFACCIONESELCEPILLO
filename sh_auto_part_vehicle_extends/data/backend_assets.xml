@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="asset_kanban_compatibility_js" model="ir.asset">
+        <field name="name">Auto Parts Kanban Compatibility JS</field>
+        <field name="bundle">web.assets_backend</field>
+        <field name="directive">append</field>
+        <field name="path">sh_auto_part_vehicle_extends/static/src/js/kanban_compatibility.js</field>
+        <field name="sequence" eval="90"/>
+    </record>
+    <record id="asset_kanban_compatibility_xml" model="ir.asset">
+        <field name="name">Auto Parts Kanban Compatibility XML</field>
+        <field name="bundle">web.assets_backend</field>
+        <field name="directive">append</field>
+        <field name="path">sh_auto_part_vehicle_extends/static/src/xml/kanban_compatibility.xml</field>
+        <field name="sequence" eval="90"/>
+    </record>
+    <record id="asset_kanban_compatibility_scss" model="ir.asset">
+        <field name="name">Auto Parts Kanban Compatibility SCSS</field>
+        <field name="bundle">web.assets_backend</field>
+        <field name="directive">append</field>
+        <field name="path">sh_auto_part_vehicle_extends/static/src/scss/kanban_compatibility.scss</field>
+        <field name="sequence" eval="90"/>
+    </record>
+</odoo>

@@ -40,12 +40,12 @@ class ProductTemplate(models.Model):
 
     def _compute_brand_id(self):
         for template in self:
-            template.brand_id = template.product_variant_ids[:1].brand
+            template.brand_id = template.brand
 
     def _inverse_brand_id(self):
         for template in self:
-            template.product_variant_ids.write({'brand': template.brand_id.id})
+            template.brand = template.brand_id
 
     @api.model
     def _search_brand_id(self, operator, value):
-        return [('product_variant_ids.brand', operator, value)]
+        return [('brand', operator, value)]

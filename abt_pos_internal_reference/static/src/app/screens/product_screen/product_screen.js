@@ -5,7 +5,10 @@ patch(ProductScreen.prototype, {
     getProductName(product) {
         const name = super.getProductName(...arguments);
         const reference = product.default_code;
-        const mode = this.pos.config.product_label_mode || "both";
+        const mode =
+            this.pos.config.ickab_pos_product_label_mode ||
+            this.pos.config.product_label_mode ||
+            "both";
         if (mode === "reference") {
             return reference || name;
         }

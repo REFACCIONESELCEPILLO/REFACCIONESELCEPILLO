@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <!-- Intentionally empty. Product card and order-line presentation are
+         owned by sh_product_brand_sale and ickab_pos_product_catalog. -->
+</templates>

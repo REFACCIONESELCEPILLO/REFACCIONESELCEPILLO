@@ -32,6 +32,11 @@ class ProductTemplate(models.Model):
         compute="_compute_ick_oem_codes_kanban",
         compute_sudo=True,
     )
+    ick_kanban_compatibility_codes = fields.Json(
+        string="Códigos de compatibilidad kanban",
+        compute="_compute_ick_kanban_compatibility_codes",
+        compute_sudo=True,
+    )
 
     @api.depends("product_variant_ids.default_code")
     def _compute_ick_default_code(self):
@@ -83,6 +88,76 @@ class ProductTemplate(models.Model):
                 else:
                     lines.append(oem_line.name)
             product.ick_oem_codes_kanban = "\n".join(lines)
+
+    @api.depends("vehicle_oem_lines.name", "vehicle_oem_lines.brand_id")
+    def _compute_ick_kanban_compatibility_codes(self):
+        for template in self:
+            template.ick_kanban_compatibility_codes = [
+                {
+                    "id": line.id,
+                    "code": line.name,
+                    "brand": line.brand_id.name or "",
+                    "label": "%s: %s" % (line.brand_id.name, line.name)
+                    if line.brand_id else line.name,
+                }
+                for line in template.vehicle_oem_lines
+                if line.name
+            ]
+
+    def get_ick_kanban_compatibility(self, oem_line_id=False):
+        self.ensure_one()
+        self.check_access("read")
+        line = self.vehicle_oem_lines.filtered(
+            lambda item: item.id == oem_line_id
+        )[:1]
+        products = self.env["product.product"]
+        if line and line.name:
+            products = products.search([
+                ("default_code", "=", line.name.strip()),
+                "|",
+                ("company_id", "in", self.env.companies.ids),
+                ("company_id", "=", False),
+            ])
+        rows = []
+        for product in products:
+            vehicles = product.motorcycle_ids.filtered(
+                lambda vehicle: not vehicle.company_id
+                or vehicle.company_id in self.env.companies
+            )
+            product_values = {
+                "id": product.id,
+                "name": product.display_name,
+                "sku": product.default_code or "",
+                "brand": product.brand.name or "",
+                "image_url": "/web/image/product.product/%s/image_128" % product.id,
+            }
+            if vehicles:
+                for vehicle in vehicles:
+                    rows.append({
+                        "key": "%s-%s" % (product.id, vehicle.id),
+                        "product": product_values,
+                        "vehicle": {
+                            "id": vehicle.id,
+                            "make": vehicle.make_id.name or "",
+                            "model": vehicle.mmodel_id.name or "",
+                            "type": vehicle.type_id.name or "",
+                            "year_from": vehicle.year_id.name or "",
+                            "year_to": vehicle.end_year_id.name or "",
+                        },
+                    })
+            else:
+                rows.append({
+                    "key": "%s-none" % product.id,
+                    "product": product_values,
+                    "vehicle": False,
+                })
+        return {
+            "title": line.name if line else self.name,
+            "code": line.name if line else "",
+            "code_brand": line.brand_id.name if line and line.brand_id else "",
+            "rows": rows,
+            "product_count": len(products),
+        }
 
     @api.model
     def _search_get_detail(self, website, order, options):

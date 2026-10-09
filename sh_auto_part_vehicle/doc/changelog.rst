@@ -68,3 +68,12 @@ Version 18.0.1 (Date : 12 September 2024)
 18.0.9.0.3 (Date: 13th March 2026)
 ================================
 [FIXED] User access rights changes 
+
+18.0.10.0.0 (Date: 10th June 2026)
+=================================
+[ADD] Integración en un único módulo del catálogo de vehículos y OEM, la
+      disponibilidad web con búsqueda por OEM, la marca de autoparte
+      (ventas/compras/inventario/POS), la identificación del producto en el POS
+      y el catálogo/recibo del POS.
+[UPDATE] Identificadores propios normalizados al prefijo ickab_*.
+[ADD] Documentación del componente en doc/ (COMPONENT.rst).

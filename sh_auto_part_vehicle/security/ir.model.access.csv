@@ -51,5 +51,3 @@ sh_product_specification_manager,sh.product.specification.manager,model_sh_produ
 sh_product_specification_public,sh.product.specification.public,model_sh_product_specification,base.group_public,1,1,1,1
 sh_product_specification,sh.product.specification,model_sh_product_specification,group_sh_motorcycle_user,1,0,0,0
 
-
-

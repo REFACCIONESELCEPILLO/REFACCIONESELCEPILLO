@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="product_warehouse_availability_sale_list" model="ir.ui.view">
+        <field name="name">product.warehouse.availability.sale.list</field>
+        <field name="model">product.warehouse.availability</field>
+        <field name="arch" type="xml">
+            <list string="Disponibilidad por almacén" create="0" edit="0" delete="0">
+                <field name="warehouse_id" string="Almacén"/>
+                <field name="free_quantity" string="Disponible para venta"
+                       sum="Total disponible"/>
+                <field name="product_uom_id" string="UdM"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_order_form_ick_auto_part_vehicle_extends_sale" model="ir.ui.view">
+        <field name="name">sale.order.form.ick.auto.part.vehicle.sale.extends</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+
+            <!-- Estado técnico que alimenta el panel contextual. -->
+            <xpath expr="//group[@name='order_details']" position="inside">
+                <field name="x_auto_context_product_id" invisible="1"/>
+                <field name="x_auto_panel" invisible="1"/>
+            </xpath>
+
+            <!-- La columna Marca la publica sh_product_brand_sale. Aquí sólo
+                 agregamos el selector del producto activo del asistente. -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_template_id']"
+                   position="attributes">
+                <attribute name="widget">ick_auto_sale_product_many2one</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_template_id']"
+                   position="after">
+                <button name="action_auto_set_context_product"
+                        type="object"
+                        icon="fa-crosshairs"
+                        title="Usar como producto activo del asistente"
+                        invisible="not product_id or display_type"/>
+            </xpath>
+
+            <!-- Disponibilidad vendible en la propia línea, con desglose por
+                 almacén. No utiliza qty_available (A mano). -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom']"
+                   position="after">
+                <field name="x_auto_available_qty" string="Disponibilidad"
+                       readonly="1" optional="show"/>
+                <button name="action_auto_open_warehouse_availability"
+                        type="object"
+                        icon="fa-cubes"
+                        title="Disponibilidad por almacén"
+                        invisible="not product_id or display_type"/>
+            </xpath>
+
+            <!-- Marcador reemplazado por el componente OWL del panel (ver
+                 static/src/js/form_compiler.js). Se declara dentro del sheet
+                 para garantizar su compilación; el compilador lo mueve después
+                 al fondo del formulario como columna derecha. -->
+            <xpath expr="//sheet" position="inside">
+                <div class="o_elcepillo_auto_panel" name="elcepillo_auto_panel"/>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>
