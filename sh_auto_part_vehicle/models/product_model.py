@@ -67,27 +67,27 @@ class ProductTemplate(models.Model):
         'sh.product.specification', 'product_id', string='Specification Lines', copy=True)
 
     ickab_default_code = fields.Char(
-        string="SKU",
+        string="Referencia interna de autoparte",
         compute="_compute_ickab_default_code",
         compute_sudo=True,
     )
     ickab_website_free_qty = fields.Float(
-        string="Disponible libre en almacenes",
+        string="Cantidad libre de autopartes en almacenes",
         compute="_compute_ickab_website_availability",
         compute_sudo=True,
     )
     ickab_website_has_free_stock = fields.Boolean(
-        string="Tiene disponibilidad libre",
+        string="Autoparte con disponibilidad libre",
         compute="_compute_ickab_website_availability",
         compute_sudo=True,
     )
     ickab_website_availability_text = fields.Text(
-        string="Disponibilidad web",
+        string="Detalle de disponibilidad web de autopartes",
         compute="_compute_ickab_website_availability",
         compute_sudo=True,
     )
     ickab_oem_codes_kanban = fields.Text(
-        string="Compatibilidad OEM",
+        string="Códigos OEM de autoparte",
         compute="_compute_ickab_oem_codes_kanban",
         compute_sudo=True,
     )
@@ -96,7 +96,7 @@ class ProductTemplate(models.Model):
         compute="_compute_ickab_brand_id",
         inverse="_inverse_ickab_brand_id",
         search="_search_ickab_brand_id",
-        string="Marca",
+        string="Marca de autoparte",
         help="Marca de autoparte asignada a la variante del producto",
     )
 
@@ -570,7 +570,7 @@ class ProductProduct(models.Model):
 
     ickab_brand_name = fields.Char(
         related="brand.name",
-        string="Marca",
+        string="Nombre de marca de autoparte",
         readonly=True,
     )
 

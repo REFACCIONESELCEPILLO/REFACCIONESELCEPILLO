@@ -7,7 +7,7 @@ class SaleReport(models.Model):
     _inherit = "sale.report"
 
     ickab_brand_id = fields.Many2one(
-        "motorcycle.brand", string="Marca", help="Marca",
+        "motorcycle.brand", string="Marca de autoparte", help="Marca",
     )
 
     def _select_additional_fields(self):
