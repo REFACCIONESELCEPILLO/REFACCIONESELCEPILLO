@@ -26,7 +26,6 @@ export class AutoPartsPanel extends Component {
     };
 
     setup() {
-        this.orm = useService("orm");
         this.dialog = useService("dialog");
         this.notification = useService("notification");
         this.state = useState({ addingProductId: false });
@@ -115,37 +114,46 @@ export class AutoPartsPanel extends Component {
      * @param {MouseEvent} ev
      */
     async onAdd(ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
         const productId = parseInt(ev.currentTarget.dataset.productId, 10);
         const record = this.props.record;
-        if (!record.resId) {
-            this.notification.add(
-                "Guarda la cotización antes de agregar productos.",
-                { type: "warning" }
-            );
+        if (this.state.addingProductId) {
             return;
         }
-        if (this.state.addingProductId) {
+        const addedProduct = this.sections
+            .flatMap((section) => section.items)
+            .find((product) => product.id === productId);
+        if (!addedProduct) {
+            this.notification.add("El producto sugerido ya no está disponible.", {
+                type: "warning",
+            });
             return;
         }
         this.state.addingProductId = productId;
         try {
-            await record.save();
-            await this.orm.call("sale.order", "action_auto_add_product", [
-                [record.resId],
-                productId,
-            ]);
-            await record.load();
-            const addedProduct = this.sections
-                .flatMap((section) => section.items)
-                .find((product) => product.id === productId);
-            await record.update({
-                x_auto_context_product_id: [
-                    productId,
-                    addedProduct?.name || "",
-                ],
-            });
-            await record.save();
-            this.notification.add("Producto agregado a la cotización.", {
+            const orderLines = record.data.order_line;
+            await orderLines.leaveEditMode();
+            const existingLine = orderLines.records.find(
+                (line) =>
+                    !line.data.display_type &&
+                    line.data.product_id?.[0] === productId
+            );
+            if (existingLine) {
+                await existingLine.update({
+                    product_uom_qty: (existingLine.data.product_uom_qty || 0) + 1,
+                });
+            } else {
+                const line = await orderLines.addNewRecord({
+                    position: "bottom",
+                    mode: "readonly",
+                });
+                await line.update({
+                    product_id: [productId, addedProduct.name || ""],
+                    product_uom_qty: 1,
+                });
+            }
+            this.notification.add("Producto agregado. La cotización continúa sin guardar.", {
                 type: "success",
             });
         } catch (error) {

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ICK Auto Part Vehicle Extends Sale',
-    'version': '18.0.3.4.1',
+    'version': '18.0.3.5.1',
     'summary': 'Panel lateral de refacciones y accesorios para cotizaciones '
                'de autopartes',
     'description': """
