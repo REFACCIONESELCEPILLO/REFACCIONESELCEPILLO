@@ -1,6 +1,6 @@
 {
     "name": "POS Internal References",
-    "version": "18.0.2.0.0",
+    "version": "18.0.2.0.1",
     "author": "AskByte Technolab; adapted by ICKAB",
     "summary": "Configurable product identification in Point of Sale",
     "category": "Point of Sale",

@@ -8,7 +8,7 @@ class StockMove(models.Model):
 
     ickab_brand_id = fields.Many2one(
         related="product_id.brand",
-        string="Marca",
+        string="Marca de autoparte",
         readonly=True,
     )
 
@@ -18,6 +18,6 @@ class StockMoveLine(models.Model):
 
     ickab_brand_id = fields.Many2one(
         related="product_id.brand",
-        string="Marca",
+        string="Marca de autoparte",
         readonly=True,
     )

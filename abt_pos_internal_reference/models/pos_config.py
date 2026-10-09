@@ -6,7 +6,7 @@ class PosConfig(models.Model):
 
     product_label_mode = fields.Selection(
         related="ickab_pos_product_label_mode",
-        string="Identificación del producto en POS",
+        string="Presentación del producto en POS",
         readonly=False,
     )
 
@@ -16,5 +16,6 @@ class ResConfigSettings(models.TransientModel):
 
     pos_product_label_mode = fields.Selection(
         related="pos_config_id.product_label_mode",
+        string="Presentación del producto en POS",
         readonly=False,
     )
