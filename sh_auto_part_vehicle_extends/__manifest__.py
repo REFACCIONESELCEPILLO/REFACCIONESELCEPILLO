@@ -6,7 +6,7 @@
 Extiende All In One Auto Parts Management con reglas propias de Ickab:
 SKU en tienda, busqueda por OEM y cintillos de disponibilidad por almacen.
     """,
-    "version": "18.0.1.0.0",
+    "version": "18.0.1.2.1",
     "author": "Ickab",
     "category": "Website/eCommerce",
     "license": "LGPL-3",
@@ -18,10 +18,16 @@ SKU en tienda, busqueda por OEM y cintillos de disponibilidad por almacen.
         "stock",
     ],
     "data": [
+        "data/backend_assets.xml",
         "views/product_template_views.xml",
         "views/website_sale_templates.xml",
     ],
     "assets": {
+        "web.assets_backend": [
+            "sh_auto_part_vehicle_extends/static/src/js/kanban_compatibility.js",
+            "sh_auto_part_vehicle_extends/static/src/xml/kanban_compatibility.xml",
+            "sh_auto_part_vehicle_extends/static/src/scss/kanban_compatibility.scss",
+        ],
         "web.assets_frontend": [
             "sh_auto_part_vehicle_extends/static/src/scss/website_sale.scss",
         ],

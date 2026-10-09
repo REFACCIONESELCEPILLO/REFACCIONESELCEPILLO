@@ -20,22 +20,10 @@ class MotorCycleWebsiteSale(WebsiteSale):
             product, category, search, **kwargs)
 
         vehicles = request.env['motorcycle.motorcycle']
-        vehicles_ids = []
-        sh_is_common_product = False
-        if product and product.product_variant_id:
-            sh_is_common_product = product.product_variant_id.sh_is_common_product
+        sh_is_common_product = product.sh_is_common_product if product else False
 
-        if product and product.product_variant_ids:
-            for product_variant in product.product_variant_ids:
-                if product_variant.motorcycle_ids:
-                    vehicles_ids += product_variant.motorcycle_ids.ids
-            if vehicles_ids:
-                # To Make List Unique
-                # insert the list to the set
-                list_set = set(vehicles_ids)
-                # convert the set to the list
-                vehicles_ids = (list(list_set))
-            vehicles = vehicles.browse(vehicles_ids).sorted(
+        if product:
+            vehicles = product.motorcycle_ids.sorted(
                 key=lambda r: r.make_id.id or 0)
 
         values['vehicles'] = vehicles
@@ -717,6 +705,6 @@ class sh_motorcycle(http.Controller):
                   'mmodel_id', 'year_id', 'end_year_id']
 
         data = {
-            'vehicles': product_id.motorcycle_ids.read(fields),
+            'vehicles': product_id.product_tmpl_id.motorcycle_ids.read(fields),
         }
         return data

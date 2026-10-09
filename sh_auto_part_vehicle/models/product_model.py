@@ -3,6 +3,7 @@
 
 import logging
 from odoo import fields, models, api
+from odoo.osv import expression
 
 _logger = logging.getLogger(__name__)
 
@@ -10,12 +11,94 @@ _logger = logging.getLogger(__name__)
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 
+    # Vehicle compatibility describes the product itself, not an individual
+    # variant. Keep its canonical data on product.template.
+    motorcycle_ids = fields.Many2many(
+        "motorcycle.motorcycle",
+        "product_template_motorcycle_motorcycle_rel",
+        "product_tmpl_id",
+        "motorcycle_id",
+        string="Auto Parts",
+        copy=True,
+    )
+    sh_is_common_product = fields.Boolean(string="Common Products?")
+    garde = fields.Many2many(
+        "motorcycle.garde",
+        "motorcycle_garde_product_template_rel",
+        "product_tmpl_id",
+        "motorcycle_garde_id",
+        string="Garde",
+    )
+    engine = fields.Many2many(
+        "motorcycle.engine",
+        "motorcycle_engine_product_template_rel",
+        "product_tmpl_id",
+        "motorcycle_engine_id",
+        string="Engine",
+    )
+    product_type = fields.Many2many(
+        "motorcycle.product.type",
+        "motorcycle_product_type_product_template_rel",
+        "product_tmpl_id",
+        "motorcycle_product_type_id",
+        string="Vehicle Product Type",
+    )
+    brand = fields.Many2one("motorcycle.brand", string="Vehicle Brand")
+    made_in = fields.Many2one("res.country", string="Made In")
+    transmission_ids = fields.Many2many(
+        "motorcycle.transmission",
+        "motorcycle_transmission_product_template_rel",
+        "product_tmpl_id",
+        "motorcycle_transmission_id",
+        string="Transmission",
+    )
+
+    @api.onchange("sh_is_common_product")
+    def _onchange_sh_is_common_product(self):
+        for template in self:
+            if template.sh_is_common_product:
+                template.motorcycle_ids = False
+
     optional_product_ids = fields.Many2many(
         'product.template', 'sh_product_optional_rel', 'sh_product_tmpl_id', 'sh_optional_product_tmpl_id', string='Optional Products')
     vehicle_oem_lines = fields.One2many(
         'sh.vehicle.oem', 'product_id', string='Vehicle OEM Lines', copy=True)
     specification_lines = fields.One2many(
         'sh.product.specification', 'product_id', string='Specification Lines', copy=True)
+
+    ickab_default_code = fields.Char(
+        string="SKU",
+        compute="_compute_ickab_default_code",
+        compute_sudo=True,
+    )
+    ickab_website_free_qty = fields.Float(
+        string="Disponible libre en almacenes",
+        compute="_compute_ickab_website_availability",
+        compute_sudo=True,
+    )
+    ickab_website_has_free_stock = fields.Boolean(
+        string="Tiene disponibilidad libre",
+        compute="_compute_ickab_website_availability",
+        compute_sudo=True,
+    )
+    ickab_website_availability_text = fields.Text(
+        string="Disponibilidad web",
+        compute="_compute_ickab_website_availability",
+        compute_sudo=True,
+    )
+    ickab_oem_codes_kanban = fields.Text(
+        string="Compatibilidad OEM",
+        compute="_compute_ickab_oem_codes_kanban",
+        compute_sudo=True,
+    )
+    ickab_brand_id = fields.Many2one(
+        "motorcycle.brand",
+        compute="_compute_ickab_brand_id",
+        inverse="_inverse_ickab_brand_id",
+        search="_search_ickab_brand_id",
+        string="Marca",
+        help="Marca de autoparte asignada a la variante del producto",
+    )
 
     @api.model
     def _get_type_list(self):
@@ -286,14 +369,12 @@ class ProductTemplate(models.Model):
                 for motorcycle in search_motorcycles:
                     if motorcycle.product_ids:
                         for product in motorcycle.product_ids:
-                            if product.product_tmpl_id:
-                                product_tmpl_id_list.append(
-                                    product.product_tmpl_id.id)
+                            product_tmpl_id_list.append(product.id)
 
                 # ------------------
                 # Universal Products
                 universal_products = self.env['product.product'].search([
-                    ('sh_is_common_product', '=', True)
+                    ('product_tmpl_id.sh_is_common_product', '=', True)
                 ])
 
                 product_tmpl_id_list += universal_products.mapped(
@@ -333,7 +414,7 @@ class ProductTemplate(models.Model):
             'list_sh_shop_product_brands', [])
         if list_sh_shop_product_brands:
             base_domain.append(
-                [('product_variant_ids.brand', 'in', list_sh_shop_product_brands)])
+                [('brand', 'in', list_sh_shop_product_brands)])
             result.update({'base_domain': base_domain})
 
         # COUNTRY
@@ -341,7 +422,7 @@ class ProductTemplate(models.Model):
             'list_sh_shop_product_made_in', [])
         if list_sh_shop_product_made_in:
             base_domain.append(
-                [('product_variant_ids.made_in', 'in', list_sh_shop_product_made_in)])
+                [('made_in', 'in', list_sh_shop_product_made_in)])
             result.update({'base_domain': base_domain})
 
         # GARDE
@@ -349,7 +430,7 @@ class ProductTemplate(models.Model):
             'list_sh_shop_product_garde', [])
         if list_sh_shop_product_garde:
             base_domain.append(
-                [('product_variant_ids.garde', 'in', list_sh_shop_product_garde)])
+                [('garde', 'in', list_sh_shop_product_garde)])
             result.update({'base_domain': base_domain})
 
         # TRANSMISSION
@@ -357,7 +438,7 @@ class ProductTemplate(models.Model):
             'list_sh_shop_product_transmission', [])
         if list_sh_shop_product_transmission:
             base_domain.append(
-                [('product_variant_ids.transmission_ids', 'in', list_sh_shop_product_transmission)])
+                [('transmission_ids', 'in', list_sh_shop_product_transmission)])
             result.update({'base_domain': base_domain})
 
         # ENGINE
@@ -365,7 +446,7 @@ class ProductTemplate(models.Model):
             'list_sh_shop_product_engine', [])
         if list_sh_shop_product_engine:
             base_domain.append(
-                [('product_variant_ids.engine', 'in', list_sh_shop_product_engine)])
+                [('engine', 'in', list_sh_shop_product_engine)])
             result.update({'base_domain': base_domain})
 
         # PRODUCT TYPE
@@ -373,32 +454,112 @@ class ProductTemplate(models.Model):
             'list_sh_shop_product_p_type', [])
         if list_sh_shop_product_p_type:
             base_domain.append(
-                [('product_variant_ids.product_type', 'in', list_sh_shop_product_p_type)])
+                [('product_type', 'in', list_sh_shop_product_p_type)])
             result.update({'base_domain': base_domain})
 
+        # Busqueda por codigo OEM en el buscador de la tienda.
+        search_fields = list(result.get('search_fields', []))
+        if 'vehicle_oem_lines.name' not in search_fields:
+            search_fields.append('vehicle_oem_lines.name')
+        result['search_fields'] = search_fields
+
         return result
+
+
+    @api.depends("product_variant_ids.default_code")
+    def _compute_ickab_default_code(self):
+        for product in self:
+            variant = product.product_variant_id or product.product_variant_ids[:1]
+            product.ickab_default_code = variant.default_code or False
+
+    @api.depends(
+        "product_variant_ids.stock_quant_ids.quantity",
+        "product_variant_ids.stock_quant_ids.reserved_quantity",
+        "product_variant_ids.stock_quant_ids.location_id",
+    )
+    def _compute_ickab_website_availability(self):
+        warehouse_data, quantities = self._get_warehouse_quantities()
+
+        for product in self:
+            lines = []
+            free_qty = sum(
+                values["free_quantity"]
+                for values in quantities.get(product.id, {}).values()
+            )
+            for warehouse, __parent_path in warehouse_data:
+                warehouse_qty = quantities[product.id][warehouse.id]["free_quantity"]
+                if warehouse_qty > 0:
+                    lines.append(
+                        "%s: %.3f %s"
+                        % (warehouse.display_name, warehouse_qty, product.uom_id.name)
+                    )
+            product.ickab_website_free_qty = free_qty
+            product.ickab_website_has_free_stock = free_qty > 0
+            if lines:
+                product.ickab_website_availability_text = "\n".join([
+                    "Disponible total: %.3f %s"
+                    % (free_qty, product.uom_id.name),
+                    *lines,
+                ])
+            else:
+                product.ickab_website_availability_text = "No disponible"
+
+    @api.depends("vehicle_oem_lines.name", "vehicle_oem_lines.brand_id")
+    def _compute_ickab_oem_codes_kanban(self):
+        for product in self:
+            lines = []
+            for oem_line in product.vehicle_oem_lines:
+                if not oem_line.name:
+                    continue
+                if oem_line.brand_id:
+                    lines.append("%s: %s" % (oem_line.brand_id.name, oem_line.name))
+                else:
+                    lines.append(oem_line.name)
+            product.ickab_oem_codes_kanban = "\n".join(lines)
+
+    @api.model
+    def _search_display_name(self, operator, value):
+        domain = super()._search_display_name(operator, value)
+        if not value or operator in expression.NEGATIVE_TERM_OPERATORS:
+            return domain
+
+        oem_domain = [("vehicle_oem_lines.name", operator, value)]
+        return expression.OR([domain, oem_domain])
+
+    def _compute_ickab_brand_id(self):
+        for template in self:
+            template.ickab_brand_id = template.brand
+
+    def _inverse_ickab_brand_id(self):
+        for template in self:
+            template.brand = template.ickab_brand_id
+
+    @api.model
+    def _search_ickab_brand_id(self, operator, value):
+        return [("brand", operator, value)]
 
 
 class ProductProduct(models.Model):
     _inherit = "product.product"
 
     motorcycle_ids = fields.Many2many(
-        'motorcycle.motorcycle',
-        'product_product_motorcycle_motorcycle_rel',
-        'product_id', 'motorcycle_id',
-        string='Auto Parts', copy=True
+        related="product_tmpl_id.motorcycle_ids",
+        readonly=False,
+        string="Auto Parts",
     )
-
-    sh_is_common_product = fields.Boolean(string="Common Products?")
-    garde = fields.Many2many(comodel_name='motorcycle.garde', string='Garde')
-    engine = fields.Many2many(
-        comodel_name='motorcycle.engine', string='Engine')
+    sh_is_common_product = fields.Boolean(
+        related="product_tmpl_id.sh_is_common_product", readonly=False
+    )
+    garde = fields.Many2many(related="product_tmpl_id.garde", readonly=False)
+    engine = fields.Many2many(related="product_tmpl_id.engine", readonly=False)
     product_type = fields.Many2many(
-        comodel_name='motorcycle.product.type', string='Vehicle Product Type')
-    brand = fields.Many2one(comodel_name='motorcycle.brand', string='Vehicle Brand')
-    made_in = fields.Many2one(comodel_name='res.country', string='Made In')
+        related="product_tmpl_id.product_type", readonly=False
+    )
+    brand = fields.Many2one(related="product_tmpl_id.brand", readonly=False)
+    made_in = fields.Many2one(related="product_tmpl_id.made_in", readonly=False)
     transmission_ids = fields.Many2many(
-        comodel_name='motorcycle.transmission', string='Transmission')
+        related="product_tmpl_id.transmission_ids", readonly=False
+    )
 
     @api.onchange('sh_is_common_product')
     def onchange_sh_is_common_product(self):
@@ -406,3 +567,57 @@ class ProductProduct(models.Model):
             for record in self:
                 if record.sh_is_common_product:
                     record.motorcycle_ids = False
+
+    ickab_brand_name = fields.Char(
+        related="brand.name",
+        string="Marca",
+        readonly=True,
+    )
+
+    @api.model
+    def _search_display_name(self, operator, value):
+        domain = super()._search_display_name(operator, value)
+        if not value or operator in expression.NEGATIVE_TERM_OPERATORS:
+            return domain
+
+        oem_domain = [("product_tmpl_id.vehicle_oem_lines.name", operator, value)]
+        return expression.OR([domain, oem_domain])
+
+    @api.model
+    def name_search(self, name="", args=None, operator="ilike", limit=100):
+        results = super().name_search(name, args, operator, limit)
+        if not name or operator in expression.NEGATIVE_TERM_OPERATORS:
+            return results
+
+        remaining_limit = None
+        if limit:
+            remaining_limit = max(limit - len(results), 0)
+            if not remaining_limit:
+                return results
+
+        found_ids = [product_id for product_id, __display_name in results]
+        domain = args or []
+        oem_domain = expression.AND([
+            domain,
+            [("product_tmpl_id.vehicle_oem_lines.name", operator, name)],
+        ])
+        if found_ids:
+            oem_domain = expression.AND([oem_domain, [("id", "not in", found_ids)]])
+
+        products = self.search(
+            oem_domain,
+            limit=remaining_limit,
+        )
+        return results + [
+            (product.id, product.display_name)
+            for product in products.sudo()
+        ]
+
+    @api.model
+    def _load_pos_data_fields(self, config_id):
+        fields_to_load = super()._load_pos_data_fields(config_id)
+        return list(dict.fromkeys([
+            *fields_to_load,
+            "ickab_brand_id",
+            "ickab_brand_name",
+        ]))

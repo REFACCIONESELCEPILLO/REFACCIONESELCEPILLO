@@ -35,7 +35,7 @@ class SaleReport(models.Model):
         Brand in pivot view of the sale order report
         """
         res = super()._select_additional_fields()
-        res['brand_id'] = "p.brand"
+        res['brand_id'] = "t.brand"
         return res
 
     def _group_by_sale(self):
@@ -44,5 +44,5 @@ class SaleReport(models.Model):
         """
         res = super()._group_by_sale()
         res += """,
-            p.brand"""
+            t.brand"""
         return res

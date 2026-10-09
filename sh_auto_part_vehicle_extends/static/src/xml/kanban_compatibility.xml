@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="sh_auto_part_vehicle_extends.KanbanCompatibility">
+        <div class="o_ick_vehicle_kanban small text-muted mt-1">
+            <div t-if="props.record.data.warehouse_free_qty_kanban" class="o_ick_warehouse">
+                <strong>Por almacén:</strong>
+                <span class="d-block text-pre-wrap" t-esc="props.record.data.warehouse_free_qty_kanban"/>
+            </div>
+            <div t-if="codes.length" class="o_ick_compatibility">
+                <strong>Compatibilidad:</strong>
+                <div class="o_ick_compatibility_codes mt-1">
+                    <a t-foreach="visibleCodes" t-as="code" t-key="code.id" href="#"
+                       class="o_ick_compatibility_link"
+                       t-att-title="code.label"
+                       t-on-click="(ev) => this.openCompatibility(ev, code)"
+                       t-esc="code.label"/>
+                    <button t-if="hiddenCodeCount" type="button"
+                            class="btn btn-link btn-sm o_ick_more_compatibilities"
+                            title="Ver todas las compatibilidades"
+                            t-on-click="openCompatibilityList">
+                        <i class="fa fa-list-ul me-1"/>Ver <t t-esc="hiddenCodeCount"/> más
+                    </button>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="sh_auto_part_vehicle_extends.CompatibilityListDialog">
+        <Dialog title="'Detalle de compatibilidades'" size="'md'">
+            <div class="o_ick_compatibility_modal_list">
+                <div class="text-muted small mb-3">Selecciona un código para consultar los vehículos relacionados.</div>
+                <button t-foreach="props.codes" t-as="code" t-key="code.id" type="button"
+                        class="btn btn-outline-primary text-start"
+                        t-on-click="(ev) => this.openCompatibility(ev, code)">
+                    <i class="fa fa-link me-2"/><span t-esc="code.label"/>
+                </button>
+            </div>
+            <t t-set-slot="footer"><button class="btn btn-secondary" t-on-click="props.close">Cerrar</button></t>
+        </Dialog>
+    </t>
+
+    <t t-name="sh_auto_part_vehicle_extends.CompatibilityDialog">
+        <Dialog title="'Productos compatibles'" size="'xl'">
+            <div t-if="state.loading" class="py-5 text-center text-muted"><i class="fa fa-spinner fa-spin me-2"/>Consultando compatibilidades…</div>
+            <div t-elif="state.error" class="alert alert-danger mb-0" t-esc="state.error"/>
+            <t t-elif="state.data">
+                <div class="mb-3"><strong>Código: </strong><span t-if="state.data.code_brand"><t t-esc="state.data.code_brand"/>: </span><t t-esc="state.data.title"/></div>
+                <div t-if="!(state.data.rows || []).length" class="alert alert-info mb-0">
+                    No existe un producto con el SKU <strong t-esc="state.data.code"/>.
+                </div>
+                <div t-else="" class="table-responsive border rounded">
+                    <table class="table table-sm table-hover align-middle mb-0">
+                        <thead class="table-light"><tr><th>Foto</th><th>SKU</th><th>Nombre</th><th>Marca</th><th>Modelo</th><th>Armadora</th><th>Año</th></tr></thead>
+                        <tbody>
+                            <tr t-foreach="state.data.rows || []" t-as="row" t-key="row.key">
+                                <td><img t-att-src="row.product.image_url" class="o_ick_compatibility_image" t-att-alt="row.product.name"/></td>
+                                <td t-esc="row.product.sku"/><td t-esc="row.product.name"/><td t-esc="row.product.brand"/>
+                                <t t-if="row.vehicle">
+                                    <td t-esc="row.vehicle.model"/><td t-esc="row.vehicle.make"/><td><t t-esc="row.vehicle.year_from"/>–<t t-esc="row.vehicle.year_to"/></td>
+                                </t>
+                                <td t-else="" colspan="3" class="text-muted">Sin vehículos compatibles registrados</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+            <t t-set-slot="footer"><button class="btn btn-secondary" t-on-click="props.close">Cerrar</button></t>
+        </Dialog>
+    </t>
+</templates>

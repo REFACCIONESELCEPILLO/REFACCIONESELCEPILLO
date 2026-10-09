@@ -1,0 +1,130 @@
+// Catálogo y recibo del POS (variables CSS configurables).
+.pos .product-screen .ickab-product-list.d-grid {
+    grid-template-columns: repeat(auto-fill, minmax(var(--ickab-card-width, 120px), 1fr));
+
+    .ickab-product-card {
+        min-width: 0;
+
+        .product-img {
+            display: flex;
+            height: var(--ickab-image-height, 96px);
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: white;
+        }
+
+        .product-img img {
+            width: 100%;
+            height: 100%;
+            aspect-ratio: auto;
+            object-fit: var(--ickab-image-fit, contain);
+        }
+
+        .product-name {
+            font-size: var(--ickab-name-size, 14px);
+            -webkit-line-clamp: var(--ickab-name-lines, 3);
+            overflow-wrap: anywhere;
+            text-align: center;
+        }
+
+        .ickab-product-price {
+            font-size: var(--ickab-name-size, 14px);
+            color: var(--bs-emphasis-color);
+        }
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .pos .product-screen .ickab-product-list.d-grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    }
+}
+
+.pos-receipt.ickab-pos-receipt {
+    box-sizing: border-box;
+    width: var(--ickab-receipt-raster-width, 512px);
+    max-width: 100%;
+    min-width: 0;
+    font-size: var(--ickab-receipt-font-size, 12px);
+    line-height: var(--ickab-receipt-line-height, 1.35);
+
+    .pos-receipt-right-align {
+        max-width: 55%;
+        margin-left: auto;
+        justify-content: flex-end;
+        text-align: right;
+        overflow-wrap: anywhere;
+    }
+
+    .pos-receipt-amount,
+    .paymentlines,
+    .pos-receipt-taxes .d-flex {
+        min-width: 0;
+    }
+
+    .pos-receipt-logo {
+        width: auto;
+        max-width: 100%;
+        max-height: var(--ickab-receipt-logo-height, 80px);
+        object-fit: contain;
+    }
+
+    .ickab-receipt-orderline .product-name {
+        display: flex !important;
+        flex-direction: column;
+        align-items: flex-start;
+        white-space: normal;
+    }
+
+    .ickab-orderline-product-reference {
+        display: block;
+        font-size: 1.2em;
+        font-weight: 700;
+        line-height: 1.15;
+        overflow-wrap: anywhere;
+    }
+
+    .ickab-orderline-product-name {
+        display: block;
+        margin-top: 0.15em;
+        font-size: 0.85em;
+        font-weight: 400;
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+    }
+}
+
+.pos-receipt.ickab-pos-receipt.pos-receipt-print {
+    width: var(--ickab-receipt-raster-width, 512px) !important;
+    max-width: none !important;
+}
+
+.pos .orderline {
+    .ickab-orderline-product-reference {
+        display: block;
+        font-size: 1.1em;
+        font-weight: 700;
+        line-height: 1.15;
+        overflow-wrap: anywhere;
+    }
+
+    .ickab-orderline-product-name {
+        display: block;
+        margin-top: 0.15em;
+        font-size: 0.85em;
+        font-weight: 400;
+        line-height: 1.2;
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+}
+
+@media print {
+    .pos-receipt.ickab-pos-receipt {
+        width: var(--ickab-receipt-paper-width, 80mm) !important;
+        max-width: var(--ickab-receipt-paper-width, 80mm) !important;
+        font-size: var(--ickab-receipt-font-size, 12px) !important;
+        line-height: var(--ickab-receipt-line-height, 1.35) !important;
+    }
+}

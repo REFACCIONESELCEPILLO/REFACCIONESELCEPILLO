@@ -4,31 +4,37 @@
         <field name="name">sh.motorcycle.product.normal.form</field>
         <field name="model">product.product</field>
         <field name="inherit_id" ref="product.product_normal_form_view" />
+        <field name="active" eval="False"/>
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
-                <page name="motorcycle" string="Vehicles">
-                	<group>
-						<field name="sh_is_common_product"/>
-						<field name="garde" widget="many2many_tags" invisible="sh_is_common_product == True"/>
-		                <field name="engine" widget="many2many_tags" invisible="sh_is_common_product == True"/>
-		                <field name="transmission_ids" widget="many2many_tags" invisible="sh_is_common_product == True"/>
-		                <field name="product_type" widget="many2many_tags" invisible="sh_is_common_product == True"/>
-		                <field name="brand" invisible="sh_is_common_product == True"/>
-		                <field name="made_in" invisible="sh_is_common_product == True"/>
+                <page name="motorcycle" string="Vehículos">
+	                	<group>
+                            <group string="Clasificación automotriz">
+                                <field name="sh_is_common_product" string="¿Producto universal?"/>
+                                <field name="product_type" string="Tipo de producto" widget="many2many_tags" invisible="sh_is_common_product"/>
+                                <field name="brand" string="Marca" invisible="sh_is_common_product"/>
+                                <field name="made_in" string="Hecho en" invisible="sh_is_common_product"/>
+                            </group>
+                            <group string="Características compatibles" invisible="sh_is_common_product">
+                                <field name="garde" string="Calificación" widget="many2many_tags"/>
+                                <field name="engine" string="Motor" widget="many2many_tags"/>
+                                <field name="transmission_ids" string="Transmisión" widget="many2many_tags"/>
+                            </group>
 					</group>
-                    <field name="motorcycle_ids" invisible="sh_is_common_product == True">
+                    <separator string="Aplicaciones vehiculares" invisible="sh_is_common_product"/>
+                    <field name="motorcycle_ids" nolabel="1" invisible="sh_is_common_product">
                         <list editable="bottom">
-                            <field name="make_id" />
-                            <field name="mmodel_id" />
-                            <field name="year_id" />
-                            <field name="end_year_id" />
+                            <field name="make_id" string="Fabricante"/>
+                            <field name="mmodel_id" string="Modelo"/>
+                            <field name="year_id" string="Año de inicio"/>
+                            <field name="end_year_id" string="Año de finalización"/>
                         </list>
                         <form>
                             <group>
-                                <field name="make_id" />
-                                <field name="mmodel_id" />
-                                <field name="year_id" />
-                                <field name="end_year_id" />
+                                <field name="make_id" string="Fabricante"/>
+                                <field name="mmodel_id" string="Modelo"/>
+                                <field name="year_id" string="Año de inicio"/>
+                                <field name="end_year_id" string="Año de finalización"/>
                             </group>
                         </form>
                     </field>
@@ -62,6 +68,38 @@
         <field name="inherit_id" ref="product.product_template_only_form_view" />
         <field name="arch" type="xml">
 			<xpath expr="//page[last()]" position="after">		
+				<page name="motorcycle" string="Vehículos">
+					<group>
+                        <group string="Clasificación automotriz">
+                            <field name="sh_is_common_product" string="¿Producto universal?"/>
+                            <field name="product_type" string="Tipo de producto" widget="many2many_tags" invisible="sh_is_common_product"/>
+                            <field name="brand" string="Marca" invisible="sh_is_common_product"/>
+                            <field name="made_in" string="Hecho en" invisible="sh_is_common_product"/>
+                        </group>
+                        <group string="Características compatibles" invisible="sh_is_common_product">
+                            <field name="garde" string="Calificación" widget="many2many_tags"/>
+                            <field name="engine" string="Motor" widget="many2many_tags"/>
+                            <field name="transmission_ids" string="Transmisión" widget="many2many_tags"/>
+                        </group>
+					</group>
+                    <separator string="Aplicaciones vehiculares" invisible="sh_is_common_product"/>
+					<field name="motorcycle_ids" nolabel="1" invisible="sh_is_common_product">
+						<list editable="bottom">
+							<field name="make_id" string="Fabricante"/>
+							<field name="mmodel_id" string="Modelo"/>
+							<field name="year_id" string="Año de inicio"/>
+							<field name="end_year_id" string="Año de finalización"/>
+						</list>
+						<form>
+                            <group>
+                                <field name="make_id" string="Fabricante"/>
+                                <field name="mmodel_id" string="Modelo"/>
+                                <field name="year_id" string="Año de inicio"/>
+                                <field name="end_year_id" string="Año de finalización"/>
+                            </group>
+                        </form>
+					</field>
+				</page>
 				<page name="Vehicle OEM" string="Vehicle OEM">
 					 <field name="vehicle_oem_lines" widget="one2many" context="{'show_attribute': False}">
                         <list string="Variants" editable="bottom">

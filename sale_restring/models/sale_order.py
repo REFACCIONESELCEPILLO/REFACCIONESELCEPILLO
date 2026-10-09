@@ -1,28 +1,31 @@
-from odoo import models, fields, api, _
-import logging
-
-_logger = logging.getLogger(__name__)
+from odoo import fields, models
 
 class SaleOrder(models.Model):
 	_inherit = "sale.order"
 
-	blocked_order = fields.Boolean(string="Order blocked")
+	blocked_order = fields.Boolean(
+		string="Orden bloqueada",
+		default=False,
+		copy=False,
+	)
 
 	def action_unlock_order(self):
-		self.with_context(unlock=True).blocked_order = False
+		"""Allow an authorized user to edit a confirmed sales order."""
+		self.write({"blocked_order": False})
 
-	@api.model_create_multi
-	def create(self, vals_list):
-		for vals in vals_list:
-			if not vals.get('website_id', False):
-				vals['blocked_order'] = True
-		return super().create(vals_list)
+	def action_confirm(self):
+		"""Lock only after the quotation becomes a sales order."""
+		result = super().action_confirm()
+		self.write({"blocked_order": True})
+		return result
+
+	def action_draft(self):
+		"""A quotation returned to draft must be editable again."""
+		result = super().action_draft()
+		self.write({"blocked_order": False})
+		return result
 
 	def write(self, values):
-		if ('website_id' in self._fields and not self.website_id) or 'website_id' not in self._fields:
-			if ('state' in values and values.get('state') != 'draft') or self._context.get('unlock',False):
-				values['blocked_order'] = False
-			else:
-				values['blocked_order'] = True
-			# raise UserError("No puede modificar ningun registro, solicite desbloqueo al Responsable")
+		# Autosaves and line changes preserve the current decision. Confirmation
+		# and return-to-draft are handled by their explicit business actions.
 		return super().write(values)

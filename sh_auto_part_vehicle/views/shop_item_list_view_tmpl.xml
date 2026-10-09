@@ -45,16 +45,16 @@
 						</div>
 						
 						<div>
-							<span t-if='product.sudo().product_variant_id.sudo().brand'>
+							<span t-if='product.sudo().brand'>
 								<strong>Brand : </strong>
-								<span t-esc='product.sudo().product_variant_id.sudo().brand.name'></span>
+								<span t-esc='product.sudo().brand.name'></span>
 							</span>
 						</div>
 						
 						<div>
-							<span t-if='product.sudo().product_variant_id.sudo().made_in'>
+							<span t-if='product.sudo().made_in'>
 								<strong>Made In : </strong>
-								<span t-esc='product.sudo().product_variant_id.sudo().made_in.name'></span>
+								<span t-esc='product.sudo().made_in.name'></span>
 							</span>
 						</div>  
 					</div>      

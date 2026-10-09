@@ -1,6 +1,6 @@
 {
     'name' : 'Sale Locked Create',
-    'version' : '1.0',
+    'version' : '18.0.2.0.0',
     'depends' :[
         'sale'
     ],
@@ -16,6 +16,7 @@
     ],
     'summary' : '''Funciones adicionales en Ventas
     ''',
-    'post_init_hook': '_update_order_lock_drat',
     'license': 'LGPL-3',
+    'installable': True,
+    'application': False,
 }

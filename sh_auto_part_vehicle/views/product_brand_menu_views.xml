@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!-- Acceso al catálogo de marcas desde Inventario. -->
+    <menuitem id="product_brand_menu"
+              name="Product Brands"
+              parent="stock.menu_product_in_config_stock"
+              sequence="6"
+              groups="sh_auto_part_vehicle.group_sh_motorcycle_manager"
+              action="sh_auto_part_vehicle.sh_motorcycle_brand_action"/>
+</odoo>

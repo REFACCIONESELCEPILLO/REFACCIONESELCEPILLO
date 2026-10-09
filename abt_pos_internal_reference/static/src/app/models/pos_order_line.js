@@ -8,7 +8,10 @@ patch(PosOrderline.prototype, {
             this.product_id?.display_name ||
             "";
         const reference = this.product_id?.default_code || "";
-        const mode = this.config?.product_label_mode || "both";
+        const mode =
+            this.config?.ickab_pos_product_label_mode ||
+            this.config?.product_label_mode ||
+            "both";
         if (mode === "reference") {
             return reference || name;
         }

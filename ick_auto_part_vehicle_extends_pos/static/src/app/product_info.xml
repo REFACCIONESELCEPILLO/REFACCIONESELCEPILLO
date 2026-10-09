@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="ick_auto_part_vehicle_extends_pos.ProductCardInfo"
+       t-inherit="point_of_sale.ProductCard" t-inherit-mode="extension">
+        <xpath expr="//article" position="inside">
+            <span t-if="env.services.pos.config.ick_auto_show_card_stock"
+                  t-att-class="props.product.free_qty &gt; 0 ? 'text-bg-success' : 'text-bg-danger'"
+                  class="o_auto_card_stock badge position-absolute top-0 start-0 rounded-pill m-1"
+                  title="Piezas disponibles"
+                  t-esc="env.utils.formatProductQty(props.product.free_qty &gt; 0 ? props.product.free_qty : 0, false)"/>
+        </xpath>
+    </t>
+
+    <t t-name="ick_auto_part_vehicle_extends_pos.ProductInfoBanner"
+       t-inherit="point_of_sale.ProductInfoBanner" t-inherit-mode="extension">
+        <xpath expr="//div[@t-if='this.props.product.is_storable']" position="replace">
+            <div t-if="this.props.product.is_storable and pos.config.ick_auto_show_banner_stock"
+                 class="h4">
+                <span>Disponible: </span>
+                <span t-if="this.fetchStock.status === 'success' || this.props.info">
+                    <t t-esc="this.state.available_quantity"/>
+                    <t t-esc="props.product.uom_id.name"/>
+                </span>
+                <span t-elif="this.fetchStock.status === 'error'">N/D</span>
+                <i t-else="" class="fa fa-fw fa-spin fa-circle-o-notch" aria-hidden="true"/>
+            </div>
+        </xpath>
+        <xpath expr="//div[t[@t-esc='state.tax_name || 0']]" position="replace"/>
+        <xpath expr="//AccordionItem" position="replace">
+            <AccordionItem t-if="pos.config.ick_auto_show_banner_stock and state.other_warehouses.length &gt; 0">
+                <t t-set-slot="header">Disponibilidad por almacén</t>
+                <t t-set-slot="content">
+                    <div class="border-start border-info text-muted small d-flex flex-column ps-2 ms-1">
+                        <t t-foreach="state.other_warehouses" t-as="warehouse" t-key="warehouse.id">
+                            <div class="d-flex gap-2">
+                                <div><t t-esc="warehouse.name"/>:</div>
+                                <div>
+                                    <span class="me-1 fw-bolder" t-esc="warehouse.available_quantity"/>
+                                    <t t-esc="warehouse.uom"/> disponible
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+            </AccordionItem>
+        </xpath>
+    </t>
+
+    <t t-name="ick_auto_part_vehicle_extends_pos.ProductInfoPopup"
+       t-inherit="point_of_sale.ProductInfoPopup" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('section-inventory')]" position="replace">
+            <div class="section-oem mt-3 mb-4 pb-4 border-bottom text-start"
+                 t-if="pos.config.ick_auto_show_oem">
+                <t t-set="applications" t-value="props.info.productInfo.auto_applications || []"/>
+                <t t-set="oemCodes" t-value="props.info.productInfo.auto_oem || []"/>
+                <t t-set="partDetails" t-value="props.info.productInfo.auto_part_details || []"/>
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <h3 class="section-title mb-0">Compatibilidad automotriz</h3>
+                    <span t-if="applications.length" class="badge text-bg-primary ms-auto">
+                        <t t-esc="props.info.productInfo.auto_application_count || 0"/> aplicaciones
+                    </span>
+                    <span t-elif="oemCodes.length" class="badge text-bg-primary ms-auto">
+                        Equivalencia OEM registrada
+                    </span>
+                </div>
+                <div class="table-responsive border rounded mb-3" t-if="applications.length || partDetails.length">
+                    <table class="table table-sm table-hover align-middle text-center mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Armadora</th><th>Modelo</th><th>Tipo</th><th>Años</th><th>Motor</th><th>Transmisión</th><th>Grado</th>
+                                <th t-foreach="partDetails" t-as="detail" t-key="detail.label"
+                                    t-esc="detail.label === 'Tipo de producto de vehículo' ? 'Familias de Autopartes' : detail.label"/>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="applications" t-as="app" t-key="app.id">
+                                <td t-esc="app.make"/><td t-esc="app.model"/><td t-esc="app.type"/>
+                                <td><t t-esc="app.year_from"/><t t-if="app.year_to">–<t t-esc="app.year_to"/></t></td>
+                                <td t-esc="app.engines"/><td t-esc="app.transmissions"/><td t-esc="app.grades"/>
+                                <td t-foreach="partDetails" t-as="detail" t-key="detail.label" t-esc="detail.value"/>
+                            </tr>
+                            <tr t-if="!applications.length">
+                                <td colspan="7" class="text-muted">Sin detalle vehicular registrado</td>
+                                <td t-foreach="partDetails" t-as="detail" t-key="detail.label" t-esc="detail.value"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div t-if="!applications.length and oemCodes.length" class="alert alert-info">
+                    Este producto tiene equivalencias OEM registradas. El detalle de vehículos,
+                    años y motores asociados aún no está registrado.
+                </div>
+                <div t-elif="!applications.length" class="alert alert-info">
+                    Aún no se han registrado aplicaciones vehiculares ni códigos OEM para este producto.
+                </div>
+                <div class="small text-muted mb-3"
+                     t-if="props.info.productInfo.auto_application_count &gt; applications.length">
+                    Se muestran las primeras <t t-esc="applications.length"/> de
+                    <t t-esc="props.info.productInfo.auto_application_count"/> aplicaciones.
+                </div>
+                <h3 class="section-title">
+                    <i class="fa fa-barcode me-2"/>Códigos OEM
+                </h3>
+                <div class="table-responsive border rounded" t-if="oemCodes.length">
+                    <table class="table table-sm table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr><th>Código OEM</th><th>Marca</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="oemCodes" t-as="oem" t-key="oem.id">
+                                <td class="fw-bold" t-esc="oem.code"/>
+                                <td t-esc="oem.brand"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-muted" t-else="">Sin códigos OEM registrados.</div>
+            </div>
+        </xpath>
+        <xpath expr="//div[hasclass('section-financials')]" position="attributes">
+            <attribute name="t-if">pos.config.ick_auto_show_financials</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('section-order')]" position="attributes">
+            <attribute name="t-if">pos.config.ick_auto_show_order_totals</attribute>
+        </xpath>
+    </t>
+</templates>

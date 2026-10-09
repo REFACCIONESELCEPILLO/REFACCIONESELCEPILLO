@@ -20,3 +20,17 @@ Skype: live:softhealertechnologies
 What's app: +917984575681
 E-Mail: support@softhealer.com
 Website: https://softhealer.com
+
+Componente ICKAB - sh_auto_part_vehicle
+==========================================
+Este módulo es el componente de autopartes y vehículos del proyecto ICKAB. A
+partir de la versión 18.0.10.0.0 integra en un único manifiesto todo el dominio:
+catálogo de vehículos y OEM, disponibilidad web con búsqueda por OEM, marca de
+autoparte en ventas/compras/inventario y POS, identificación del producto en el
+POS y catálogo/recibo del POS. Los identificadores propios usan el prefijo
+``ickab_*``.
+
+* Descripción del componente, mapa de archivos, autoría y licencias:
+  ``doc/COMPONENT.rst``.
+* Historial de cambios: ``doc/changelog.rst``.
+

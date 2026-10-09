@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <!-- Catálogo POS (rejilla responsive). -->
+    <t t-name="sh_auto_part_vehicle.ProductScreen" t-inherit="point_of_sale.ProductScreen" t-inherit-mode="extension">
+        <xpath expr="//div[contains(@t-attf-class, 'product-list')]" position="attributes">
+            <attribute name="class" add="ickab-product-list" separator=" "/>
+            <attribute name="t-att-style">this.ickabCatalogStyle</attribute>
+        </xpath>
+    </t>
+</templates>

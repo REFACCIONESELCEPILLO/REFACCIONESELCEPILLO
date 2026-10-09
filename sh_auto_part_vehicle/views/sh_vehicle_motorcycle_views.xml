@@ -54,7 +54,7 @@
                                 <field name="default_code" />
                                 <field name="name" />
                                 <!-- <field name="product_template_attribute_value_ids" widget="many2many_tags" groups="product.group_product_variant" /> -->
-                                <field name="lst_price" />
+                                <field name="list_price" />
                             </list>
                         </field>
                     </sheet>
@@ -86,7 +86,7 @@
         <field name="model">motorcycle.motorcycle</field>
         <field name="arch" type="xml">
             <search string="Auto Parts">
-                <field name="name" string="Auto Parts" filter_domain="['|','|','|','|','|',('end_year_id','ilike',self),('type_id','ilike',self),('make_id','ilike',self)('mmodel_id','ilike',self),('year_id','ilike',self)]" />
+                <field name="name" string="Auto Parts" filter_domain="['|', '|', '|', '|', ('make_id', 'ilike', self), ('mmodel_id', 'ilike', self), ('type_id', 'ilike', self), ('year_id', 'ilike', self), ('end_year_id', 'ilike', self)]" />
                 <field name="type_id" />
                 <field name="make_id" />
                 <field name="mmodel_id" />

@@ -5,14 +5,9 @@ class PosConfig(models.Model):
     _inherit = "pos.config"
 
     product_label_mode = fields.Selection(
-        selection=[
-            ("reference", "Referencia interna"),
-            ("name", "Nombre"),
-            ("both", "Ambos"),
-        ],
+        related="ickab_pos_product_label_mode",
         string="Identificación del producto en POS",
-        default="both",
-        required=True,
+        readonly=False,
     )
 
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="group_sale_locked" model="res.groups">
-        <field name="name">Permiso de desboqueo de Ordenes de Venta</field>
+        <field name="name">Permiso de desbloqueo de órdenes de venta</field>
     </record>
 </odoo>

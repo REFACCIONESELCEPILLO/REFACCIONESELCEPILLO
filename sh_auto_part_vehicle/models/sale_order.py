@@ -238,3 +238,12 @@ class Invoice(models.Model):
 
 
 
+class SaleOrderLine(models.Model):
+    _inherit = "sale.order.line"
+
+    ickab_brand_id = fields.Many2one(
+        related="product_id.brand",
+        string="Marca",
+        readonly=True,
+    )
+

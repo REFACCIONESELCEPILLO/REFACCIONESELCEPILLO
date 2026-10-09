@@ -16,11 +16,11 @@
 
     <!-- action -->
     <record id="sh_motorcycle_product_type_action" model="ir.actions.act_window">
-        <field name="name">Product Type</field>
+        <field name="name">Familia de Autopartes</field>
         <field name="res_model">motorcycle.product.type</field>
         <field name="view_mode">list</field>
     </record>
 
     <!-- make menuitem -->
-    <menuitem id="sh_motorcycle_product_type_menuitem" action="sh_motorcycle_product_type_action" parent="sh_motorcycle_menuitem_config" sequence="8" />
+    <menuitem id="sh_motorcycle_product_type_menuitem" name="Familia de Autopartes" action="sh_motorcycle_product_type_action" parent="sh_motorcycle_menuitem_config" sequence="8" />
 </odoo>

@@ -21,7 +21,7 @@
 ################################################################################
 {
     'name': 'SH Product Brand in Sale',
-    'version': '18.0.3.0.2',
+    'version': '18.0.3.0.3',
     'category': 'Inventory/Inventory',
     'summary': 'Use auto-part brands across products, sales, purchases, inventory and POS',
     'description': 'Extends the brand catalog provided by sh_auto_part_vehicle '

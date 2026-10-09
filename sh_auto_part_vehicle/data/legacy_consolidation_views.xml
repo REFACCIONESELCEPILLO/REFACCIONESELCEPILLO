@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Compatibility bridge for the current modular deployment.
+
+        These views were temporarily absorbed by the core during the paused
+        normalization work. Their original addons remain installed, so keeping
+        both implementations active duplicates Marca and makes two OEM kanban
+        views replace the same stock block. Preserve the records for a future
+        migration, but keep them inactive while the modular addons coexist.
+    -->
+    <record id="product_template_search_oem_inherit" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="product_template_kanban_oem_inherit" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+
+    <record id="vehicle_search_make_label" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="products_item_sku_and_availability" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="product_detail_sku" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="product_detail_availability" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="product_detail_oem_title" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="product_detail_oem_code_links" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="product_detail_oem_bookmark_title" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+
+    <record id="product_template_form_brand_sale_view" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="product_template_list_brand" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="product_template_kanban_brand" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="product_product_list_brand" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="product_product_kanban_brand" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="sale_order_form_line_brand" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="purchase_order_form_line_brand" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="purchase_order_line_list_brand" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="stock_picking_form_move_brand" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="stock_move_line_operation_brand" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="sale_report_view_order_product_search_brand" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+</odoo>

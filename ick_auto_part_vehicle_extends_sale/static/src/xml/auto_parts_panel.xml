@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="ick_auto_part_vehicle_extends_sale.AutoPartsPanel">
+        <div class="o_elcepillo_auto_panel_wrap">
+
+            <section class="o_auto_ad_slot" aria-label="Espacio publicitario">
+                <div class="o_auto_ad_icon">
+                    <i class="fa fa-bullhorn"/>
+                </div>
+                <div class="o_auto_ad_copy">
+                    <span class="o_auto_ad_title">Espacio publicitario</span>
+                    <span class="o_auto_ad_hint">Promociones y campañas comerciales</span>
+                </div>
+            </section>
+
+            <div class="o_auto_panel_header">
+                <div class="o_auto_panel_title">
+                    <i class="fa fa-wrench me-1"/>
+                    <span>Refacciones y accesorios</span>
+                </div>
+                <div class="o_auto_vehicle" t-if="this.activeProduct">
+                    <img class="o_auto_vehicle_img"
+                         t-att-src="this.activeProduct.image_url"
+                         t-att-alt="this.activeProduct.name"/>
+                    <div class="o_auto_vehicle_info">
+                        <span class="o_auto_vehicle_label">Producto activo</span>
+                        <span class="o_auto_vehicle_name" t-esc="this.activeProduct.name"/>
+                        <span class="o_auto_vehicle_label" t-if="this.activeProduct.default_code"
+                              t-esc="this.activeProduct.default_code"/>
+                    </div>
+                    <div class="ms-auto d-flex gap-1">
+                        <button t-if="this.activeProduct.has_compatibility" type="button"
+                                class="btn btn-sm btn-outline-light"
+                                t-att-data-product-id="this.activeProduct.id"
+                                t-on-click="(ev) => this.onCompatibility(ev)" title="Compatibilidad automotriz">
+                            <i class="fa fa-car"/>
+                        </button>
+                    </div>
+                </div>
+                <div class="o_auto_vehicle_hint" t-else="">
+                    <i class="fa fa-info-circle me-1"/>
+                    <span>Captura un producto para recibir asistencia comercial.</span>
+                </div>
+            </div>
+
+            <div class="o_auto_empty_state" t-if="this.activeProduct and !this.hasRecommendations">
+                <i class="fa fa-lightbulb-o"/>
+                <span>No hay recomendaciones configuradas para este producto.</span>
+            </div>
+
+            <t t-foreach="this.visibleSections" t-as="section" t-key="section.key">
+                <div class="o_auto_section">
+                    <div class="o_auto_section_header">
+                        <i t-attf-class="fa {{ section.icon }}"/>
+                        <span class="o_auto_section_label" t-esc="section.label"/>
+                        <span class="o_auto_section_count badge rounded-pill"
+                              t-esc="section.items.length"/>
+                    </div>
+
+                    <div class="o_auto_empty" t-if="!section.items.length"
+                         t-esc="section.empty"/>
+
+                    <div class="o_auto_cards" t-else="">
+                        <t t-foreach="section.items" t-as="item" t-key="item.id">
+                            <div class="o_auto_card">
+                                <img class="o_auto_card_img"
+                                     t-att-src="item.image_url"
+                                     t-att-alt="item.name"/>
+                                <div class="o_auto_card_body">
+                                    <div class="o_auto_card_name" t-esc="item.name"/>
+                                    <div class="o_auto_card_meta">
+                                        <span class="o_auto_code" t-if="item.default_code"
+                                              t-esc="item.default_code"/>
+                                        <span class="o_auto_brand" t-if="item.brand"
+                                              t-esc="item.brand"/>
+                                    </div>
+                                    <div class="o_auto_card_price"
+                                         t-esc="this.money(item.price)"/>
+                                </div>
+                                <div class="o_auto_card_availability">
+                                    <span class="o_auto_availability_label">Disponibilidad</span>
+                                    <div class="o_auto_availability_value">
+                                        <span t-att-class="item.available_qty &gt; 0 ? 'text-success' : 'text-danger'"
+                                              t-esc="this.quantity(item.available_qty, item.uom)"/>
+                                        <button type="button"
+                                                class="btn btn-sm btn-link p-0 o_auto_btn_stock"
+                                                t-att-data-product-id="item.id"
+                                                t-on-click="(ev) => this.onStock(ev)"
+                                                title="Disponibilidad por almacén">
+                                            <i class="fa fa-cubes"/>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="o_auto_card_actions">
+                                    <button type="button"
+                                            class="btn btn-sm btn-link o_auto_btn_vehicle"
+                                            t-if="item.has_compatibility"
+                                            t-att-data-product-id="item.id"
+                                            t-on-click="(ev) => this.onCompatibility(ev)"
+                                            title="Ver compatibilidad del producto">
+                                        <i class="fa fa-car"/>
+                                    </button>
+                                    <button type="button"
+                                            class="btn btn-sm btn-primary o_auto_btn_add"
+                                            t-att-data-product-id="item.id"
+                                            t-att-disabled="this.state.addingProductId"
+                                            t-on-click="(ev) => this.onAdd(ev)">
+                                        <i t-if="this.state.addingProductId === item.id" class="fa fa-spinner fa-spin me-1"/>
+                                        Agregar
+                                    </button>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </t>
+
+        </div>
+    </t>
+
+</templates>

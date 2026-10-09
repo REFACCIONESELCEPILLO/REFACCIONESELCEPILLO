@@ -1,10 +1,10 @@
 {
     "name": "POS Internal References",
-    "version": "18.0.1.1.1",
+    "version": "18.0.2.0.0",
     "author": "AskByte Technolab; adapted by ICKAB",
     "summary": "Configurable product identification in Point of Sale",
     "category": "Point of Sale",
-    "depends": ["point_of_sale"],
+    "depends": ["point_of_sale", "sh_auto_part_vehicle"],
     "data": [
         "views/res_config_settings_views.xml",
     ],

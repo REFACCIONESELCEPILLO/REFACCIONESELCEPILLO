@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_auto_parts_pos" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.auto.parts.pos</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@id='pos_interface_section']" position="after">
+                <block title="Información de autopartes" id="ick_auto_parts_pos_info">
+                    <setting string="Tarjetas del catálogo"
+                             help="Muestra la disponibilidad vendible en la esquina superior izquierda de cada producto.">
+                        <field name="pos_ick_auto_show_card_stock"/>
+                    </setting>
+                    <setting string="Franja de disponibilidad"
+                             help="Muestra existencias disponibles, sin cantidades pronosticadas, dentro del modal de información.">
+                        <field name="pos_ick_auto_show_banner_stock"/>
+                    </setting>
+                    <setting string="Códigos OEM"
+                             help="Muestra los códigos OEM en el modal abierto por el icono de información.">
+                        <field name="pos_ick_auto_show_oem"/>
+                    </setting>
+                    <setting string="Finanzas">
+                        <field name="pos_ick_auto_show_financials"/>
+                    </setting>
+                    <setting string="Totales de la orden">
+                        <field name="pos_ick_auto_show_order_totals"/>
+                    </setting>
+                    <setting string="Publicidad"
+                             help="Muestra el espacio publicitario en el asistente lateral del POS.">
+                        <field name="pos_ick_auto_show_advertising"/>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>
