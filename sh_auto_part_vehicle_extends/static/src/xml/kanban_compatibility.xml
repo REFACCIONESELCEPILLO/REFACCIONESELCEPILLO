@@ -45,16 +45,32 @@
             <div t-elif="state.error" class="alert alert-danger mb-0" t-esc="state.error"/>
             <t t-elif="state.data">
                 <div class="mb-3"><strong>Código: </strong><span t-if="state.data.code_brand"><t t-esc="state.data.code_brand"/>: </span><t t-esc="state.data.title"/></div>
+                <div class="alert alert-info py-2 mb-3" t-if="state.data.selected_warehouse">
+                    Disponibilidad para venta en
+                    <strong t-esc="state.data.selected_warehouse.name"/>.
+                    Use el icono <i class="fa fa-cubes mx-1"/> para consultar todas las tiendas.
+                </div>
                 <div t-if="!(state.data.rows || []).length" class="alert alert-info mb-0">
                     No existe un producto con el SKU <strong t-esc="state.data.code"/>.
                 </div>
                 <div t-else="" class="table-responsive border rounded">
                     <table class="table table-sm table-hover align-middle mb-0">
-                        <thead class="table-light"><tr><th>Foto</th><th>SKU</th><th>Nombre</th><th>Marca</th><th>Modelo</th><th>Armadora</th><th>Año</th></tr></thead>
+                        <thead class="table-light"><tr><th>Foto</th><th>SKU</th><th>Nombre</th><th>Marca</th><th class="text-end">Disponibilidad</th><th>Modelo</th><th>Armadora</th><th>Año</th></tr></thead>
                         <tbody>
                             <tr t-foreach="state.data.rows || []" t-as="row" t-key="row.key">
                                 <td><img t-att-src="row.product.image_url" class="o_ick_compatibility_image" t-att-alt="row.product.name"/></td>
                                 <td t-esc="row.product.sku"/><td t-esc="row.product.name"/><td t-esc="row.product.brand"/>
+                                <td class="text-end text-nowrap">
+                                    <span class="fw-semibold"
+                                          t-att-class="row.product.available_qty &gt; 0 ? 'text-success' : 'text-danger'"
+                                          t-esc="this.quantity(row.product)"/>
+                                    <button type="button" class="btn btn-sm btn-link p-0 ms-2"
+                                            title="Disponibilidad en todas las tiendas"
+                                            t-att-data-product-id="row.product.id"
+                                            t-on-click="(ev) => this.openStock(ev)">
+                                        <i class="fa fa-cubes"/>
+                                    </button>
+                                </td>
                                 <t t-if="row.vehicle">
                                     <td t-esc="row.vehicle.model"/><td t-esc="row.vehicle.make"/><td><t t-esc="row.vehicle.year_from"/>–<t t-esc="row.vehicle.year_to"/></td>
                                 </t>
@@ -65,6 +81,51 @@
                 </div>
             </t>
             <t t-set-slot="footer"><button class="btn btn-secondary" t-on-click="props.close">Cerrar</button></t>
+        </Dialog>
+    </t>
+
+    <t t-name="sh_auto_part_vehicle_extends.CompatibilityProductStockDialog">
+        <Dialog title="'Disponibilidad por tienda'" size="'lg'">
+            <div t-if="state.loading" class="py-5 text-center text-muted">
+                <i class="fa fa-spinner fa-spin me-2"/>Consultando existencias…
+            </div>
+            <div t-elif="state.error" class="alert alert-danger mb-0" t-esc="state.error"/>
+            <t t-elif="state.data">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <img t-att-src="state.data.product.image_url"
+                         class="o_ick_compatibility_image"
+                         t-att-alt="state.data.product.name"/>
+                    <div>
+                        <div class="fw-bold" t-esc="state.data.product.name"/>
+                        <div class="small text-muted" t-esc="state.data.product.sku"/>
+                    </div>
+                </div>
+                <div class="table-responsive border rounded" t-if="state.data.warehouses.length">
+                    <table class="table table-sm table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr><th>Tienda / almacén</th><th class="text-end">Disponible para venta</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="state.data.warehouses" t-as="warehouse" t-key="warehouse.id"
+                                t-att-class="warehouse.selected ? 'table-info' : ''">
+                                <td>
+                                    <span t-esc="warehouse.name"/>
+                                    <span t-if="warehouse.selected" class="badge text-bg-info ms-2">Seleccionada</span>
+                                </td>
+                                <td class="text-end fw-semibold"
+                                    t-att-class="warehouse.available &gt; 0 ? 'text-success' : 'text-danger'"
+                                    t-esc="this.quantity(warehouse.available, warehouse.uom)"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div t-else="" class="alert alert-info mb-0">
+                    No existen cantidades registradas en almacenes internos.
+                </div>
+            </t>
+            <t t-set-slot="footer">
+                <button type="button" class="btn btn-secondary" t-on-click="props.close">Cerrar</button>
+            </t>
         </Dialog>
     </t>
 </templates>

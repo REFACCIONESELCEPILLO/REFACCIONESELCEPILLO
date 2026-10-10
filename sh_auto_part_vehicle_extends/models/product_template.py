@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models
+from odoo.exceptions import UserError
 from odoo.osv import expression
 
 
@@ -104,6 +105,76 @@ class ProductTemplate(models.Model):
                 if line.name
             ]
 
+    @api.model
+    def _ick_kanban_selected_warehouse(self):
+        """Resolve the selected or user-default warehouse for product tools."""
+        warehouse_id = (
+            self.env.context.get("warehouse_id")
+            or self.env.context.get("warehouse")
+        )
+        warehouse = self.env["stock.warehouse"].browse(warehouse_id).exists()
+        if not warehouse or warehouse.company_id not in self.env.companies:
+            warehouse = self.env.user.with_company(
+                self.env.company
+            )._get_default_warehouse_id()
+        if warehouse.company_id not in self.env.companies:
+            return self.env["stock.warehouse"]
+        return warehouse
+
+    @api.model
+    def _ick_kanban_available_by_product(self, products, warehouse):
+        available = {product.id: 0.0 for product in products}
+        if not products or not warehouse:
+            return available
+        rows = self.env["product.warehouse.availability"].sudo().search([
+            ("product_id", "in", products.ids),
+            ("warehouse_id", "=", warehouse.id),
+            ("company_id", "=", warehouse.company_id.id),
+        ])
+        for row in rows:
+            available[row.product_id.id] += row.free_quantity
+        return available
+
+    @api.model
+    def get_ick_kanban_product_stock(self, product_id):
+        """Return sellable availability for one product in every warehouse."""
+        product = self.env["product.product"].browse(product_id).exists()
+        if not product:
+            raise UserError("El producto seleccionado ya no está disponible.")
+        product.check_access("read")
+        selected_warehouse = self._ick_kanban_selected_warehouse()
+        company = selected_warehouse.company_id or self.env.company
+        warehouses = self.env["stock.warehouse"].search([
+            ("company_id", "=", company.id),
+        ], order="name")
+        rows = self.env["product.warehouse.availability"].sudo().search([
+            ("product_id", "=", product.id),
+            ("company_id", "=", company.id),
+            ("warehouse_id", "in", warehouses.ids),
+        ])
+        available_by_warehouse = {warehouse.id: 0.0 for warehouse in warehouses}
+        uom_by_warehouse = {}
+        for row in rows:
+            available_by_warehouse[row.warehouse_id.id] += row.free_quantity
+            uom_by_warehouse[row.warehouse_id.id] = row.product_uom_id.name
+        return {
+            "product": {
+                "id": product.id,
+                "name": product.display_name,
+                "sku": product.default_code or "",
+                "image_url": "/web/image/product.product/%s/image_128" % product.id,
+            },
+            "selected_warehouse_id": selected_warehouse.id,
+            "warehouses": [{
+                "id": warehouse.id,
+                "name": warehouse.display_name,
+                "available": available_by_warehouse[warehouse.id],
+                "uom": uom_by_warehouse.get(warehouse.id)
+                or product.uom_id.name or "",
+                "selected": warehouse == selected_warehouse,
+            } for warehouse in warehouses],
+        }
+
     def get_ick_kanban_compatibility(self, oem_line_id=False):
         self.ensure_one()
         self.check_access("read")
@@ -118,6 +189,10 @@ class ProductTemplate(models.Model):
                 ("company_id", "in", self.env.companies.ids),
                 ("company_id", "=", False),
             ])
+        warehouse = self._ick_kanban_selected_warehouse()
+        available_by_product = self._ick_kanban_available_by_product(
+            products, warehouse
+        )
         rows = []
         for product in products:
             vehicles = product.motorcycle_ids.filtered(
@@ -129,6 +204,8 @@ class ProductTemplate(models.Model):
                 "name": product.display_name,
                 "sku": product.default_code or "",
                 "brand": product.brand.name or "",
+                "available_qty": available_by_product[product.id],
+                "uom": product.uom_id.name or "",
                 "image_url": "/web/image/product.product/%s/image_128" % product.id,
             }
             if vehicles:
@@ -155,6 +232,10 @@ class ProductTemplate(models.Model):
             "title": line.name if line else self.name,
             "code": line.name if line else "",
             "code_brand": line.brand_id.name if line and line.brand_id else "",
+            "selected_warehouse": {
+                "id": warehouse.id,
+                "name": warehouse.display_name or "",
+            } if warehouse else False,
             "rows": rows,
             "product_count": len(products),
         }
