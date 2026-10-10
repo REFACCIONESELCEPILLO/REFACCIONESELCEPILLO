@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "ICK Auto Part Vehicle Product Kanban",
-    "version": "18.0.1.2.1",
+    "version": "18.0.1.3.0",
     "summary": "Acceso kanban a productos sugeridos, accesorios y opcionales",
     "author": "ICKAB",
     "website": "https://ickab.mx",
@@ -10,6 +10,7 @@
     "depends": [
         "sh_auto_part_vehicle_extends",
         "sh_product_brand_sale",
+        "product_qty_warehouse",
         "website_sale",
     ],
     "data": [
