@@ -104,10 +104,11 @@
                                     <button type="button"
                                             class="btn btn-sm btn-primary o_auto_btn_add"
                                             t-att-data-product-id="item.id"
-                                            t-att-disabled="this.state.addingProductId"
+                                            t-att-disabled="this.state.addingProductId || this.isLocked"
                                             t-on-click="(ev) => this.onAdd(ev)">
                                         <i t-if="this.state.addingProductId === item.id" class="fa fa-spinner fa-spin me-1"/>
-                                        Agregar
+                                        <t t-if="this.isLocked">Bloqueado</t>
+                                        <t t-else="">Agregar</t>
                                     </button>
                                 </div>
                             </div>
