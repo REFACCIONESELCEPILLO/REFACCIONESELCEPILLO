@@ -6,6 +6,39 @@ import { registry } from "@web/core/registry";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
 import { useService } from "@web/core/utils/hooks";
 
+class CompatibilityProductStockDialog extends Component {
+    static template = "sh_auto_part_vehicle_extends.CompatibilityProductStockDialog";
+    static components = { Dialog };
+    static props = { close: Function, productId: Number };
+
+    setup() {
+        this.orm = useService("orm");
+        this.state = useState({ loading: true, error: false, data: null });
+        onWillStart(async () => {
+            try {
+                this.state.data = await this.orm.call(
+                    "product.template",
+                    "get_ick_kanban_product_stock",
+                    [],
+                    { product_id: this.props.productId }
+                );
+            } catch (error) {
+                this.state.error = error?.message || "No fue posible consultar las existencias.";
+            } finally {
+                this.state.loading = false;
+            }
+        });
+    }
+
+    quantity(value, uom) {
+        const quantity = new Intl.NumberFormat(undefined, {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 3,
+        }).format(value || 0);
+        return uom ? `${quantity} ${uom}` : quantity;
+    }
+}
+
 class CompatibilityDialog extends Component {
     static template = "sh_auto_part_vehicle_extends.CompatibilityDialog";
     static components = { Dialog };
@@ -13,6 +46,7 @@ class CompatibilityDialog extends Component {
 
     setup() {
         this.orm = useService("orm");
+        this.dialog = useService("dialog");
         this.state = useState({ loading: true, error: false, data: null });
         onWillStart(async () => {
             try {
@@ -37,6 +71,22 @@ class CompatibilityDialog extends Component {
         });
     }
 
+    quantity(product) {
+        const quantity = new Intl.NumberFormat(undefined, {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 3,
+        }).format(product.available_qty || 0);
+        return product.uom ? `${quantity} ${product.uom}` : quantity;
+    }
+
+    openStock(ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        this.dialog.add(CompatibilityProductStockDialog, {
+            productId: parseInt(ev.currentTarget.dataset.productId, 10),
+        });
+    }
+
     async loadCompatibilityRows(code) {
         if (!code) {
             return [];
@@ -58,6 +108,8 @@ class CompatibilityDialog extends Component {
                 name: product.display_name || "",
                 sku: product.default_code || "",
                 brand: product.brand?.[1] || "",
+                available_qty: 0,
+                uom: "",
                 image_url: `/web/image/product.product/${product.id}/image_128`,
             };
             if (vehicles.length) {
