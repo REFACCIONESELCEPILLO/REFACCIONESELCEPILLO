@@ -1,4 +1,5 @@
-from odoo import fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import AccessError
 
 class SaleOrder(models.Model):
 	_inherit = "sale.order"
@@ -10,22 +11,53 @@ class SaleOrder(models.Model):
 	)
 
 	def action_unlock_order(self):
-		"""Allow an authorized user to edit a confirmed sales order."""
-		self.write({"blocked_order": False})
+		"""Open the order for one editing cycle.
+
+		The next regular save locks it again.  Access to this action is
+		restricted in the form view to the dedicated unlock group.
+		"""
+		if not self.env.user.has_group("sale_restring.group_sale_locked"):
+			raise AccessError(_("No tiene permisos para desbloquear cotizaciones."))
+		self.with_context(unlock_sale_order=True).write({"blocked_order": False})
+		return True
+
+	@api.model_create_multi
+	def create(self, vals_list):
+		"""Lock back-office quotations as soon as they receive a folio."""
+		for values in vals_list:
+			# Website orders keep their native checkout workflow.
+			if not values.get("website_id"):
+				values["blocked_order"] = True
+		return super().create(vals_list)
 
 	def action_confirm(self):
-		"""Lock only after the quotation becomes a sales order."""
+		"""Confirmed sales orders always remain protected."""
 		result = super().action_confirm()
-		self.write({"blocked_order": True})
+		super(SaleOrder, self).write({"blocked_order": True})
 		return result
 
 	def action_draft(self):
-		"""A quotation returned to draft must be editable again."""
+		"""A quotation returned to draft is still a saved, locked record."""
 		result = super().action_draft()
-		self.write({"blocked_order": False})
+		super(SaleOrder, self).write({"blocked_order": True})
 		return result
 
 	def write(self, values):
-		# Autosaves and line changes preserve the current decision. Confirmation
-		# and return-to-draft are handled by their explicit business actions.
-		return super().write(values)
+		"""Relock a quotation after every normal save.
+
+		Using ``super`` for the final technical write avoids recursion while
+		keeping the unlock action as the only supported way to clear the flag.
+		"""
+		result = super().write(values)
+		if self.env.context.get("unlock_sale_order"):
+			return result
+		has_website = "website_id" in self._fields
+		to_lock = self.filtered(
+			lambda order: (
+				(not has_website or not order.website_id)
+				and not order.blocked_order
+			)
+		)
+		if to_lock:
+			super(SaleOrder, to_lock).write({"blocked_order": True})
+		return result

@@ -39,6 +39,14 @@ export class AutoPartsPanel extends Component {
         return this.panel.active_product || null;
     }
 
+    get isLocked() {
+        return Boolean(
+            this.props.record.data.blocked_order ||
+            this.props.record.data.locked ||
+            !["draft", "sent"].includes(this.props.record.data.state)
+        );
+    }
+
     get sections() {
         const panel = this.panel;
         return [
@@ -116,6 +124,13 @@ export class AutoPartsPanel extends Component {
     async onAdd(ev) {
         ev.preventDefault();
         ev.stopPropagation();
+        if (this.isLocked) {
+            this.notification.add(
+                "La cotización está bloqueada. Solicite autorización para editarla.",
+                { type: "warning" }
+            );
+            return;
+        }
         const productId = parseInt(ev.currentTarget.dataset.productId, 10);
         const record = this.props.record;
         if (this.state.addingProductId) {

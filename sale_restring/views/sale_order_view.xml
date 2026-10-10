@@ -8,8 +8,29 @@
         <field name="arch" type="xml">
             <xpath expr="header" position="inside">
                 <field name="blocked_order" invisible="1"/>
-                <button name="action_unlock_order" type="object" string="Desbloquear"
+                <button name="action_unlock_order" type="object"
+                        string="Desbloquear cotización" icon="fa-unlock"
                         invisible="not blocked_order" groups="sale_restring.group_sale_locked"/>
+            </xpath>
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-warning d-flex align-items-center gap-2 mb-0"
+                     role="alert"
+                     invisible="not blocked_order or state not in ['draft', 'sent']">
+                    <i class="fa fa-lock" title="Bloqueada"/>
+                    <div>
+                        <strong>Cotización bloqueada.</strong>
+                        Solicite a un usuario autorizado que la desbloquee para editarla.
+                    </div>
+                </div>
+                <div class="alert alert-warning d-flex align-items-center gap-2 mb-0"
+                     role="alert"
+                     invisible="not blocked_order or state != 'sale'">
+                    <i class="fa fa-lock" title="Bloqueada"/>
+                    <div>
+                        <strong>Orden de venta bloqueada.</strong>
+                        Solicite autorización antes de modificarla.
+                    </div>
+                </div>
             </xpath>
             <field name="partner_id" position="attributes">
                 <attribute name="readonly" add="blocked_order" separator=" or "/>
