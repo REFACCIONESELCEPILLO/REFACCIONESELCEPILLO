@@ -237,6 +237,9 @@
                                         </t>
                                         <t t-set="ticket_name_lines" t-value="ticket_name.split('\n')"/>
                                         <div class="o_ticket_product_name" t-esc="ticket_name_lines[0] if ticket_name_lines else ticket_name"/>
+                                        <div t-if="line.product_id.brand" class="o_ticket_product_detail o_ticket_product_brand">
+                                            Marca: <span t-field="line.product_id.brand.name"/>
+                                        </div>
                                         <t t-foreach="ticket_name_lines[1:]" t-as="detail">
                                             <div t-if="detail" class="o_ticket_product_detail" t-esc="detail"/>
                                         </t>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_saleorder_product_brand" inherit_id="sale.report_saleorder_document">
+        <xpath expr="//td[@name='td_name']" position="inside">
+            <div t-if="line.product_id.brand" name="product_brand" class="text-muted small">
+                Marca: <span t-field="line.product_id.brand.name"/>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="report_invoice_product_brand" inherit_id="account.report_invoice_document">
+        <xpath expr="//td[@name='account_invoice_line_name']" position="inside">
+            <div t-if="line.product_id.brand" name="product_brand" class="text-muted small">
+                Marca: <span t-field="line.product_id.brand.name"/>
+            </div>
+        </xpath>
+    </template>
+</odoo>
