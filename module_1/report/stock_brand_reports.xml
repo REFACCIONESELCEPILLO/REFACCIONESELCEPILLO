@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_picking_product_brand" inherit_id="stock.report_picking">
+        <xpath expr="//span[@t-field='ml.product_id.display_name']/.." position="inside">
+            <div t-if="ml.product_id.brand" name="product_brand" class="text-muted small">
+                Marca: <span t-field="ml.product_id.brand.name"/>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="report_delivery_product_brand" inherit_id="stock.report_delivery_document">
+        <xpath expr="//span[@t-field='move.product_id']/.." position="inside">
+            <div t-if="move.product_id.brand" name="product_brand" class="text-muted small">
+                Marca: <span t-field="move.product_id.brand.name"/>
+            </div>
+        </xpath>
+        <xpath expr="//span[@t-field='bo_line.product_id']/.." position="inside">
+            <div t-if="bo_line.product_id.brand" name="product_brand" class="text-muted small">
+                Marca: <span t-field="bo_line.product_id.brand.name"/>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="report_delivery_serial_product_brand" inherit_id="stock.stock_report_delivery_has_serial_move_line">
+        <xpath expr="//span[@t-field='move_line.product_id']/.." position="inside">
+            <div t-if="move_line.product_id.brand" name="product_brand" class="text-muted small">
+                Marca: <span t-field="move_line.product_id.brand.name"/>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="report_delivery_aggregated_product_brand" inherit_id="stock.stock_report_delivery_aggregated_move_lines">
+        <xpath expr="//tr[@t-foreach='aggregated_lines']/td[1]" position="inside">
+            <div t-if="aggregated_lines[line]['product'].brand" name="product_brand" class="text-muted small">
+                Marca: <span t-field="aggregated_lines[line]['product'].brand.name"/>
+            </div>
+        </xpath>
+    </template>
+</odoo>
