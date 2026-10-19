@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'design_ticket_sale',
-    'version': '18.0.4.4.0',
-    'summary': 'Ticket de venta y marca en reportes de venta y factura',
-    'description': 'Personaliza el ticket de El Cepillo y muestra la marca de autoparte en tickets, órdenes de venta y facturas.',
+    'version': '18.0.4.5.0',
+    'summary': 'Marca en tickets y reportes de venta, factura e inventario',
+    'description': 'Personaliza el ticket de El Cepillo y muestra la marca de autoparte en tickets, órdenes de venta, facturas y movimientos de inventario.',
     'author': 'IcTechnologyMx',
     'license': 'LGPL-3',
     'category': 'Sales/Sales',
@@ -11,11 +11,13 @@
         'sale',
         'sale_stock',
         'account',
+        'stock',
         'sh_product_brand_sale',
     ],
     'data': [
         'report/sale_ticket_report.xml',
         'report/product_brand_reports.xml',
+        'report/stock_brand_reports.xml',
     ],
     'assets': {
         'web.report_assets_common': [
